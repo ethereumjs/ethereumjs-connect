@@ -255,6 +255,14 @@ module.exports = {
 
     connect: function (rpcinfo, ipcpath, callback) {
         var localnode, self = this;
+        if (!ipcpath && is_function(rpcinfo)) {
+            callback = rpcinfo;
+            rpcinfo = null;
+        }
+        if (!callback && is_function(ipcpath)) {
+            callback = ipcpath;
+            ipcpath = null;
+        }
         if (rpcinfo) {
             localnode = this.parse_rpcinfo(rpcinfo);
             if (localnode) {
