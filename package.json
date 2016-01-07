@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha",
-    "lint": "jshint *.js"
+    "lint": "jshint index.js"
   },
   "repository": {
     "type": "git",
