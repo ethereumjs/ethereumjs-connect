@@ -1,0 +1,43 @@
+{
+  "name": "ethereumjs-connect",
+  "version": "0.1.0",
+  "description": "Basic Ethereum connection tasks",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha",
+    "lint": "jshint *.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ethereumjs/ethereumjs-connect.git"
+  },
+  "keywords": [
+    "Ethereum",
+    "network",
+    "connector",
+    "coinbase",
+    "etherbase"
+  ],
+  "author": "Jack Peterson <jack@tinybike.net>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ethereumjs/ethereumjs-connect/issues"
+  },
+  "homepage": "https://github.com/ethereumjs/ethereumjs-connect#readme",
+  "dependencies": {
+    "async": "^1.5.1",
+    "augur-contracts": "^0.3.3",
+    "ethrpc": "^0.4.10"
+  },
+  "devDependencies": {
+    "browserify": "^12.0.1",
+    "chai": "^3.4.1",
+    "coveralls": "^2.11.6",
+    "del": "^2.2.0",
+    "gulp": "^3.9.0",
+    "istanbul": "^0.4.1",
+    "it-each": "^0.3.1",
+    "mocha": "^2.3.4",
+    "uglify-js": "^2.6.1"
+  }
+}
