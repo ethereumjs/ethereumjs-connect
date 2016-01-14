@@ -246,7 +246,7 @@ module.exports = {
         return this.urlstring(rpc_obj);
     },
 
-    connect: function (rpcinfo, ipcpath, callback) {
+    connect: function (rpcinfo, ipcpath, callback, retry) {
         var localnode, self = this;
         if (!ipcpath && is_function(rpcinfo)) {
             callback = rpcinfo;
@@ -256,37 +256,47 @@ module.exports = {
             callback = ipcpath;
             ipcpath = null;
         }
-        if (rpcinfo) {
-            localnode = this.parse_rpcinfo(rpcinfo);
-            if (localnode) {
-                this.rpc.setLocalNode(localnode);
+        if (!retry) {
+            rpcinfo = rpcinfo || process.env.AUGUR_HOST;
+            if (ipcpath) {
                 this.rpc.balancer = false;
+                this.rpc.ipcpath = ipcpath;
+                if (rpcinfo) {
+                    localnode = this.parse_rpcinfo(rpcinfo);
+                    if (localnode) this.rpc.nodes.local = localnode;
+                } else {
+                    this.rpc.nodes.local = "http://127.0.0.1:8545";
+                }
+            } else {
+                this.rpc.ipcpath = null;
+            }
+            if (rpcinfo) {
+                localnode = this.parse_rpcinfo(rpcinfo);
+                if (localnode) {
+                    this.rpc.setLocalNode(localnode);
+                    this.rpc.balancer = false;
+                } else {
+                    this.rpc.useHostedNode();
+                    this.rpc.balancer = true;
+                }
             } else {
                 this.rpc.useHostedNode();
                 this.rpc.balancer = true;
             }
         } else {
+            this.rpc.ipcpath = null;
             this.rpc.useHostedNode();
             this.rpc.balancer = true;
-        }
-        if (ipcpath) {
-            this.rpc.balancer = false;
-            this.rpc.ipcpath = ipcpath;
-            if (rpcinfo) {
-                localnode = this.parse_rpcinfo(rpcinfo);
-                if (localnode) this.rpc.nodes.local = localnode;
-            } else {
-                this.rpc.nodes.local = "http://127.0.0.1:8545";
-            }
-        } else {
-            this.rpc.ipcpath = null;
         }
         if (is_function(callback)) {
             async.series([
                 this.detect_network.bind(this),
                 this.get_coinbase.bind(this)
             ], function (err) {
-                if (err && self.debug) console.error("connect error:", err);
+                if (err) {
+                    if (self.debug) console.error("connect error:", err);
+                    return self.connect(rpcinfo, ipcpath, callback, true);
+                }
                 self.update_contracts();
                 self.connection = true;
                 callback(true);
@@ -299,9 +309,8 @@ module.exports = {
                 this.connection = true;
                 return true;
             } catch (exc) {
-                if (this.debug) console.error(exc);
-                this.default_rpc();
-                return this.connect();
+                if (self.debug) console.error("augur.connect:", exc);
+                return this.connect(rpcinfo, ipcpath, callback, true);
             }
         }
     },
