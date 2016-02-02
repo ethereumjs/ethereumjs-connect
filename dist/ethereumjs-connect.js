@@ -1,130 +1,243 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 module.exports={
-    "0": {
-        "namereg": "0xc6d9d2cd449a754c494264e1809c50e34d64562b",
-        "buyAndSellShares": "0xcb41186d3fa3eae83aa828eb776a913ffe94bcb7",
-        "checkQuorum": "0x7ad6e15cedf2a82651b5b407d1e98cbdf7c9e0e4",
-        "closeMarket": "0xfb8f4d790665457dcac8cbfa03965d1671d9e6a2",
-        "closeMarketEight": "0x3c348ffa3c66a7968110f64ae0a3d730cf20b670",
-        "closeMarketFour": "0x8cb16b2af081bf8a9cf06a5d8ae00a8f0d3a991f",
-        "closeMarketOne": "0x3aa010724da6a6d10d830905f6c83e31bfe47084",
-        "closeMarketTwo": "0xe4288ab0c0d886af4d5db6aa320c630c31a24b96",
-        "comments": "0x853cb123de348769d17108f505d6c3081fde2275",
-        "createBranch": "0x97aa6fe95e117a2c5c2e4f1419f5712d0ecfb66d",
-        "createEvent": "0xe3d1eef1fa0dba41796f08784033a32c3c2efd28",
-        "createMarket": "0x242219e309914836840a0ca0a55009478c5ba3d6",
-        "dispatch": "0x36004227035b544b981657d2736dd7de2ad1d30a",
-        "faucets": "0xd403f1657106c138843ea831bd99cbd2a4b8d648",
-        "makeReports": "0x9eed4f95d3bdc11775d7356709a8ae51f13f9bba",
-        "p2pWagers": "0x1c0e5ba6a9ba14420656be68657954917258eda6",
-        "sendReputation": "0xe5a16f3eef2158a63abd55c89474aef9ced7c82a",
-        "transferShares": "0x1743b8bd782221de0ad7c3ec010afc20da4c0d4f",
-        "accounts": "0x77ae4a8fa5c2775e618fcb40b0598f80a3b846f1",
-        "branches": "0x3a52e33bda40cb220cca98407bb332ec7579499b",
-        "cash": "0x25957529618e670165d49700c7d3f4ce4e2e00b9",
-        "events": "0x05b052da4cd80512f6a0837c72f7a4c3a591cbf6",
-        "expiringEvents": "0x554c2e7b73e62604e9d9f2e439b5a611da88fc87",
-        "fxpFunctions": "0x4abb75045783a639383aace45622ce97dec3b110",
-        "info": "0xe6e87575230b8e9315027c30648868e9ea80161c",
-        "ipfs": "0xbcfe600f4420d3db214bb2e7861b9c1c59ae2573",
-        "markets": "0x847adbfda58ca76ce0f5ff9952838a86192f510a",
-        "reporting": "0x772c698ff3121fde846002bae4d6828a39911fdb",
-        "adjust": "0x8fd78c97952f8bdd4351e8694e24c77f921446dd",
-        "center": "0x9c92cb96d4141204e2dc6e36b64192e4b6b1d29b",
-        "payout": "0x306973dc029f74fbfc83d9200e49b6c6978e77e9",
-        "redeem_adjust": "0xcfa0f80de838466d2605d7878f2ebb879e2aae60",
-        "redeem_center": "0x54d6594d3dc7d5af46f5bff12646d5f4ad152176",
-        "redeem_interpolate": "0xe8ff6008f6981d27f90cc6499d0f46546e6d8da7",
-        "redeem_payout": "0x701201acf46b40f449a815967fe0607a12645cd4",
-        "redeem_resolve": "0x46967961e529aaf9642742e08d27db1c8d33ba0d",
-        "redeem_score": "0x79988cdd607ef793f279d59d2686df2711c5b3a7",
-        "resolve": "0x145faea6f94952d73b54b2f85262ad8d8d474466",
-        "score": "0xe7fd9f29b2fbd3623574f303bee4355ca4645d62",
-        "statistics": "0xb44c5dffcb5092c06e8240b1d300b3287b0ca279"
-    },
     "7": {
         "namereg": "0xc6d9d2cd449a754c494264e1809c50e34d64562b",
-        "buyAndSellShares": "0xbe4ee6fec0988e5be8dafd38d9c0f8d6f9e5cbec",
-        "checkQuorum": "0x0602dfd8e341d2fbcf3625455fb756af998857a1",
-        "closeMarket": "0x288a972a5d2df198090c62aff28d752aa844462a",
-        "closeMarketEight": "0xdcf05b01d814507f93911aa1817a461e0b93cc15",
-        "closeMarketFour": "0xc048752bef846584750f426dfa853310e8b2692e",
-        "closeMarketOne": "0x8bc5fe35449908da4c436c135e7146d7516e9f19",
-        "closeMarketTwo": "0x647d9a245d1dfea6d6ad105b67189d1978428fe2",
-        "comments": "0xbd46ac9cbceebe6d8f33366df7e3bb1faa46c97f",
-        "createBranch": "0x79c536d060a2b420eef3f0b43f3b94453b674f2c",
-        "createEvent": "0x46b9460e82b44eb315b07ddd681563860837eb28",
-        "createMarket": "0x49c63c69bce199e2a53d265857849d0b8c3f7167",
-        "dispatch": "0x332df78758caafadbcecb8a33a86f0a3311b5617",
-        "faucets": "0xa105994eb344fcc492a90e43609e5078e958a777",
-        "makeReports": "0x705ade91ba95f82bfd0851d65e4e4f1b26d8a78f",
-        "p2pWagers": "0xa98080fda696c11af2cb9a90b1899d914436e4ba",
-        "sendReputation": "0xd3f5b1d3cbf338394fbbbab45174329ef62e59d8",
-        "transferShares": "0x05a0c629185abf6fbf189e985a7e739f54939237",
-        "accounts": "0x4b4248f78b2a4aaa51e242b6f35b8dd4276451da",
-        "branches": "0x7a07e396f3691831bf2caa85bdfaa611d77e8ef2",
-        "cash": "0xca401c5c89b7188629fcb8e006165a4bc1aaeaa6",
-        "events": "0x61097e73dd210af08d73bebdf1608d504c137566",
-        "expiringEvents": "0xc7717a4a53a6b3ed63d1b6da807f51fd8e916f64",
-        "fxpFunctions": "0xd8e126fab75ecfba100910d9e6bb39b4eadfaeee",
-        "info": "0x4cc834408dee680b256a307727b63b27bc5abfcb",
-        "ipfs": "0x03377d7fb9147e6123aea28973a195b1eee2a61c",
-        "markets": "0x04124f1643372564aded7c1f215709bf49929b2d",
-        "reporting": "0xcff90d34101456788b37199d1ee13b68ad47e8c7",
-        "adjust": "0x8ded14b321b658551970bb0a6b0401b4b008019a",
-        "center": "0x6796b0cae4636faf82501f441135ac0b96b84b91",
-        "payout": "0x249ef04ea9054d3002b95ce6189ff8358677eda4",
-        "redeem_adjust": "0x93ea5a64a68014f769ef7003c9bdf2a726626cc2",
-        "redeem_center": "0xc149bbab0707d6455d54ac2cf681b9bb64b5d639",
-        "redeem_interpolate": "0x29f97d471eedeeded58f34ce3863c7a92f3072e7",
-        "redeem_payout": "0xda15cf68e108c72eaea338890fc3edc39af5f25f",
-        "redeem_resolve": "0x5eb5686b101a8901a1e10e17a58b2fc0c95802c7",
-        "redeem_score": "0x50060e47a13b69e9c2d03b564e08e20cbfc14957",
-        "resolve": "0xf8bfa1b49b66ba3a6e52f5265e22375145306527",
-        "score": "0x4ee6fd8192a3ba884b89ac69e12a76c4bcd8f5ec",
-        "statistics": "0x4d5c089204374a962e17ce5e716d42e1e67db432"
+        "buy&sellShares": "0xb07c85f4bc330af9d05a13bfcfc8e4ee97aaf8a7",
+        "closeMarket": "0xc50d5c87fd47fcd0809189537167875f6bd2d2ec",
+        "closeMarketEight": "0x1638264f1cf621577e0c9ebdbb32c64363ad5091",
+        "closeMarketFour": "0xc0e57d94439e2ee128c2027165418990f7761b5a",
+        "closeMarketOne": "0xf66694ae3d829aa429d45c3ca25c1b72ea939664",
+        "closeMarketTwo": "0x7463f09d6325539b67fb1029c967e8dece922de3",
+        "comments": "0xe3afb897ca3433beb4dd26e56b7a7e1e5a3cb95f",
+        "createBranch": "0xfc5641a3e886de604de807ddaf5177b3ff54c49d",
+        "createEvent": "0x0bb851b745b9b3645393e6aa73ed3c578bee2c44",
+        "createMarket": "0xb932ada718d652733f3e0d3b56680c8db8d2c185",
+        "eventResolution": "0x9841da6e15861bfdb3ed00b824367a7d303c61c1",
+        "faucets": "0xc609601d1e106b82685f1d4ccc4a4414756edcec",
+        "insertionsort": "0xb7633eb6855a73fa7a30d77283d96bef0a5aadbd",
+        "makeReports": "0x4b08fc091b82aa66bb89717a024134980734f0c4",
+        "orderBook": "0xc2b23407ee8b39afae85e10e97bb09ade18895aa",
+        "quicksort": "0x48e24883526844e5569581451dc265b1606f1ad7",
+        "transferShares": "0x778644baaed232b93edc81b5bca3489bda81bf54",
+        "branches": "0x3f317c2945f54b4c105b8624c1ba4ccab4da16ba",
+        "cash": "0xd774e260a27f84b645a9aac3d01a58a5c6fbe4a4",
+        "events": "0x0375c66ee1c2056e7bd07c5a36e04c955b48d312",
+        "expiringEvents": "0x239beef0da25a0d3fbcfbebceaa2e2b95e279a1c",
+        "fxpFunctions": "0x49e9c495ecb6e30a8a0bbe5c94f1f93876396849",
+        "info": "0xe5051d599fb951ded03c906fecff09d4b37b0173",
+        "markets": "0x8032786d68e26dc2792bed6a0b605f892b8c6217",
+        "reporting": "0x2480ce8744fbd678f3280c952c38d95d5cf15101"
     },
     "10101": {
         "namereg": "0xc6d9d2cd449a754c494264e1809c50e34d64562b",
-        "buyAndSellShares": "0x2e5a882aa53805f1a9da3cf18f73673bca98fa0f",
-        "checkQuorum": "0x8caf2c0ce7cdc2e81b58f74322cefdef440b3f8d",
-        "closeMarket": "0xcece47d6c0a6a1c90521f38ec5bf7550df983804",
-        "closeMarketEight": "0x031d9d02520cc708ea3c865278508c9cdb92bd51",
-        "closeMarketFour": "0xcd6c7bc634257f82903b182142aae7156d72a200",
-        "closeMarketOne": "0xd2e9f7c2fd4635199b8cc9e8128fc4d27c693945",
-        "closeMarketTwo": "0x7d4b581a0868204b7481c316b430a97fd292a2fb",
-        "comments": "0x014b14d07e5afb2f30eb6ebf81d927563f0f1238",
+        "buy&sellShares": "0xe5b327630cfa7f4b2324f9066c897dceecfd88a3",
+        "closeMarket": "0xc1c4e2f32e4b84a60b8b7983b6356af4269aab79",
+        "closeMarketEight": "0x8caf2c0ce7cdc2e81b58f74322cefdef440b3f8d",
+        "closeMarketFour": "0x9fe69262bbaa47f013b7dbd6ca5f01e17446c645",
+        "closeMarketOne": "0x52ccb0490bc81a2ae363fccbb2b367bca546cec7",
+        "closeMarketTwo": "0xd15a6cfc462ae76b9ec590cab8b34bfa8e1302d7",
+        "comments": "0x8f2c2267687cb0f047b28a1b6f945da6e101a0d7",
         "createBranch": "0x5f67ab9ff79be97b27ac8f26ef9f4b429b82e2df",
-        "createEvent": "0x9fe69262bbaa47f013b7dbd6ca5f01e17446c645",
-        "createMarket": "0x448c01a2e1fd6c2ef133402c403d2f48c99993e7",
-        "dispatch": "0x70a893eb9569041e97a3787f0c76a1eb6378d8b2",
-        "faucets": "0x509592c96eee7e19f6a34772fd8783cb072ca3c6",
-        "makeReports": "0x3f3276849a878a176b2f02dd48a483e8182a49e4",
-        "p2pWagers": "0x77c424f86a1b80f1e303d1c2651acd6aba653cb6",
-        "sendReputation": "0x35152caa07026203a1add680771afb690d872d7d",
-        "transferShares": "0xd70c6e1f3857d23bd96c3e4d2ec346fa7c3931f3",
-        "accounts": "0x77ae4a8fa5c2775e618fcb40b0598f80a3b846f1",
-        "branches": "0xabe47f122a496a732d6c4b38b3ca376d597d75dd",
-        "cash": "0xe4714fcbdcdba49629bc408183ef40d120700b8d",
-        "events": "0x4a61f3db785f1e2a23ffefeafaceeef2df551667",
-        "expiringEvents": "0xd15a6cfc462ae76b9ec590cab8b34bfa8e1302d7",
-        "fxpFunctions": "0x482c57abdce592b39434e3f619ffc3db62ab6d01",
-        "info": "0x5069d883e31429c6dd1325d961f443007747c7a2",
-        "ipfs": "0xc21cfa6688dbfd2eca2548d894aa55fd0bbf1c7e",
-        "markets": "0x9308cf21b5a11f182f9707ca284bbb71bb84f893",
-        "reporting": "0x81a7621e9a286d061b3dea040888a51c96693b1c",
-        "adjust": "0xbd19195b9e8a2d8ed14fc3a2823856b5c16f7f55",
-        "center": "0xa34c9f6fc047cea795f69b34a063d32e6cb6288c",
-        "payout": "0x8a4e2993a9972ee035453bb5674816fc3a698718",
-        "redeem_adjust": "0x8c19616de17acdfbc933b99d9f529a689d22098f",
-        "redeem_center": "0xc1c4e2f32e4b84a60b8b7983b6356af4269aab79",
-        "redeem_interpolate": "0x60cb05deb51f92ee25ce99f67181ecaeb0b743ea",
-        "redeem_payout": "0xe5b327630cfa7f4b2324f9066c897dceecfd88a3",
-        "redeem_resolve": "0x6c4c9fa11d6d8ed2c7a08ddcf4d4654c85194f68",
-        "redeem_score": "0x52ccb0490bc81a2ae363fccbb2b367bca546cec7",
-        "resolve": "0x0fbddb6bfb81c8d0965a894567cf4061446072c2",
-        "score": "0x708fdfe18bf28afe861a69e95419d183ace003eb",
-        "statistics": "0x8f2c2267687cb0f047b28a1b6f945da6e101a0d7"
+        "createEvent": "0x81a7621e9a286d061b3dea040888a51c96693b1c",
+        "createMarket": "0x6c4c9fa11d6d8ed2c7a08ddcf4d4654c85194f68",
+        "eventResolution": "0x3f3276849a878a176b2f02dd48a483e8182a49e4",
+        "faucets": "0x5069d883e31429c6dd1325d961f443007747c7a2",
+        "insertionsort": "0x708fdfe18bf28afe861a69e95419d183ace003eb",
+        "makeReports": "0x35152caa07026203a1add680771afb690d872d7d",
+        "orderBook": "0x8a4e2993a9972ee035453bb5674816fc3a698718",
+        "quicksort": "0xa34c9f6fc047cea795f69b34a063d32e6cb6288c",
+        "transferShares": "0x60cb05deb51f92ee25ce99f67181ecaeb0b743ea",
+        "branches": "0x482c57abdce592b39434e3f619ffc3db62ab6d01",
+        "cash": "0xbd19195b9e8a2d8ed14fc3a2823856b5c16f7f55",
+        "events": "0xe4714fcbdcdba49629bc408183ef40d120700b8d",
+        "expiringEvents": "0x4a61f3db785f1e2a23ffefeafaceeef2df551667",
+        "fxpFunctions": "0x0fbddb6bfb81c8d0965a894567cf4061446072c2",
+        "info": "0xc21cfa6688dbfd2eca2548d894aa55fd0bbf1c7e",
+        "markets": "0xabe47f122a496a732d6c4b38b3ca376d597d75dd",
+        "reporting": "0x77c424f86a1b80f1e303d1c2651acd6aba653cb6"
+    },
+    "errors": {
+        "0x": "no response or bad input",
+        "getSimulatedBuy": {
+            "-2": "cost updating error (did you enter a valid quantity?)"
+        },
+        "getSimulatedSell": {
+            "-2": "cost updating error (did you enter a valid quantity?)"
+        },
+        "closeMarket": {
+            "-1": "market has no cash",
+            "-2": "0 outcome",
+            "-3": "outcome indeterminable"
+        },
+        "report": {
+            "0": "could not set reporter ballot",
+            "-1": "report length does not match number of expiring events",
+            "-2": "voting period expired",
+            "-3": "incorrect hash"
+        },
+        "submitReportHash": {
+            "0": "could not set report hash",
+            "-1": "reporter (you) doesn't (don't) exist, or voting period over or hasn't started yet",
+            "-2": "not in hash submitting timeframe or event doesn't exist / not a valid event expiring then",
+            "-4": "already resolved",
+            "-5": ".99 market",
+            "-6": "no markets"
+        },
+        "checkReportValidity": {
+            "-1": "report isn't long enough",
+            "-2": "reporter doesn't exist, voting period is over, or voting period hasn't started yet"
+        },
+        "slashRep": {
+            "0": "incorrect hash",
+            "-2": "incorrect reporter ID"
+        },
+        "createSubbranch": {
+            "-1": "bad input or parent doesn't exist",
+            "-2": "no money for creation fee or branch already exists"
+        },
+        "createEvent": {
+            "0": "not enough money to pay fees or event already exists",
+            "-1": "we're either already past that date, branch doesn't exist, or description is bad"
+        },
+        "createMarket": {
+            "-1": "bad input or parent doesn't exist",
+            "-2": "too many events",
+            "-3": "too many outcomes",
+            "-4": "not enough money or market already exists"
+        },
+        "sendReputation": {
+            "0": "not enough reputation",
+            "-1": "Your reputation account was just created! Earn some reputation before you can send to others",
+            "-2": "Receiving address doesn't exist"
+        },
+        "buyShares": {
+            "-1": "invalid outcome or trading closed",
+            "-2": "entered a negative number of shares",
+            "-3": "not enough money",
+            "-4": "bad nonce/hash"
+        },
+        "sellShares": {
+            "-1": "invalid outcome or trading closed",
+            "-2": "entered a negative number of shares",
+            "-3": "not enough money",
+            "-4": "bad nonce/hash"
+        },
+        "WHISPER_POST_FAILED": {
+            "error": 65,
+            "message": "could not post message to whisper"
+        },
+        "DB_DELETE_FAILED": {
+            "error": 97,
+            "message": "database delete failed"
+        },
+        "DB_WRITE_FAILED": {
+            "error": 98,
+            "message": "database write failed"
+        },
+        "DB_READ_FAILED": {
+            "error": 99,
+            "message": "database read failed"
+        },
+        "INVALID_CONTRACT_PARAMETER": {
+            "error": 400,
+            "message": "cannot send object parameter to contract"
+        },
+        "NOT_LOGGED_IN": {
+            "error": 401,
+            "message": "not logged in"
+        },
+        "PARAMETER_NUMBER_ERROR": {
+            "error": 402,
+            "message": "wrong number of parameters"
+        },
+        "BAD_CREDENTIALS": {
+            "error": 403,
+            "message": "incorrect handle or password"
+        },
+        "TRANSACTION_NOT_FOUND": {
+            "error": 404,
+            "message": "transaction not found"
+        },
+        "PASSWORD_TOO_SHORT": {
+            "error": 405,
+            "message": "password must be at least 6 characters long"
+        },
+        "NULL_CALL_RETURN": {
+            "error": 406,
+            "message": "expected contract call to return value, received null"
+        },
+        "NULL_RESPONSE": {
+            "error": 407,
+            "message": "expected transaction hash from Ethereum node, received null"
+        },
+        "NO_RESPONSE": {
+            "error": 408,
+            "message": "no response"
+        },
+        "INVALID_RESPONSE": {
+            "error": 409,
+            "message": "could not parse response from Ethereum node"
+        },
+        "LOCAL_NODE_FAILURE": {
+            "error": 410,
+            "message": "RPC request to local Ethereum node failed"
+        },
+        "HOSTED_NODE_FAILURE": {
+            "error": 411,
+            "message": "RPC request to hosted nodes failed"
+        },
+        "HANDLE_TAKEN": {
+            "error": 422,
+            "message": "handle already taken"
+        },
+        "FILTER_NOT_CREATED": {
+            "error": 450,
+            "message": "filter could not be created"
+        },
+        "TRANSACTION_FAILED": {
+            "error": 500,
+            "message": "transaction failed"
+        },
+        "TRANSACTION_NOT_CONFIRMED": {
+            "error": 501,
+            "message": "polled network but could not confirm transaction"
+        },
+        "DUPLICATE_TRANSACTION": {
+            "error": 502,
+            "message": "duplicate transaction"
+        },
+        "RAW_TRANSACTION_ERROR": {
+            "error": 503,
+            "message": "error sending client-side transaction"
+        },
+        "RLP_ENCODING_ERROR": {
+            "error": 504,
+            "message": "RLP encoding error"
+        },
+        "NO_MARKET_INFO": {
+            "error": 505,
+            "message": "could not retrieve market data"
+        },
+        "IPFS_ADD_FAILURE": {
+            "error": 506,
+            "message": "files could not be added to IPFS"
+        },
+        "IPFS_GET_FAILURE": {
+            "error": 507,
+            "message": "could not retrieve file from IPFS"
+        },
+        "RPC_TIMEOUT": {
+            "error": 599,
+            "message": "timed out while waiting for Ethereum network response"
+        },
+        "LOOPBACK_NOT_FOUND": {
+            "error": 650,
+            "message": "loopback interface required for synchronous local commands"
+        },
+        "ETHEREUM_NOT_FOUND": {
+            "error": 651,
+            "message": "no active ethereum node(s) found"
+        }
     }
 }
 },{}],2:[function(require,module,exports){
@@ -149,8 +262,11 @@ module.exports={
     },
     "submitReportHash": {
         "0": "could not set report hash",
-        "-1": "reporter doesn't exist, voting period is over, or voting period hasn't started yet",
-        "-2": "not in hash submitting timeframe"
+        "-1": "reporter (you) doesn't (don't) exist, or voting period over or hasn't started yet",
+        "-2": "not in hash submitting timeframe or event doesn't exist / not a valid event expiring then",
+        "-4": "already resolved",
+        "-5": ".99 market",
+        "-6": "no markets"
     },
     "checkReportValidity": {
         "-1": "report isn't long enough",
@@ -159,6 +275,10 @@ module.exports={
     "slashRep": {
         "0": "incorrect hash",
         "-2": "incorrect reporter ID"
+    },
+    "createSubbranch": {
+        "-1": "bad input or parent doesn't exist",
+        "-2": "no money for creation fee or branch already exists"
     },
     "createEvent": {
         "0": "not enough money to pay fees or event already exists",
@@ -190,6 +310,10 @@ module.exports={
     "WHISPER_POST_FAILED": {
         "error": 65,
         "message": "could not post message to whisper"
+    },
+    "DB_DELETE_FAILED": {
+        "error": 97,
+        "message": "database delete failed"
     },
     "DB_WRITE_FAILED": {
         "error": 98,
@@ -341,6 +465,13 @@ module.exports = function (network) {
         },
 
         // cash.se
+        initiateOwner: {
+            to: contracts.cash,
+            method: "initiateOwner",
+            signature: "i",
+            send: true,
+            returns: "number"
+        },
         getCashBalance: {
             to: contracts.cash,
             method: "balance",
@@ -484,14 +615,20 @@ module.exports = function (network) {
         },
 
         // branches.se
+        initDefaultBranch: {
+            to: contracts.branches,
+            method: "initDefaultBranch",
+            returns: "number",
+            send: true
+        },
         getBranches: {
             to: contracts.branches,
             method: "getBranches",
             returns: "hash[]"
         },
-        getMarkets: {
+        getMarketsInBranch: {
             to: contracts.branches,
-            method: "getMarkets",
+            method: "getMarketsInBranch",
             signature: "i",
             returns: "hash[]"
         },
@@ -537,9 +674,9 @@ module.exports = function (network) {
             signature: "i",
             send: true
         },
-        getNumMarkets: {
+        getNumMarketsBranch: {
             to: contracts.branches,
-            method: "getNumMarkets",
+            method: "getNumMarketsBranch",
             signature: "i",
             returns: "number"
         },
@@ -575,6 +712,12 @@ module.exports = function (network) {
         },
 
         // events.se
+        getReportingThreshold: {
+            to: contracts.events,
+            method: "getReportingThreshold",
+            signature: "i",
+            returns: "unfix"
+        },
         getEventInfo: {
             to: contracts.events,
             method: "getEventInfo",
@@ -619,6 +762,12 @@ module.exports = function (network) {
         },
 
         // expiringEvents.se
+        getEventIndex: {
+            to: contracts.expiringEvents,
+            method: "getEventIndex",
+            signature: "ii",
+            returns: "number"
+        },
         getEvents: {
             to: contracts.expiringEvents,
             method: "getEvents",
@@ -916,17 +1065,11 @@ module.exports = function (network) {
         },
 
         // markets.se
-        getSimulatedBuy: {
+        price: {
             to: contracts.markets,
-            method: "getSimulatedBuy",
-            signature: "iii",
-            returns: "unfix[]"
-        },
-        getSimulatedSell: {
-            to: contracts.markets,
-            method: "getSimulatedSell",
-            signature: "iii",
-            returns: "unfix[]"
+            method: "price",
+            signature: "ii",
+            returns: "unfix"
         },
         lsLmsr: {
             to: contracts.markets,
@@ -990,17 +1133,23 @@ module.exports = function (network) {
             signature: "ii",
             returns: "unfix"
         },
+        getForkSelection: {
+            to: contracts.markets,
+            method: "getForkSelection",
+            signature: "i",
+            returns: "hash"
+        },
+        getVolume: {
+            to: contracts.markets,
+            method: "getVolume",
+            signature: "i",
+            returns: "unfix"
+        },
         getWinningOutcomes: {
             to: contracts.markets,
             method: "getWinningOutcomes",
             signature: "i",
             returns: "number[]"
-        },
-        price: {
-            to: contracts.markets,
-            method: "price",
-            signature: "ii",
-            returns: "unfix"
         },
         getParticipantNumber: {
             to: contracts.markets,
@@ -1143,7 +1292,8 @@ module.exports = function (network) {
         createSubbranch: {
             to: contracts.createBranch,
             method: "createSubbranch",
-            signature: "siii",
+            signature: "siiii",
+            returns: "hash",
             send: true
         },
 
@@ -1157,6 +1307,12 @@ module.exports = function (network) {
         },
 
         // makeReports.se
+        makeHash: {
+            to: contracts.makeReports,
+            method: "makeHash",
+            signature: "iii",
+            returns: "hash"
+        },
         report: {
             to: contracts.makeReports,
             method: "report",
@@ -1164,10 +1320,16 @@ module.exports = function (network) {
             returns: "number",
             send: true
         },
+        calculateReportingThreshold: {
+            to: contracts.makeReports,
+            method: "calculateReportingThreshold",
+            signature: "iii",
+            returns: "hash"
+        },
         submitReportHash: {
             to: contracts.makeReports,
             method: "submitReportHash",
-            signature: "iii",
+            signature: "iiiii",
             returns: "number",
             send: true
         },
@@ -1197,7 +1359,7 @@ module.exports = function (network) {
         createMarket: {
             to: contracts.createMarket,
             method: "createMarket",
-            signature: "isiiia",
+            signature: "isiiiai",
             send: true
         },
 
