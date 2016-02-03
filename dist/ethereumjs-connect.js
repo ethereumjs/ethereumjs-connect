@@ -2,7 +2,7 @@
 module.exports={
     "7": {
         "namereg": "0xc6d9d2cd449a754c494264e1809c50e34d64562b",
-        "buy&sellShares": "0xb07c85f4bc330af9d05a13bfcfc8e4ee97aaf8a7",
+        "buyAndSellShares": "0xb07c85f4bc330af9d05a13bfcfc8e4ee97aaf8a7",
         "closeMarket": "0xc50d5c87fd47fcd0809189537167875f6bd2d2ec",
         "closeMarketEight": "0x1638264f1cf621577e0c9ebdbb32c64363ad5091",
         "closeMarketFour": "0xc0e57d94439e2ee128c2027165418990f7761b5a",
@@ -30,7 +30,7 @@ module.exports={
     },
     "10101": {
         "namereg": "0xc6d9d2cd449a754c494264e1809c50e34d64562b",
-        "buy&sellShares": "0xe5b327630cfa7f4b2324f9066c897dceecfd88a3",
+        "buyAndSellShares": "0xe5b327630cfa7f4b2324f9066c897dceecfd88a3",
         "closeMarket": "0xc1c4e2f32e4b84a60b8b7983b6356af4269aab79",
         "closeMarketEight": "0x8caf2c0ce7cdc2e81b58f74322cefdef440b3f8d",
         "closeMarketFour": "0x9fe69262bbaa47f013b7dbd6ca5f01e17446c645",
@@ -1187,6 +1187,12 @@ module.exports = function (network) {
             signature: "i",
             returns: "unfix"
         },
+        initialLiquidityAmount: {
+            to: contracts.markets,
+            method: "initialLiquidityAmount",
+            signature: "ii",
+            returns: "unfix"
+        },
         initialLiquiditySetup: {
             to: contracts.markets,
             method: "initialLiquiditySetup",
@@ -1258,32 +1264,25 @@ module.exports = function (network) {
             signature: "ai"
         },
 
-        // checkQuorum.se
-        checkQuorum: {
-            to: contracts.checkQuorum,
-            method: "checkQuorum",
-            signature: "i",
-            returns: "number"
-        },
-
         // buy&sellShares.se
-        getNonce: {
+        commitTrade: {
             to: contracts.buyAndSellShares,
-            method: "getNonce",
-            signature: "i",
-            returns: "number"
+            method: "commitTrade",
+            signature: "ii",
+            returns: "number",
+            send: true
         },
         buyShares: {
             to: contracts.buyAndSellShares,
             method: "buyShares",
-            signature: "iiiiii",
+            signature: "iiiii",
             returns: "unfix",
             send: true
         },
         sellShares: {
             to: contracts.buyAndSellShares,
             method: "sellShares",
-            signature: "iiiiii",
+            signature: "iiiii",
             returns: "unfix",
             send: true
         },
@@ -33659,10 +33658,10 @@ function isFunction(f) {
 }
 
 var HOSTED_NODES = [
-    "https://eth1.augur.net",
-    "https://eth3.augur.net",
-    "https://eth4.augur.net",
-    "https://eth5.augur.net"
+    "https://eth1.augur.net"
+    // "https://eth3.augur.net",
+    // "https://eth4.augur.net",
+    // "https://eth5.augur.net"
 ];
 
 module.exports = {
@@ -33676,7 +33675,7 @@ module.exports = {
     },
 
     // network load balancer
-    balancer: true,
+    balancer: false,
 
     // remove unresponsive nodes
     excision: false,
