@@ -294,7 +294,8 @@ module.exports = {
                 this.get_coinbase.bind(this)
             ], function (err) {
                 if (err) {
-                    if (self.debug) console.error("connect error:", err);
+                    // if (self.debug) console.error("connect error:", err);
+                    console.error("connect error:", err);
                     return self.connect(rpcinfo, ipcpath, callback, true);
                 }
                 self.update_contracts();
@@ -309,7 +310,8 @@ module.exports = {
                 this.connection = true;
                 return true;
             } catch (exc) {
-                if (self.debug) console.error("augur.connect:", exc);
+                // if (self.debug) console.error("augur.connect:", exc);
+                console.error("augur.connect:", exc);
                 return this.connect(rpcinfo, ipcpath, callback, true);
             }
         }
