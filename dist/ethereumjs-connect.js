@@ -2,59 +2,65 @@
 module.exports={
     "7": {
         "namereg": "0xc6d9d2cd449a754c494264e1809c50e34d64562b",
-        "buyAndSellShares": "0xb07c85f4bc330af9d05a13bfcfc8e4ee97aaf8a7",
-        "closeMarket": "0xc50d5c87fd47fcd0809189537167875f6bd2d2ec",
-        "closeMarketEight": "0x1638264f1cf621577e0c9ebdbb32c64363ad5091",
-        "closeMarketFour": "0xc0e57d94439e2ee128c2027165418990f7761b5a",
-        "closeMarketOne": "0xf66694ae3d829aa429d45c3ca25c1b72ea939664",
-        "closeMarketTwo": "0x7463f09d6325539b67fb1029c967e8dece922de3",
-        "comments": "0xe3afb897ca3433beb4dd26e56b7a7e1e5a3cb95f",
-        "createBranch": "0xfc5641a3e886de604de807ddaf5177b3ff54c49d",
-        "createEvent": "0x0bb851b745b9b3645393e6aa73ed3c578bee2c44",
-        "createMarket": "0xb932ada718d652733f3e0d3b56680c8db8d2c185",
-        "eventResolution": "0x9841da6e15861bfdb3ed00b824367a7d303c61c1",
-        "faucets": "0xc609601d1e106b82685f1d4ccc4a4414756edcec",
-        "insertionsort": "0xb7633eb6855a73fa7a30d77283d96bef0a5aadbd",
-        "makeReports": "0x4b08fc091b82aa66bb89717a024134980734f0c4",
-        "orderBook": "0xc2b23407ee8b39afae85e10e97bb09ade18895aa",
-        "quicksort": "0x48e24883526844e5569581451dc265b1606f1ad7",
-        "transferShares": "0x778644baaed232b93edc81b5bca3489bda81bf54",
-        "branches": "0x3f317c2945f54b4c105b8624c1ba4ccab4da16ba",
-        "cash": "0xd774e260a27f84b645a9aac3d01a58a5c6fbe4a4",
-        "events": "0x0375c66ee1c2056e7bd07c5a36e04c955b48d312",
-        "expiringEvents": "0x239beef0da25a0d3fbcfbebceaa2e2b95e279a1c",
-        "fxpFunctions": "0x49e9c495ecb6e30a8a0bbe5c94f1f93876396849",
-        "info": "0xe5051d599fb951ded03c906fecff09d4b37b0173",
-        "markets": "0x8032786d68e26dc2792bed6a0b605f892b8c6217",
-        "reporting": "0x2480ce8744fbd678f3280c952c38d95d5cf15101"
+        "buyAndSellShares": "0xea9cb33592fb7b5c2b730fb4696b108f0ab3b6de",
+        "closeMarket": "0x0d7e621a192a10c3333a54ce916bdc8e0244c29d",
+        "closeMarketEight": "0xa85e41e0d2efe7d9c3df9ff01ce42cd2182e9a21",
+        "closeMarketFour": "0x3522016cab0793ebfd005c1808b23fba7fc1a0ac",
+        "closeMarketOne": "0xb15baeac7c5c18a4ae1b8dcd24b349b18888d5ca",
+        "closeMarketTwo": "0x1ebe7f6f3bf5ed9276373ecbef5a09cb11af2f0f",
+        "comments": "0x412d2febf4b4db21382d2b26e074e7b0c5780d5a",
+        "consensus": "0xc59537470f1cf45ca1725fac10d389ea9a739885",
+        "createBranch": "0x3bf0139b2281c5f13b6a43b3a3c020934ceb0897",
+        "createEvent": "0x4ff5e87b13be9df2cf83a81aa971797f8f50f278",
+        "createMarket": "0xb8c2e4ba3971463a93b068e8b70285d3a5185796",
+        "eventResolution": "0xca1b25164975d13fc0acb721f0bd88f51675a0a4",
+        "faucets": "0x072fbf825698f67eff41d145fab695f88272ad8f",
+        "insertionsort": "0x79fdce9ece6665c3b65d981772a9406a385fe4cf",
+        "makeReports": "0x33ee3ef2acb6c0aee2b2377ff70afff871555b1a",
+        "orderBook": "0xbb2fcf76c09c07caa55eb9d4d96729e17b66395d",
+        "quicksort": "0x99952d75c52b3bfd5ff961ecebd34bd4477f7d6b",
+        "ramble": "0xcce881fc29629e655df467f2ab55b4daa7c0785c",
+        "sendReputation": "0x378524f700f69ddf709a5fdb32d62ae9bd8f3100",
+        "transferShares": "0x12bd588d040fbaaf40a8a4aec30f07a74a8aa55b",
+        "branches": "0x6e099c37d8d538243ad64c829f895483f378d740",
+        "cash": "0x7863b30f2eaa3bd304dd6d3be014c77d7f9cd8c9",
+        "events": "0x8e884f6dd75c696024dd9739b9b6c5b6e5d0f01c",
+        "expiringEvents": "0xfe81801638055a798a5951561f568f7b4821fc04",
+        "fxpFunctions": "0x07cc411f282b977f2109df7087f4efd5286c5153",
+        "info": "0x76d8477190c55b4a504531c0413a001e2356437c",
+        "markets": "0x9ea3e29dc2f202f59a8b4c2964e851358c0f1569",
+        "reporting": "0xb707b070a020fdc959496dd9e598d9f03cc2d02f"
     },
     "10101": {
         "namereg": "0xc6d9d2cd449a754c494264e1809c50e34d64562b",
-        "buyAndSellShares": "0xe5b327630cfa7f4b2324f9066c897dceecfd88a3",
-        "closeMarket": "0xc1c4e2f32e4b84a60b8b7983b6356af4269aab79",
-        "closeMarketEight": "0x8caf2c0ce7cdc2e81b58f74322cefdef440b3f8d",
-        "closeMarketFour": "0x9fe69262bbaa47f013b7dbd6ca5f01e17446c645",
-        "closeMarketOne": "0x52ccb0490bc81a2ae363fccbb2b367bca546cec7",
-        "closeMarketTwo": "0xd15a6cfc462ae76b9ec590cab8b34bfa8e1302d7",
-        "comments": "0x8f2c2267687cb0f047b28a1b6f945da6e101a0d7",
-        "createBranch": "0x5f67ab9ff79be97b27ac8f26ef9f4b429b82e2df",
-        "createEvent": "0x81a7621e9a286d061b3dea040888a51c96693b1c",
-        "createMarket": "0x6c4c9fa11d6d8ed2c7a08ddcf4d4654c85194f68",
-        "eventResolution": "0x3f3276849a878a176b2f02dd48a483e8182a49e4",
-        "faucets": "0x5069d883e31429c6dd1325d961f443007747c7a2",
-        "insertionsort": "0x708fdfe18bf28afe861a69e95419d183ace003eb",
-        "makeReports": "0x35152caa07026203a1add680771afb690d872d7d",
-        "orderBook": "0x8a4e2993a9972ee035453bb5674816fc3a698718",
+        "buyAndSellShares": "0x8caf2c0ce7cdc2e81b58f74322cefdef440b3f8d",
+        "closeMarket": "0x6c4c9fa11d6d8ed2c7a08ddcf4d4654c85194f68",
+        "closeMarketEight": "0x60cb05deb51f92ee25ce99f67181ecaeb0b743ea",
+        "closeMarketFour": "0xe5b327630cfa7f4b2324f9066c897dceecfd88a3",
+        "closeMarketOne": "0x35152caa07026203a1add680771afb690d872d7d",
+        "closeMarketTwo": "0x9fe69262bbaa47f013b7dbd6ca5f01e17446c645",
+        "comments": "0x0fbddb6bfb81c8d0965a894567cf4061446072c2",
+        "consensus": "0x8c19616de17acdfbc933b99d9f529a689d22098f",
+        "createBranch": "0x9308cf21b5a11f182f9707ca284bbb71bb84f893",
+        "createEvent": "0xabe47f122a496a732d6c4b38b3ca376d597d75dd",
+        "createMarket": "0x5f67ab9ff79be97b27ac8f26ef9f4b429b82e2df",
+        "eventResolution": "0xc1c4e2f32e4b84a60b8b7983b6356af4269aab79",
+        "faucets": "0xc21cfa6688dbfd2eca2548d894aa55fd0bbf1c7e",
+        "insertionsort": "0x8f2c2267687cb0f047b28a1b6f945da6e101a0d7",
+        "makeReports": "0x3f3276849a878a176b2f02dd48a483e8182a49e4",
+        "orderBook": "0x708fdfe18bf28afe861a69e95419d183ace003eb",
         "quicksort": "0xa34c9f6fc047cea795f69b34a063d32e6cb6288c",
-        "transferShares": "0x60cb05deb51f92ee25ce99f67181ecaeb0b743ea",
-        "branches": "0x482c57abdce592b39434e3f619ffc3db62ab6d01",
-        "cash": "0xbd19195b9e8a2d8ed14fc3a2823856b5c16f7f55",
-        "events": "0xe4714fcbdcdba49629bc408183ef40d120700b8d",
-        "expiringEvents": "0x4a61f3db785f1e2a23ffefeafaceeef2df551667",
-        "fxpFunctions": "0x0fbddb6bfb81c8d0965a894567cf4061446072c2",
-        "info": "0xc21cfa6688dbfd2eca2548d894aa55fd0bbf1c7e",
-        "markets": "0xabe47f122a496a732d6c4b38b3ca376d597d75dd",
-        "reporting": "0x77c424f86a1b80f1e303d1c2651acd6aba653cb6"
+        "ramble": "0x8a4e2993a9972ee035453bb5674816fc3a698718",
+        "sendReputation": "0x70a893eb9569041e97a3787f0c76a1eb6378d8b2",
+        "transferShares": "0x52ccb0490bc81a2ae363fccbb2b367bca546cec7",
+        "branches": "0xe4714fcbdcdba49629bc408183ef40d120700b8d",
+        "cash": "0x482c57abdce592b39434e3f619ffc3db62ab6d01",
+        "events": "0x4a61f3db785f1e2a23ffefeafaceeef2df551667",
+        "expiringEvents": "0x77c424f86a1b80f1e303d1c2651acd6aba653cb6",
+        "fxpFunctions": "0xbd19195b9e8a2d8ed14fc3a2823856b5c16f7f55",
+        "info": "0x81a7621e9a286d061b3dea040888a51c96693b1c",
+        "markets": "0xd15a6cfc462ae76b9ec590cab8b34bfa8e1302d7",
+        "reporting": "0x5069d883e31429c6dd1325d961f443007747c7a2"
     },
     "errors": {
         "0x": "no response or bad input",
@@ -65,9 +71,16 @@ module.exports={
             "-2": "cost updating error (did you enter a valid quantity?)"
         },
         "closeMarket": {
-            "-1": "market has no cash",
+            "0": "fail/trading not over yet/event not expired or closed already",
+            "-1": "Market has no cash anyway / already closed",
             "-2": "0 outcome",
-            "-3": "outcome indeterminable"
+            "-4": "Outcome .5 once, pushback and retry",
+            "-6": "bonded pushed forward market not ready to be resolved",
+            "-7": "event not reportable >.99"
+        },
+        "claimProceeds": {
+            "0": "reporting not done",
+            "-1": "trader doesn't exist"
         },
         "report": {
             "0": "could not set reporter ballot",
@@ -83,6 +96,17 @@ module.exports={
             "-5": ".99 market",
             "-6": "no markets"
         },
+        "submitReport": {
+            "-1": "has already reported",
+            "-2": "reporter (you) doesn't (don't) exist, or voting period over or hasn't started yet",
+            "-3": "hash doesn't match",
+            "-4": "no rep",
+            "-5": "bad report",
+            "-6": "hash not low enough",
+            "-8": "invalid event",
+            "-9": "already resolved",
+            "-10": "<24 hr left in period, too late to report, able to put up readj. bonds though"
+        },
         "checkReportValidity": {
             "-1": "report isn't long enough",
             "-2": "reporter doesn't exist, voting period is over, or voting period hasn't started yet"
@@ -97,13 +121,17 @@ module.exports={
         },
         "createEvent": {
             "0": "not enough money to pay fees or event already exists",
-            "-1": "we're either already past that date, branch doesn't exist, or description is bad"
+            "-1": "we're either already past that date, branch doesn't exist, or description is bad",
+            "-2": "max value < min value"
         },
         "createMarket": {
             "-1": "bad input or parent doesn't exist",
             "-2": "too many events",
             "-3": "too many outcomes",
-            "-4": "not enough money or market already exists"
+            "-4": "not enough money or market already exists",
+            "-5": "fee too low",
+            "-6": "duplicate events",
+            "-7": "event already expired"
         },
         "sendReputation": {
             "0": "not enough reputation",
@@ -112,15 +140,18 @@ module.exports={
         },
         "buyShares": {
             "-1": "invalid outcome or trading closed",
-            "-2": "entered a negative number of shares",
-            "-3": "not enough money",
-            "-4": "bad nonce/hash"
+            "-2": "entered a -amt of shares",
+            "-3": "not enough money / limit order too low",
+            "-4": "invalid outcome",
+            "-5": "bad commitment or no commitment",
+            "-6": "oracle only branch, no trading"
         },
         "sellShares": {
-            "-1": "invalid outcome or trading closed",
-            "-2": "entered a negative number of shares",
-            "-3": "not enough money",
-            "-4": "bad nonce/hash"
+            "-1": "invalid outcome, trading closed, or you haven't traded in this market",
+            "-2": "entered a -amt of shares",
+            "-3": "you own no shares / limit price too high",
+            "-5": "bad commitment or no commitment",
+            "-6": "oracle only branch, no trading"
         },
         "WHISPER_POST_FAILED": {
             "error": 65,
@@ -237,6 +268,10 @@ module.exports={
         "ETHEREUM_NOT_FOUND": {
             "error": 651,
             "message": "no active ethereum node(s) found"
+        },
+        "ROOT_NOT_FOUND": {
+            "error": 700,
+            "message": "no LS-LMSR objectve function solution found"
         }
     }
 }
@@ -250,9 +285,16 @@ module.exports={
         "-2": "cost updating error (did you enter a valid quantity?)"
     },
     "closeMarket": {
-        "-1": "market has no cash",
+        "0": "fail/trading not over yet/event not expired or closed already",
+        "-1": "Market has no cash anyway / already closed",
         "-2": "0 outcome",
-        "-3": "outcome indeterminable"
+        "-4": "Outcome .5 once, pushback and retry",
+        "-6": "bonded pushed forward market not ready to be resolved",
+        "-7": "event not reportable >.99"
+    },
+    "claimProceeds": {
+        "0": "reporting not done",
+        "-1": "trader doesn't exist"
     },
     "report": {
         "0": "could not set reporter ballot",
@@ -268,6 +310,17 @@ module.exports={
         "-5": ".99 market",
         "-6": "no markets"
     },
+    "submitReport": {
+        "-1": "has already reported",
+        "-2": "reporter (you) doesn't (don't) exist, or voting period over or hasn't started yet",
+        "-3": "hash doesn't match",
+        "-4": "no rep",
+        "-5": "bad report",
+        "-6": "hash not low enough",
+        "-8": "invalid event",
+        "-9": "already resolved",
+        "-10": "<24 hr left in period, too late to report, able to put up readj. bonds though"
+    },
     "checkReportValidity": {
         "-1": "report isn't long enough",
         "-2": "reporter doesn't exist, voting period is over, or voting period hasn't started yet"
@@ -281,14 +334,18 @@ module.exports={
         "-2": "no money for creation fee or branch already exists"
     },
     "createEvent": {
+        "-1": "we're either already past that date, branch doesn't exist, or description is bad",
         "0": "not enough money to pay fees or event already exists",
-        "-1": "we're either already past that date, branch doesn't exist, or description is bad"
+        "-2": "max value < min value"
     },
     "createMarket": {
         "-1": "bad input or parent doesn't exist",
         "-2": "too many events",
         "-3": "too many outcomes",
-        "-4": "not enough money or market already exists"
+        "-4": "not enough money or market already exists",
+        "-5": "fee too low",
+        "-6": "duplicate events",
+        "-7": "event already expired"
     },
     "sendReputation": {
         "0": "not enough reputation",
@@ -297,15 +354,18 @@ module.exports={
     },
     "buyShares": {
         "-1": "invalid outcome or trading closed",
-        "-2": "entered a negative number of shares",
-        "-3": "not enough money",
-        "-4": "bad nonce/hash"
+        "-2": "entered a -amt of shares",
+        "-3": "not enough money / limit order too low",
+        "-4": "invalid outcome",
+        "-5": "bad commitment or no commitment",
+        "-6": "oracle only branch, no trading"
     },
     "sellShares": {
-        "-1": "invalid outcome or trading closed",
-        "-2": "entered a negative number of shares",
-        "-3": "not enough money",
-        "-4": "bad nonce/hash"
+        "-1": "invalid outcome, trading closed, or you haven't traded in this market",
+        "-2": "entered a -amt of shares",
+        "-3": "you own no shares / limit price too high",
+        "-5": "bad commitment or no commitment",
+        "-6": "oracle only branch, no trading"
     },
     "WHISPER_POST_FAILED": {
         "error": 65,
@@ -422,6 +482,10 @@ module.exports={
     "ETHEREUM_NOT_FOUND": {
         "error": 651,
         "message": "no active ethereum node(s) found"
+    },
+    "ROOT_NOT_FOUND": {
+        "error": 700,
+        "message": "no LS-LMSR objectve function solution found"
     }
 }
 
@@ -1276,14 +1340,14 @@ module.exports = function (network) {
             to: contracts.buyAndSellShares,
             method: "buyShares",
             signature: "iiiii",
-            returns: "unfix",
+            returns: "number",
             send: true
         },
         sellShares: {
             to: contracts.buyAndSellShares,
             method: "sellShares",
             signature: "iiiii",
-            returns: "unfix",
+            returns: "number",
             send: true
         },
 
@@ -1366,6 +1430,13 @@ module.exports = function (network) {
         closeMarket: {
             to: contracts.closeMarket,
             method: "closeMarket",
+            signature: "ii",
+            returns: "number",
+            send: true
+        },
+        claimProceeds: {
+            to: contracts.closeMarket,
+            method: "claimProceeds",
             signature: "ii",
             returns: "number",
             send: true
@@ -1686,7 +1757,8 @@ module.exports = {
                 this.get_coinbase.bind(this)
             ], function (err) {
                 if (err) {
-                    if (self.debug) console.error("connect error:", err);
+                    // if (self.debug) console.error("connect error:", err);
+                    console.error("connect error:", err);
                     return self.connect(rpcinfo, ipcpath, callback, true);
                 }
                 self.update_contracts();
@@ -1701,7 +1773,8 @@ module.exports = {
                 this.connection = true;
                 return true;
             } catch (exc) {
-                if (self.debug) console.error("augur.connect:", exc);
+                // if (self.debug) console.error("augur.connect:", exc);
+                console.error("augur.connect:", exc);
                 return this.connect(rpcinfo, ipcpath, callback, true);
             }
         }
@@ -33658,10 +33731,10 @@ function isFunction(f) {
 }
 
 var HOSTED_NODES = [
-    "https://eth1.augur.net"
-    // "https://eth3.augur.net",
-    // "https://eth4.augur.net",
-    // "https://eth5.augur.net"
+    "https://eth1.augur.net",
+    "https://eth3.augur.net",
+    "https://eth4.augur.net",
+    "https://eth5.augur.net"
 ];
 
 module.exports = {
@@ -33675,7 +33748,7 @@ module.exports = {
     },
 
     // network load balancer
-    balancer: false,
+    balancer: true,
 
     // remove unresponsive nodes
     excision: false,
@@ -33787,7 +33860,7 @@ module.exports = {
     },
 
     parse: function (response, returns, callback) {
-        var results, len;
+        var results, len, err;
         try {
             if (response && typeof response === "string") {
                 response = JSON.parse(response);
@@ -33841,14 +33914,14 @@ module.exports = {
 
                 // no result or error field
                 } else {
-                    var err = errors.NO_RESPONSE;
+                    err = errors.NO_RESPONSE;
                     err.bubble = response;
                     if (isFunction(callback)) return callback(err);
                     throw new this.Error(err);
                 }
             }
         } catch (e) {
-            var err = e;
+            err = e;
             if (e && e.name === "SyntaxError") {
                 err = errors.INVALID_RESPONSE;
             }
@@ -34568,7 +34641,7 @@ module.exports = {
      * }
      */
     invoke: function (itx, f) {
-        var tx, dataAbi, packaged, invocation, invoked;
+        var tx, dataAbi, packaged, invocation, invoked, err;
         try {
             if (itx) {
                 if (itx.send && itx.invocation && itx.invocation.invoke &&
@@ -34616,14 +34689,14 @@ module.exports = {
                 }
             }
         } catch (exc) {
-            var err = abi.copy(errors.TRANSACTION_FAILED);
+            err = abi.copy(errors.TRANSACTION_FAILED);
             err.bubble = exc;
             err.tx = itx;
             if (isFunction(f)) return f(err);
             return err;
         }
         if (!invoked) {
-            var err = abi.copy(errors.TRANSACTION_FAILED);
+            err = abi.copy(errors.TRANSACTION_FAILED);
             err.bubble = "!invoked";
             err.tx = itx;
             if (isFunction(f)) return f(err);
