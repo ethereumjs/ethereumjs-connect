@@ -341,7 +341,7 @@ describe("connect", function () {
                 this.timeout(TIMEOUT);
                 delete require.cache[require.resolve("../")];
                 var connector = require("../");
-                assert.isTrue(connector.connect(null, IPCPATH));
+                assert.isTrue(connector.connect("http://127.0.0.1:8545", IPCPATH));
                 assert.strictEqual(connector.contracts.branches, contracts["10101"].branches);
                 assert.strictEqual(connector.contracts.createMarket, contracts["10101"].createMarket);
                 assert.isTrue(connector.connect("http://localhost:8545", IPCPATH));
