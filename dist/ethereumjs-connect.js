@@ -692,36 +692,6 @@ module.exports = function (network) {
             signature: "i",
             returns: "number"
         },
-        getStep: {
-            to: contracts.branches,
-            method: "getStep",
-            signature: "i",
-            returns: "number"
-        },
-        setStep: {
-            to: contracts.branches,
-            method: "setStep",
-            signature: "ii",
-            send: true
-        },
-        getSubstep: {
-            to: contracts.branches,
-            method: "getSubstep",
-            signature: "i",
-            returns: "number"
-        },
-        setSubstep: {
-            to: contracts.branches,
-            method: "setSubstep",
-            signature: "ii",
-            send: true
-        },
-        incrementSubstep: {
-            to: contracts.branches,
-            method: "incrementSubstep",
-            signature: "i",
-            send: true
-        },
         getNumMarketsBranch: {
             to: contracts.branches,
             method: "getNumMarketsBranch",
@@ -755,6 +725,16 @@ module.exports = function (network) {
             to: contracts.branches,
             method: "addMarket",
             signature: "ii",
+            returns: "number",
+            send: true
+        },
+
+        // consensus.se
+
+        incrementPeriodAfterReporting: {
+            to: contracts.consensus,
+            method: "incrementPeriodAfterReporting",
+            signature: "i",
             returns: "number",
             send: true
         },

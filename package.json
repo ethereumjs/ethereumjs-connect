@@ -1,6 +1,6 @@
 {
   "name": "ethereumjs-connect",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Basic Ethereum connection tasks",
   "main": "index.js",
   "scripts": {
@@ -26,7 +26,7 @@
   "homepage": "https://github.com/ethereumjs/ethereumjs-connect#readme",
   "dependencies": {
     "async": "^1.5.1",
-    "augur-contracts": "^0.4.10",
+    "augur-contracts": "AugurProject/augur-contracts",
     "ethrpc": "^0.4.13"
   },
   "devDependencies": {
