@@ -79,6 +79,8 @@ module.exports = {
                             key = self.has_value(self.init_contracts, self.tx[method].to);
                             if (key) self.tx[method].to = self.contracts[key];
                         }
+                    } else {
+                        return callback(version);
                     }
                     if (is_function(callback)) callback(null, version);
                 });
@@ -294,8 +296,7 @@ module.exports = {
                 this.get_coinbase.bind(this)
             ], function (err) {
                 if (err) {
-                    // if (self.debug) console.error("connect error:", err);
-                    console.error("connect error:", err);
+                    console.error("[async] connect error:", err);
                     return self.connect(rpcinfo, ipcpath, callback, true);
                 }
                 self.update_contracts();
@@ -310,8 +311,7 @@ module.exports = {
                 this.connection = true;
                 return true;
             } catch (exc) {
-                // if (self.debug) console.error("augur.connect:", exc);
-                console.error("augur.connect:", exc);
+                console.error("[sync] connect error:", exc);
                 return this.connect(rpcinfo, ipcpath, callback, true);
             }
         }

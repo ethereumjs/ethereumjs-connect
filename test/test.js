@@ -323,78 +323,78 @@ describe("connect", function () {
                     });
                 }
             );
-            it("[sync] switch to network 10101 contract addresses", function () {
+            it("[sync] switch to network 2 contract addresses", function () {
                 this.timeout(TIMEOUT);
                 delete require.cache[require.resolve("../")];
                 var connector = require("../");
                 assert.isTrue(connector.connect("http://localhost:8545"));
-                assert.strictEqual(connector.contracts.branches, contracts["10101"].branches);
-                assert.strictEqual(connector.contracts.createMarket, contracts["10101"].createMarket);
+                assert.strictEqual(connector.contracts.branches, contracts["2"].branches);
+                assert.strictEqual(connector.contracts.createMarket, contracts["2"].createMarket);
                 assert.isTrue(connector.connect({host: "localhost", port: 8545}));
-                assert.strictEqual(connector.contracts.branches, contracts["10101"].branches);
-                assert.strictEqual(connector.contracts.createMarket, contracts["10101"].createMarket);
+                assert.strictEqual(connector.contracts.branches, contracts["2"].branches);
+                assert.strictEqual(connector.contracts.createMarket, contracts["2"].createMarket);
                 assert.isTrue(connector.connect({host: "127.0.0.1", port: 8545}));
-                assert.strictEqual(connector.contracts.branches, contracts["10101"].branches);
-                assert.strictEqual(connector.contracts.createMarket, contracts["10101"].createMarket);
+                assert.strictEqual(connector.contracts.branches, contracts["2"].branches);
+                assert.strictEqual(connector.contracts.createMarket, contracts["2"].createMarket);
             });
-            it("[sync+IPC] switch to network 10101 contract addresses", function () {
+            it("[sync+IPC] switch to network 2 contract addresses", function () {
                 this.timeout(TIMEOUT);
                 delete require.cache[require.resolve("../")];
                 var connector = require("../");
                 assert.isTrue(connector.connect("http://127.0.0.1:8545", IPCPATH));
-                assert.strictEqual(connector.contracts.branches, contracts["10101"].branches);
-                assert.strictEqual(connector.contracts.createMarket, contracts["10101"].createMarket);
+                assert.strictEqual(connector.contracts.branches, contracts["2"].branches);
+                assert.strictEqual(connector.contracts.createMarket, contracts["2"].createMarket);
                 assert.isTrue(connector.connect("http://localhost:8545", IPCPATH));
-                assert.strictEqual(connector.contracts.branches, contracts["10101"].branches);
-                assert.strictEqual(connector.contracts.createMarket, contracts["10101"].createMarket);
+                assert.strictEqual(connector.contracts.branches, contracts["2"].branches);
+                assert.strictEqual(connector.contracts.createMarket, contracts["2"].createMarket);
                 assert.isTrue(connector.connect({host: "localhost", port: 8545}, IPCPATH));
-                assert.strictEqual(connector.contracts.branches, contracts["10101"].branches);
-                assert.strictEqual(connector.contracts.createMarket, contracts["10101"].createMarket);
+                assert.strictEqual(connector.contracts.branches, contracts["2"].branches);
+                assert.strictEqual(connector.contracts.createMarket, contracts["2"].createMarket);
                 assert.isTrue(connector.connect({host: "127.0.0.1", port: 8545}, IPCPATH));
-                assert.strictEqual(connector.contracts.branches, contracts["10101"].branches);
-                assert.strictEqual(connector.contracts.createMarket, contracts["10101"].createMarket);
+                assert.strictEqual(connector.contracts.branches, contracts["2"].branches);
+                assert.strictEqual(connector.contracts.createMarket, contracts["2"].createMarket);
             });
-            it("[async] switch to network 10101 contract addresses", function (done) {
+            it("[async] switch to network 2 contract addresses", function (done) {
                 this.timeout(TIMEOUT);
                 delete require.cache[require.resolve("../")];
                 var connector = require("../");
                 connector.connect("http://localhost:8545", null, function (connected) {
                     assert.isTrue(connected);
-                    assert.strictEqual(connector.contracts.branches, contracts["10101"].branches);
-                    assert.strictEqual(connector.contracts.createMarket, contracts["10101"].createMarket);
+                    assert.strictEqual(connector.contracts.branches, contracts["2"].branches);
+                    assert.strictEqual(connector.contracts.createMarket, contracts["2"].createMarket);
                     connector.connect({host: "localhost", port: 8545}, null, function (connected) {
                         assert.isTrue(connected);
-                        assert.strictEqual(connector.contracts.branches, contracts["10101"].branches);
-                        assert.strictEqual(connector.contracts.createMarket, contracts["10101"].createMarket);
+                        assert.strictEqual(connector.contracts.branches, contracts["2"].branches);
+                        assert.strictEqual(connector.contracts.createMarket, contracts["2"].createMarket);
                         connector.connect({host: "127.0.0.1", port: 8545}, null, function (connected) {
                             assert.isTrue(connected);
-                            assert.strictEqual(connector.contracts.branches, contracts["10101"].branches);
-                            assert.strictEqual(connector.contracts.createMarket, contracts["10101"].createMarket);
+                            assert.strictEqual(connector.contracts.branches, contracts["2"].branches);
+                            assert.strictEqual(connector.contracts.createMarket, contracts["2"].createMarket);
                             done();
                         });
                     });
                 });
             });
-            it("[async+IPC] switch to network 10101 contract addresses", function (done) {
+            it("[async+IPC] switch to network 2 contract addresses", function (done) {
                 this.timeout(TIMEOUT);
                 delete require.cache[require.resolve("../")];
                 var connector = require("../");
                 connector.connect(null, IPCPATH, function (connected) {
                     assert.isTrue(connected);
-                    assert.strictEqual(connector.contracts.branches, contracts["10101"].branches);
-                    assert.strictEqual(connector.contracts.createMarket, contracts["10101"].createMarket);
+                    assert.strictEqual(connector.contracts.branches, contracts["2"].branches);
+                    assert.strictEqual(connector.contracts.createMarket, contracts["2"].createMarket);
                     connector.connect("http://localhost:8545", IPCPATH, function (connected) {
                         assert.isTrue(connected);
-                        assert.strictEqual(connector.contracts.branches, contracts["10101"].branches);
-                        assert.strictEqual(connector.contracts.createMarket, contracts["10101"].createMarket);
+                        assert.strictEqual(connector.contracts.branches, contracts["2"].branches);
+                        assert.strictEqual(connector.contracts.createMarket, contracts["2"].createMarket);
                         connector.connect({host: "localhost", port: 8545}, IPCPATH, function (connected) {
                             assert.isTrue(connected);
-                            assert.strictEqual(connector.contracts.branches, contracts["10101"].branches);
-                            assert.strictEqual(connector.contracts.createMarket, contracts["10101"].createMarket);
+                            assert.strictEqual(connector.contracts.branches, contracts["2"].branches);
+                            assert.strictEqual(connector.contracts.createMarket, contracts["2"].createMarket);
                             connector.connect({host: "127.0.0.1", port: 8545}, IPCPATH, function (connected) {
                                 assert.isTrue(connected);
-                                assert.strictEqual(connector.contracts.branches, contracts["10101"].branches);
-                                assert.strictEqual(connector.contracts.createMarket, contracts["10101"].createMarket);
+                                assert.strictEqual(connector.contracts.branches, contracts["2"].branches);
+                                assert.strictEqual(connector.contracts.createMarket, contracts["2"].createMarket);
                                 done();
                             });
                         });
@@ -457,11 +457,11 @@ describe("connect", function () {
         });
     });
 
-    it("network_id = 0, 1, 10101, or 7", function () {
+    it("network_id = 0, 1, 2, 7, or 10101", function () {
         delete require.cache[require.resolve("../")];
         var connector = require("../");
         assert.isTrue(connector.connect());
-        assert.include(["0", "1", "10101", "7"], connector.network_id);
+        assert.include(["0", "1", "2", "7", "10101"], connector.network_id);
     });
 
 });
