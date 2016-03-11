@@ -72,6 +72,7 @@ module.exports = {
                     var key;
                     if (version !== null && version !== undefined && !version.error) {
                         self.network_id = version;
+                        // console.log("[async] network ID:", self.network_id);
                         self.tx = new contracts.Tx(version);
                         self.contracts = clone(contracts[self.network_id]);
                         for (var method in self.tx) {
@@ -87,6 +88,7 @@ module.exports = {
             } else {
                 var key, method;
                 this.network_id = this.rpc.version() || "7";
+                // console.log("[sync] network ID:", this.network_id);
                 this.tx = new contracts.Tx(this.network_id);
                 this.contracts = clone(contracts[this.network_id]);
                 for (method in this.tx) {
