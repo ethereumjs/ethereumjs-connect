@@ -12,7 +12,6 @@ var connector = require("../");
 connector.debug = true;
 
 var TIMEOUT = 48000;
-var HOSTED_NODE = "0xaff9cb4dcb19d13b84761c040c91d21dc6c991ec";
 var IPCPATH = join(process.env.HOME, ".ethereum", "geth.ipc");
 
 require('it-each')({ testPerIteration: true });
@@ -55,12 +54,12 @@ describe("urlstring", function () {
         string: "http://127.0.0.1"
     });
     test({
-        object: {host: "eth1.augur.net"},
-        string: "http://eth1.augur.net"
+        object: {host: "eth3.augur.net"},
+        string: "http://eth3.augur.net"
     });
     test({
-        object: {host: "eth1.augur.net", protocol: "https"},
-        string: "https://eth1.augur.net"
+        object: {host: "eth3.augur.net", protocol: "https"},
+        string: "https://eth3.augur.net"
     });
     test({
         object: {host: "127.0.0.1", port: 8547, protocol: "https"},
@@ -157,20 +156,28 @@ describe("connect", function () {
 
     describe("hosted nodes", function () {
 
-        var test = function (url) {
-            it(url, function () {
+        var test = function (t) {
+            it(t.node, function () {
                 this.timeout(TIMEOUT);
                 delete require.cache[require.resolve("../")];
                 var connector = require("../");
-                assert.isTrue(connector.connect(this.test.title));
-                assert.strictEqual(connector.coinbase, HOSTED_NODE);
+                assert.isTrue(connector.connect(t.node));
+                assert.strictEqual(connector.coinbase, t.address);
             });
         };
 
-        test("https://eth1.augur.net");
-        test("https://eth3.augur.net");
-        test("https://eth4.augur.net");
-        test("https://eth5.augur.net");
+        test({
+            node: "https://eth3.augur.net",
+            address: "0x00bae5113ee9f252cceb0001205b88fad175461a"
+        });
+        test({
+            node: "https://eth4.augur.net",
+            address: "0x8296eb59079f435275b76058c08b47c4f8965b78"
+        });
+        test({
+            node: "https://eth5.augur.net",
+            address: "0xe434ed7f4684e3d2db25c4937c9e0b7b1faf54c6"
+        });
     });
 
     if (!process.env.CONTINUOUS_INTEGRATION) {
@@ -354,84 +361,6 @@ describe("connect", function () {
                 assert.strictEqual(connector.contracts.branches, contracts["2"].branches);
                 assert.strictEqual(connector.contracts.createMarket, contracts["2"].createMarket);
             });
-            it("[async] switch to network 2 contract addresses", function (done) {
-                this.timeout(TIMEOUT);
-                delete require.cache[require.resolve("../")];
-                var connector = require("../");
-                connector.connect("http://localhost:8545", null, function (connected) {
-                    assert.isTrue(connected);
-                    assert.strictEqual(connector.contracts.branches, contracts["2"].branches);
-                    assert.strictEqual(connector.contracts.createMarket, contracts["2"].createMarket);
-                    connector.connect({host: "localhost", port: 8545}, null, function (connected) {
-                        assert.isTrue(connected);
-                        assert.strictEqual(connector.contracts.branches, contracts["2"].branches);
-                        assert.strictEqual(connector.contracts.createMarket, contracts["2"].createMarket);
-                        connector.connect({host: "127.0.0.1", port: 8545}, null, function (connected) {
-                            assert.isTrue(connected);
-                            assert.strictEqual(connector.contracts.branches, contracts["2"].branches);
-                            assert.strictEqual(connector.contracts.createMarket, contracts["2"].createMarket);
-                            done();
-                        });
-                    });
-                });
-            });
-            it("[async+IPC] switch to network 2 contract addresses", function (done) {
-                this.timeout(TIMEOUT);
-                delete require.cache[require.resolve("../")];
-                var connector = require("../");
-                connector.connect(null, IPCPATH, function (connected) {
-                    assert.isTrue(connected);
-                    assert.strictEqual(connector.contracts.branches, contracts["2"].branches);
-                    assert.strictEqual(connector.contracts.createMarket, contracts["2"].createMarket);
-                    connector.connect("http://localhost:8545", IPCPATH, function (connected) {
-                        assert.isTrue(connected);
-                        assert.strictEqual(connector.contracts.branches, contracts["2"].branches);
-                        assert.strictEqual(connector.contracts.createMarket, contracts["2"].createMarket);
-                        connector.connect({host: "localhost", port: 8545}, IPCPATH, function (connected) {
-                            assert.isTrue(connected);
-                            assert.strictEqual(connector.contracts.branches, contracts["2"].branches);
-                            assert.strictEqual(connector.contracts.createMarket, contracts["2"].createMarket);
-                            connector.connect({host: "127.0.0.1", port: 8545}, IPCPATH, function (connected) {
-                                assert.isTrue(connected);
-                                assert.strictEqual(connector.contracts.branches, contracts["2"].branches);
-                                assert.strictEqual(connector.contracts.createMarket, contracts["2"].createMarket);
-                                done();
-                            });
-                        });
-                    });
-                });
-            });
-            it("[sync] update the transaction object addresses when contracts are changed", function () {
-                this.timeout(TIMEOUT);
-                delete require.cache[require.resolve("../")];
-                var connector = require("../");
-                var new_address = "0x01";
-                connector.contracts.branches = new_address;
-                connector.connect();
-                assert.strictEqual(connector.contracts.branches, new_address);
-                var newer_address = "0x02";
-                connector.contracts.branches = newer_address;
-                connector.connect();
-                assert.strictEqual(connector.contracts.branches, newer_address);
-            });
-            it("[async] update the transaction object addresses when contracts are changed", function (done) {
-                this.timeout(TIMEOUT);
-                delete require.cache[require.resolve("../")];
-                var connector = require("../");
-                var new_address = "0x01";
-                connector.contracts.branches = new_address;
-                connector.connect(function (connected) {
-                    assert.isTrue(connected);
-                    assert.strictEqual(connector.contracts.branches, new_address);
-                    var newer_address = "0x02";
-                    connector.contracts.branches = newer_address;
-                    connector.connect(null, function (connected) {
-                        assert.isTrue(connected);
-                        assert.strictEqual(connector.contracts.branches, newer_address);
-                        done();
-                    });
-                });
-            });
         });
     }
 
@@ -439,19 +368,19 @@ describe("connect", function () {
         this.timeout(TIMEOUT);
         delete require.cache[require.resolve("../")];
         var connector = require("../");
-        assert.isTrue(connector.connect("https://eth1.augur.net"));
+        assert.isTrue(connector.connect("https://eth3.augur.net"));
         assert.isNotNull(connector.rpc.nodes.local);
-        assert.isTrue(connector.rpc.unlocked(connector.coinbase));
+        assert.isFalse(connector.rpc.unlocked(connector.coinbase));
     });
     it("[async] unlocked", function (done) {
         this.timeout(TIMEOUT);
         delete require.cache[require.resolve("../")];
         var connector = require("../");
-        connector.connect("https://eth1.augur.net", function (connected) {
+        connector.connect("https://eth3.augur.net", function (connected) {
             assert.isTrue(connected);
             connector.rpc.unlocked(connector.coinbase, function (unlocked) {
                 assert.isNotNull(connector.rpc.nodes.local);
-                assert.isTrue(unlocked);
+                assert.isFalse(unlocked);
                 done();
             });
         });
