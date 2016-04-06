@@ -1,10 +1,1382 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+module.exports={
+    "2": {
+        "buyAndSellShares": "0xf37626aa99f29a4afe7406e386f68cc77be2cb6e",
+        "closeMarket": "0x9973183349c7fc536041d65108431e736cbb6f7e",
+        "closeMarketEight": "0xb6e28762fef57f336014643741544d4f197cc494",
+        "closeMarketFour": "0x1665ee14c0b07448c3d758c2792d2a328acd98c5",
+        "closeMarketOne": "0x8b4cd6f60de0362237dc0c5b22be15273b099b7e",
+        "closeMarketTwo": "0x0774e46e0cbddb58f09f2d8d53d4aa8bc53df714",
+        "consensus": "0xb816c3abdbb9967485f8645bc83143bb749572e0",
+        "createBranch": "0x21b87e562066e36da0bc599b3d016efb6fe80913",
+        "createEvent": "0xfab258ae92a2fe25ae4e4ddb9e63fb1c691cc2aa",
+        "createMarket": "0x8a1bbe841ceef103221ebcb7fc50bf3e0edc7773",
+        "createSingleEventMarket": "0xd5283e4f818de5c984f2221a421983f6040961c1",
+        "eventResolution": "0x2fac411c69994858409c24ed2a5567da29c61bca",
+        "faucets": "0x895d32f2db7d01ebb50053f9e48aacf26584fe40",
+        "makeReports": "0x79a406da9ea815fd8cbe75ba8a4cb6d493dbf9b4",
+        "orderBook": "0xc8bdc68526a959fcb932b57063c97b1fc6176709",
+        "ramble": "0x42a77acc59bb566aa670d6e7639b99efa235e6f7",
+        "sendReputation": "0x6b969e428c58d81429ef13240c0ecb3529aa91bb",
+        "transferShares": "0x95ecfe0ebd855931faec81cbb671e61bfe56082e",
+        "branches": "0x513087e06ea1a05b858f6da58befb0012c775e63",
+        "cash": "0x154edcf6418038f863c6cd3b395a16a02c037ae3",
+        "events": "0x2d446b3950fc5ea3cf18804b9ab8f79357978ab9",
+        "expiringEvents": "0x0ed2d24d31ed33b658aa2f1108698d5bc3a8b622",
+        "fxpFunctions": "0xe85133772801961725debe87ace3cefaffb01533",
+        "info": "0xf68dab896ca313cbd8946aecfdb965662a61aa3c",
+        "markets": "0x4b2a8b1cc3a2f686d835bfc2ca0c20671676efb0",
+        "reporting": "0x2828a20e3ce771571177928077bfbbcdd16df764"
+    },
+    "7": {
+        "buyAndSellShares": "0x271ee62a8577a97d648c4b4eb3a0e56306f711c1",
+        "closeMarket": "0x7a2e05c795fbf585af34cebe760602b8425846dd",
+        "closeMarketEight": "0x66021d8b17cd9b90dc53012ba6c8cec8aaef2d1b",
+        "closeMarketFour": "0xfb5c088e0d2b8400800c61ac0d69cfd11261401c",
+        "closeMarketOne": "0xbfaa24839dec3961c010c4831709bdecbac382f5",
+        "closeMarketTwo": "0x8bb3073196dbdbf425157b3d83156f18c5c0e776",
+        "consensus": "0xc4d92584ea34be5dd2b916c464e55ec9b4bd1f8f",
+        "createBranch": "0xb005839c49a328850bb22359bb66f9ba1a0f9994",
+        "createEvent": "0x0c532debb932ddb5d07eb957bf8ff5975e932ca3",
+        "createMarket": "0x26ff0f6452673ff11dd8497491b271a18c76990e",
+        "createSingleEventMarket": "0x6f5452dca9bbfe8ac9151dd0e67c8dde8b1c6572",
+        "eventResolution": "0xd399af9820be7ddda37c7d85e701bf8ee2337739",
+        "faucets": "0x94bab6be74df76e996b20329dff2ec39d3013dc3",
+        "makeReports": "0x0b7c36b76208e2c968b04dce0658c03c27bfdc00",
+        "orderBook": "0xf86bbf277ae88a8b50ae90d97e1aafb1390e2984",
+        "ramble": "0x2258a25e503b19dc3d2c2fdc9ca57a1d5985e30c",
+        "sendReputation": "0x7e049a60e0106d263ffd0a60bcfbf4f63dd1f2a4",
+        "transferShares": "0x40343b107ef5dee9c240ff5f1f87f0afb6f709dc",
+        "branches": "0x44cecf2528fbc502f31a58cfce99b8bae992b9c4",
+        "cash": "0x9ef25450d88c82118a3395f57e7a29931305ac6d",
+        "events": "0xa95fa8fe1f544d80afa29ffb0a959116c842e110",
+        "expiringEvents": "0xad225235b9da03bbfda4fb79bf4e2356296e7d7f",
+        "fxpFunctions": "0xa1a240f9f505aa06e9eabe405ffab14689dfdda3",
+        "info": "0x087785682381a1316303efb19d1d450562603fca",
+        "markets": "0xfd0f6987c7042e867db9c1dae6e681b2c3648de2",
+        "reporting": "0x9d358fee98edb880e6a4549e21f4ab66dfcadfa7"
+    },
+    "10101": {
+        "buyAndSellShares": "0xabe47f122a496a732d6c4b38b3ca376d597d75dd",
+        "closeMarket": "0x52ccb0490bc81a2ae363fccbb2b367bca546cec7",
+        "closeMarketEight": "0xd15a6cfc462ae76b9ec590cab8b34bfa8e1302d7",
+        "closeMarketFour": "0x81a7621e9a286d061b3dea040888a51c96693b1c",
+        "closeMarketOne": "0xe5b327630cfa7f4b2324f9066c897dceecfd88a3",
+        "closeMarketTwo": "0xc21cfa6688dbfd2eca2548d894aa55fd0bbf1c7e",
+        "consensus": "0xc1c4e2f32e4b84a60b8b7983b6356af4269aab79",
+        "createBranch": "0x8c19616de17acdfbc933b99d9f529a689d22098f",
+        "createEvent": "0x77c424f86a1b80f1e303d1c2651acd6aba653cb6",
+        "createMarket": "0x35152caa07026203a1add680771afb690d872d7d",
+        "createSingleEventMarket": "0x3f3276849a878a176b2f02dd48a483e8182a49e4",
+        "eventResolution": "0x60cb05deb51f92ee25ce99f67181ecaeb0b743ea",
+        "faucets": "0x5f67ab9ff79be97b27ac8f26ef9f4b429b82e2df",
+        "makeReports": "0x8caf2c0ce7cdc2e81b58f74322cefdef440b3f8d",
+        "orderBook": "0x8a4e2993a9972ee035453bb5674816fc3a698718",
+        "ramble": "0xa34c9f6fc047cea795f69b34a063d32e6cb6288c",
+        "sendReputation": "0x6c4c9fa11d6d8ed2c7a08ddcf4d4654c85194f68",
+        "transferShares": "0x9fe69262bbaa47f013b7dbd6ca5f01e17446c645",
+        "branches": "0x0fbddb6bfb81c8d0965a894567cf4061446072c2",
+        "cash": "0x8f2c2267687cb0f047b28a1b6f945da6e101a0d7",
+        "events": "0xbd19195b9e8a2d8ed14fc3a2823856b5c16f7f55",
+        "expiringEvents": "0x482c57abdce592b39434e3f619ffc3db62ab6d01",
+        "fxpFunctions": "0x708fdfe18bf28afe861a69e95419d183ace003eb",
+        "info": "0x4a61f3db785f1e2a23ffefeafaceeef2df551667",
+        "markets": "0x5069d883e31429c6dd1325d961f443007747c7a2",
+        "reporting": "0xe4714fcbdcdba49629bc408183ef40d120700b8d"
+    },
+    "errors": {
+        "0x": "no response or bad input",
+        "getSimulatedBuy": {
+            "-2": "cost updating error (did you enter a valid quantity?)"
+        },
+        "getSimulatedSell": {
+            "-2": "cost updating error (did you enter a valid quantity?)"
+        },
+        "closeMarket": {
+            "0": "fail/trading not over yet/event not expired or closed already",
+            "-1": "Market has no cash anyway / already closed",
+            "-2": "0 outcome",
+            "-4": "Outcome .5 once, pushback and retry",
+            "-6": "bonded pushed forward market not ready to be resolved",
+            "-7": "event not reportable >.99"
+        },
+        "claimProceeds": {
+            "0": "reporting not done",
+            "-1": "trader doesn't exist"
+        },
+        "report": {
+            "0": "could not set reporter ballot",
+            "-1": "report length does not match number of expiring events",
+            "-2": "voting period expired",
+            "-3": "incorrect hash"
+        },
+        "submitReportHash": {
+            "0": "could not set report hash",
+            "-1": "reporter (you) doesn't (don't) exist, or voting period over or hasn't started yet",
+            "-2": "not in hash submitting timeframe or event doesn't exist / not a valid event expiring then",
+            "-4": "already resolved",
+            "-5": ".99 market",
+            "-6": "no markets"
+        },
+        "submitReport": {
+            "-1": "has already reported",
+            "-2": "reporter (you) doesn't (don't) exist, or voting period over or hasn't started yet",
+            "-3": "hash doesn't match",
+            "-4": "no rep",
+            "-5": "bad report",
+            "-6": "hash not low enough",
+            "-8": "invalid event",
+            "-9": "already resolved",
+            "-10": "<24 hr left in period, too late to report, able to put up readj. bonds though"
+        },
+        "checkReportValidity": {
+            "-1": "report isn't long enough",
+            "-2": "reporter doesn't exist, voting period is over, or voting period hasn't started yet"
+        },
+        "penalizeNotEnoughReports": {
+            "-1": "already done",
+            "-2": "hasn't reported this period"
+        },
+        "penalizationCatchup": {
+            "-2": "can only be called during the first half of the reporting period"
+        },
+        "penalizeWrong": {
+            "-1": "pushed back event already resolved, so can't redistribute rep based off of its original expected expiration period",
+            "-2": "already past first half of new period and needed to penalize before then",
+            "-3": "need to do not enough reports penalization [or lackthereof]"
+        },
+        "collectFees": {
+            "-2": "needs to be second half of reporting period to claim rep [1st half is when redistribution is done]"
+        },
+        "slashRep": {
+            "0": "not a valid claim",
+            "-2": "reporter doesn't exist"
+        },
+        "createSubbranch": {
+            "-1": "bad input or parent doesn't exist",
+            "-2": "no money for creation fee or branch already exists"
+        },
+        "createEvent": {
+            "0": "not enough money to pay fees or event already exists",
+            "-1": "we're either already past that date, branch doesn't exist, or description is bad",
+            "-2": "max value < min value"
+        },
+        "createMarket": {
+            "-1": "bad input or parent doesn't exist",
+            "-2": "too many events",
+            "-3": "too many outcomes",
+            "-4": "not enough money or market already exists",
+            "-5": "fee too low",
+            "-6": "duplicate events",
+            "-7": "event already expired"
+        },
+        "createSingleEventMarket": {
+            "-1": "bad input or parent doesn't exist",
+            "-2": "too many events",
+            "-3": "too many outcomes",
+            "-4": "not enough money or market already exists",
+            "-5": "fee too low",
+            "-6": "duplicate events",
+            "-7": "event already expired"
+        },
+        "sendReputation": {
+            "0": "not enough reputation",
+            "-1": "Your reputation account was just created! Earn some reputation before you can send to others",
+            "-2": "Receiving address doesn't exist"
+        },
+        "buyShares": {
+            "-1": "invalid outcome or trading closed",
+            "-2": "entered a -amt of shares",
+            "-3": "not enough money / limit order too low",
+            "-4": "invalid outcome",
+            "-5": "bad commitment or no commitment",
+            "-6": "oracle only branch, no trading"
+        },
+        "sellShares": {
+            "-1": "invalid outcome, trading closed, or you haven't traded in this market",
+            "-2": "entered a -amt of shares",
+            "-3": "you own no shares / limit price too high",
+            "-5": "bad commitment or no commitment",
+            "-6": "oracle only branch, no trading"
+        },
+        "WHISPER_POST_FAILED": {
+            "error": 65,
+            "message": "could not post message to whisper"
+        },
+        "DB_DELETE_FAILED": {
+            "error": 97,
+            "message": "database delete failed"
+        },
+        "DB_WRITE_FAILED": {
+            "error": 98,
+            "message": "database write failed"
+        },
+        "DB_READ_FAILED": {
+            "error": 99,
+            "message": "database read failed"
+        },
+        "INVALID_CONTRACT_PARAMETER": {
+            "error": 400,
+            "message": "cannot send object parameter to contract"
+        },
+        "NOT_LOGGED_IN": {
+            "error": 401,
+            "message": "not logged in"
+        },
+        "PARAMETER_NUMBER_ERROR": {
+            "error": 402,
+            "message": "wrong number of parameters"
+        },
+        "BAD_CREDENTIALS": {
+            "error": 403,
+            "message": "incorrect handle or password"
+        },
+        "TRANSACTION_NOT_FOUND": {
+            "error": 404,
+            "message": "transaction not found"
+        },
+        "PASSWORD_TOO_SHORT": {
+            "error": 405,
+            "message": "password must be at least 6 characters long"
+        },
+        "NULL_CALL_RETURN": {
+            "error": 406,
+            "message": "expected contract call to return value, received null"
+        },
+        "NULL_RESPONSE": {
+            "error": 407,
+            "message": "expected transaction hash from Ethereum node, received null"
+        },
+        "NO_RESPONSE": {
+            "error": 408,
+            "message": "no response"
+        },
+        "INVALID_RESPONSE": {
+            "error": 409,
+            "message": "could not parse response from Ethereum node"
+        },
+        "LOCAL_NODE_FAILURE": {
+            "error": 410,
+            "message": "RPC request to local Ethereum node failed"
+        },
+        "HOSTED_NODE_FAILURE": {
+            "error": 411,
+            "message": "RPC request to hosted nodes failed"
+        },
+        "HANDLE_TAKEN": {
+            "error": 422,
+            "message": "handle already taken"
+        },
+        "FILTER_NOT_CREATED": {
+            "error": 450,
+            "message": "filter could not be created"
+        },
+        "TRANSACTION_FAILED": {
+            "error": 500,
+            "message": "transaction failed"
+        },
+        "TRANSACTION_NOT_CONFIRMED": {
+            "error": 501,
+            "message": "polled network but could not confirm transaction"
+        },
+        "DUPLICATE_TRANSACTION": {
+            "error": 502,
+            "message": "duplicate transaction"
+        },
+        "RAW_TRANSACTION_ERROR": {
+            "error": 503,
+            "message": "error sending client-side transaction"
+        },
+        "RLP_ENCODING_ERROR": {
+            "error": 504,
+            "message": "RLP encoding error"
+        },
+        "NO_MARKET_INFO": {
+            "error": 505,
+            "message": "could not retrieve market data"
+        },
+        "IPFS_ADD_FAILURE": {
+            "error": 506,
+            "message": "files could not be added to IPFS"
+        },
+        "IPFS_GET_FAILURE": {
+            "error": 507,
+            "message": "could not retrieve file from IPFS"
+        },
+        "RPC_TIMEOUT": {
+            "error": 599,
+            "message": "timed out while waiting for Ethereum network response"
+        },
+        "LOOPBACK_NOT_FOUND": {
+            "error": 650,
+            "message": "loopback interface required for synchronous local commands"
+        },
+        "ETHEREUM_NOT_FOUND": {
+            "error": 651,
+            "message": "no active ethereum node(s) found"
+        },
+        "ROOT_NOT_FOUND": {
+            "error": 700,
+            "message": "no LS-LMSR objectve function solution found"
+        },
+        "CHECK_ORDER_BOOK_FAILED": {
+            "error": 710,
+            "message": "could not check order book using current prices"
+        }
+    }
+}
+},{}],2:[function(require,module,exports){
+module.exports={
+    "0x": "no response or bad input",
+    "getSimulatedBuy": {
+        "-2": "cost updating error (did you enter a valid quantity?)"
+    },
+    "getSimulatedSell": {
+        "-2": "cost updating error (did you enter a valid quantity?)"
+    },
+    "closeMarket": {
+        "0": "fail/trading not over yet/event not expired or closed already",
+        "-1": "Market has no cash anyway / already closed",
+        "-2": "0 outcome",
+        "-4": "Outcome .5 once, pushback and retry",
+        "-6": "bonded pushed forward market not ready to be resolved",
+        "-7": "event not reportable >.99"
+    },
+    "claimProceeds": {
+        "0": "reporting not done",
+        "-1": "trader doesn't exist"
+    },
+    "report": {
+        "0": "could not set reporter ballot",
+        "-1": "report length does not match number of expiring events",
+        "-2": "voting period expired",
+        "-3": "incorrect hash"
+    },
+    "submitReportHash": {
+        "0": "could not set report hash",
+        "-1": "reporter (you) doesn't (don't) exist, or voting period over or hasn't started yet",
+        "-2": "not in hash submitting timeframe or event doesn't exist / not a valid event expiring then",
+        "-4": "already resolved",
+        "-5": ".99 market",
+        "-6": "no markets"
+    },
+    "submitReport": {
+        "-1": "has already reported",
+        "-2": "reporter (you) doesn't (don't) exist, or voting period over or hasn't started yet",
+        "-3": "hash doesn't match",
+        "-4": "no rep",
+        "-5": "bad report",
+        "-6": "hash not low enough",
+        "-8": "invalid event",
+        "-9": "already resolved",
+        "-10": "<24 hr left in period, too late to report, able to put up readj. bonds though"
+    },
+    "checkReportValidity": {
+        "-1": "report isn't long enough",
+        "-2": "reporter doesn't exist, voting period is over, or voting period hasn't started yet"
+    },
+    "penalizeNotEnoughReports": {
+        "-1": "already done",
+        "-2": "hasn't reported this period"
+    },
+    "penalizationCatchup": {
+        "-2": "can only be called during the first half of the reporting period"
+    },
+    "penalizeWrong": {
+        "-1": "pushed back event already resolved, so can't redistribute rep based off of its original expected expiration period",
+        "-2": "already past first half of new period and needed to penalize before then",
+        "-3": "need to do not enough reports penalization [or lackthereof]"
+    },
+    "collectFees": {
+        "-2": "needs to be second half of reporting period to claim rep [1st half is when redistribution is done]"
+    },
+    "slashRep": {
+        "0": "not a valid claim",
+        "-2": "reporter doesn't exist"
+    },
+    "createSubbranch": {
+        "-1": "bad input or parent doesn't exist",
+        "-2": "no money for creation fee or branch already exists"
+    },
+    "createEvent": {
+        "-1": "we're either already past that date, branch doesn't exist, or description is bad",
+        "0": "not enough money to pay fees or event already exists",
+        "-2": "max value < min value"
+    },
+    "createMarket": {
+        "-1": "bad input or parent doesn't exist",
+        "-2": "too many events",
+        "-3": "too many outcomes",
+        "-4": "not enough money or market already exists",
+        "-5": "fee too low",
+        "-6": "duplicate events",
+        "-7": "event already expired"
+    },
+    "createSingleEventMarket": {
+        "-1": "bad input or parent doesn't exist",
+        "-2": "too many events",
+        "-3": "too many outcomes",
+        "-4": "not enough money or market already exists",
+        "-5": "fee too low",
+        "-6": "duplicate events",
+        "-7": "event already expired"
+    },
+    "sendReputation": {
+        "0": "not enough reputation",
+        "-1": "Your reputation account was just created! Earn some reputation before you can send to others",
+        "-2": "Receiving address doesn't exist"
+    },
+    "buyShares": {
+        "-1": "invalid outcome or trading closed",
+        "-2": "entered a -amt of shares",
+        "-3": "not enough money / limit order too low",
+        "-4": "invalid outcome",
+        "-5": "bad commitment or no commitment",
+        "-6": "oracle only branch, no trading"
+    },
+    "sellShares": {
+        "-1": "invalid outcome, trading closed, or you haven't traded in this market",
+        "-2": "entered a -amt of shares",
+        "-3": "you own no shares / limit price too high",
+        "-5": "bad commitment or no commitment",
+        "-6": "oracle only branch, no trading"
+    },
+    "WHISPER_POST_FAILED": {
+        "error": 65,
+        "message": "could not post message to whisper"
+    },
+    "DB_DELETE_FAILED": {
+        "error": 97,
+        "message": "database delete failed"
+    },
+    "DB_WRITE_FAILED": {
+        "error": 98,
+        "message": "database write failed"
+    },
+    "DB_READ_FAILED": {
+        "error": 99,
+        "message": "database read failed"
+    },
+    "INVALID_CONTRACT_PARAMETER": {
+        "error": 400,
+        "message": "cannot send object parameter to contract"
+    },
+    "NOT_LOGGED_IN": {
+        "error": 401,
+        "message": "not logged in"
+    },
+    "PARAMETER_NUMBER_ERROR": {
+        "error": 402,
+        "message": "wrong number of parameters"
+    },
+    "BAD_CREDENTIALS": {
+        "error": 403,
+        "message": "incorrect handle or password"
+    },
+    "TRANSACTION_NOT_FOUND": {
+        "error": 404,
+        "message": "transaction not found"
+    },
+    "PASSWORD_TOO_SHORT": {
+        "error": 405,
+        "message": "password must be at least 6 characters long"
+    },
+    "NULL_CALL_RETURN": {
+        "error": 406,
+        "message": "expected contract call to return value, received null"
+    },
+    "NULL_RESPONSE": {
+        "error": 407,
+        "message": "expected transaction hash from Ethereum node, received null"
+    },
+    "NO_RESPONSE": {
+        "error": 408,
+        "message": "no response"
+    },
+    "INVALID_RESPONSE": {
+        "error": 409,
+        "message": "could not parse response from Ethereum node"
+    },
+    "LOCAL_NODE_FAILURE": {
+        "error": 410,
+        "message": "RPC request to local Ethereum node failed"
+    },
+    "HOSTED_NODE_FAILURE": {
+        "error": 411,
+        "message": "RPC request to hosted nodes failed"
+    },
+    "HANDLE_TAKEN": {
+        "error": 422,
+        "message": "handle already taken"
+    },
+    "FILTER_NOT_CREATED": {
+        "error": 450,
+        "message": "filter could not be created"
+    },
+    "TRANSACTION_FAILED": {
+        "error": 500,
+        "message": "transaction failed"
+    },
+    "TRANSACTION_NOT_CONFIRMED": {
+        "error": 501,
+        "message": "polled network but could not confirm transaction"
+    },
+    "DUPLICATE_TRANSACTION": {
+        "error": 502,
+        "message": "duplicate transaction"
+    },
+    "RAW_TRANSACTION_ERROR": {
+        "error": 503,
+        "message": "error sending client-side transaction"
+    },
+    "RLP_ENCODING_ERROR": {
+        "error": 504,
+        "message": "RLP encoding error"
+    },
+    "NO_MARKET_INFO": {
+        "error": 505,
+        "message": "could not retrieve market data"
+    },
+    "IPFS_ADD_FAILURE": {
+        "error": 506,
+        "message": "files could not be added to IPFS"
+    },
+    "IPFS_GET_FAILURE": {
+        "error": 507,
+        "message": "could not retrieve file from IPFS"
+    },
+    "RPC_TIMEOUT": {
+        "error": 599,
+        "message": "timed out while waiting for Ethereum network response"
+    },
+    "LOOPBACK_NOT_FOUND": {
+        "error": 650,
+        "message": "loopback interface required for synchronous local commands"
+    },
+    "ETHEREUM_NOT_FOUND": {
+        "error": 651,
+        "message": "no active ethereum node(s) found"
+    },
+    "ROOT_NOT_FOUND": {
+        "error": 700,
+        "message": "no LS-LMSR objectve function solution found"
+    },
+    "CHECK_ORDER_BOOK_FAILED": {
+        "error": 710,
+        "message": "could not check order book using current prices"
+    }
+}
+
+},{}],3:[function(require,module,exports){
+var contracts = require("./contracts");
+contracts.errors = require("./errors");
+contracts.Tx = require("./tx");
+
+module.exports = contracts;
+
+},{"./contracts":1,"./errors":2,"./tx":4}],4:[function(require,module,exports){
+/**
+ * Augur transactions
+ */
+
+"use strict";
+
+module.exports = function (network) {
+
+    var contracts = require("./contracts")[network];
+
+    return {
+
+        // faucets.se
+        reputationFaucet: {
+            to: contracts.faucets,
+            method: "reputationFaucet",
+            signature: "i",
+            returns: "number",
+            send: true
+        },
+        cashFaucet: {
+            to: contracts.faucets,
+            method: "cashFaucet",
+            returns: "number",
+            send: true
+        },
+        fundNewAccount: {
+            to: contracts.faucets,
+            method: "fundNewAccount",
+            signature: "i",
+            returns: "number",
+            send: true
+        },
+
+        // createSingleEventMarket.se
+        createSingleEventMarket: {
+            to: contracts.createSingleEventMarket,
+            method: "createSingleEventMarket",
+            signature: "isiiiiiiii",
+            returns: "hash",
+            send: true
+        },
+
+        // cash.se
+        addCash: {
+            to: contracts.cash,
+            method: "addCash",
+            signature: "ii",
+            send: true,
+            returns: "number"
+        },
+        setCash: {
+            to: contracts.cash,
+            method: "setCash",
+            signature: "ii",
+            send: true,
+            returns: "number"
+        },
+        initiateOwner: {
+            to: contracts.cash,
+            method: "initiateOwner",
+            signature: "i",
+            send: true,
+            returns: "number"
+        },
+        getCashBalance: {
+            to: contracts.cash,
+            method: "balance",
+            signature: "i",
+            returns: "unfix"
+        },
+        balance: {
+            to: contracts.cash,
+            method: "balance",
+            signature: "i",
+            returns: "unfix"
+        },
+        sendCash: {
+            to: contracts.cash,
+            method: "send",
+            send: true,
+            signature: "ii",
+            returns: "unfix"
+        },
+        sendCashFrom: {
+            to: contracts.cash,
+            method: "sendFrom",
+            send: true,
+            signature: "iii",
+            returns: "unfix"
+        },
+        depositEther: {
+            to: contracts.cash,
+            method: "depositEther",
+            send: true,
+            returns: "number"
+        },
+        withdrawEther: {
+            to: contracts.cash,
+            method: "withdrawEther",
+            signature: "ii",
+            send: true,
+            returns: "number"
+        },
+
+        // info.se
+        getCreator: {
+            to: contracts.info,
+            method: "getCreator",
+            signature: "i",
+            returns: "address"
+        },
+        getCreationFee: {
+            to: contracts.info,
+            method: "getCreationFee",
+            signature: "i",
+            returns: "unfix"
+        },
+        getDescription: {
+            to: contracts.info,
+            method: "getDescription",
+            signature: "i",
+            returns: "string"
+        },
+        setInfo: {
+            to: contracts.info,
+            method: "setInfo",
+            signature: "isii",
+            returns: "number",
+            send: true
+        },
+
+        // redeem_interpolate.se
+        redeem_interpolate: {
+            to: contracts.redeem_interpolate,
+            method: "interpolate",
+            signature: "iiiii"
+        },
+        read_ballots: {
+            to: contracts.redeem_interpolate,
+            method: "read_ballots",
+            signature: "iiiii"
+        },
+
+        // branches.se
+        initDefaultBranch: {
+            to: contracts.branches,
+            method: "initDefaultBranch",
+            returns: "number",
+            send: true
+        },
+        getBranches: {
+            to: contracts.branches,
+            method: "getBranches",
+            returns: "hash[]"
+        },
+        getMarketsInBranch: {
+            to: contracts.branches,
+            method: "getMarketsInBranch",
+            signature: "i",
+            returns: "hash[]"
+        },
+        getPeriodLength: {
+            to: contracts.branches,
+            method: "getPeriodLength",
+            signature: "i",
+            returns: "number"
+        },
+        getVotePeriod: {
+            to: contracts.branches,
+            method: "getVotePeriod",
+            signature: "i",
+            returns: "number"
+        },
+        getNumMarketsBranch: {
+            to: contracts.branches,
+            method: "getNumMarketsBranch",
+            signature: "i",
+            returns: "number"
+        },
+        getMinTradingFee: {
+            to: contracts.branches,
+            method: "getMinTradingFee",
+            signature: "i",
+            returns: "unfix"
+        },
+        getNumBranches: {
+            to: contracts.branches,
+            method: "getNumBranches",
+            returns: "number"
+        },
+        getBranch: {
+            to: contracts.branches,
+            method: "getBranch",
+            signature: "i",
+            returns: "hash"
+        },
+        incrementPeriod: {
+            to: contracts.branches,
+            method: "incrementPeriod",
+            signature: "i",
+            send: true,
+            returns: "number"
+        },
+        addMarket: {
+            to: contracts.branches,
+            method: "addMarket",
+            signature: "ii",
+            returns: "number",
+            send: true
+        },
+
+        // consensus.se
+        proportionCorrect: {
+            to: contracts.consensus,
+            method: "proportionCorrect",
+            signature: "iii",
+            returns: "unfix"
+        },
+        incrementPeriodAfterReporting: {
+            to: contracts.consensus,
+            method: "incrementPeriodAfterReporting",
+            signature: "i",
+            returns: "number",
+            send: true
+        },
+        penalizeNotEnoughReports: {
+            to: contracts.consensus,
+            method: "penalizeNotEnoughReports",
+            signature: "i",
+            returns: "number",
+            send: true
+        },
+        collectFees: {
+            to: contracts.consensus,
+            method: "collectFees",
+            signature: "i",
+            returns: "number",
+            send: true
+        },
+        penalizeWrong: {
+            to: contracts.consensus,
+            method: "penalizeWrong",
+            signature: "ii",
+            returns: "number",
+            send: true
+        },
+        penalizationCatchup: {
+            to: contracts.consensus,
+            method: "penalizationCatchup",
+            signature: "i",
+            returns: "number",
+            send: true
+        },
+        slashRep: {
+            to: contracts.consensus,
+            method: "slashRep",
+            signature: "iiiii",
+            returns: "number",
+            send: true
+        },
+
+        // events.se
+        getmode: {
+            to: contracts.events,
+            method: "getmode",
+            signature: "i",
+            returns: "unfix"
+        },
+        getUncaughtOutcome: {
+            to: contracts.events,
+            method: "getUncaughtOutcome",
+            signature: "i",
+            returns: "unfix"
+        },
+        getMarkets: {
+            to: contracts.events,
+            method: "getMarkets",
+            signature: "i",
+            returns: "hash[]"
+        },
+        getReportingThreshold: {
+            to: contracts.events,
+            method: "getReportingThreshold",
+            signature: "i",
+            returns: "unfix"
+        },
+        getEventInfo: {
+            to: contracts.events,
+            method: "getEventInfo",
+            signature: "i",
+            returns: "hash[]"
+        },
+        getEventBranch: {
+            to: contracts.events,
+            method: "getEventBranch",
+            signature: "i",
+            returns: "hash"
+        },
+        getExpiration: {
+            to: contracts.events,
+            method: "getExpiration",
+            signature: "i",
+            returns: "number"
+        },
+        getOutcome: {
+            to: contracts.events,
+            method: "getOutcome",
+            signature: "i",
+            returns: "unfix"
+        },
+        getMinValue: {
+            to: contracts.events,
+            method: "getMinValue",
+            signature: "i",
+            returns: "number"
+        },
+        getMaxValue: {
+            to: contracts.events,
+            method: "getMaxValue",
+            signature: "i",
+            returns: "number"
+        },
+        getNumOutcomes: {
+            to: contracts.events,
+            method: "getNumOutcomes",
+            signature: "i",
+            returns: "number"
+        },
+        setOutcome: {
+            to: contracts.events,
+            method: "setOutcome",
+            signature: "ii",
+            returns: "number",
+            send: true
+        },
+
+        // expiringEvents.se
+        getEventIndex: {
+            to: contracts.expiringEvents,
+            method: "getEventIndex",
+            signature: "ii",
+            returns: "number"
+        },
+        getEvents: {
+            to: contracts.expiringEvents,
+            method: "getEvents",
+            signature: "ii",
+            returns: "hash[]"
+        },
+        getNumberEvents: {
+            to: contracts.expiringEvents,
+            method: "getNumberEvents",
+            signature: "ii",
+            returns: "number"
+        },
+        getEvent: {
+            to: contracts.expiringEvents,
+            method: "getEvent",
+            signature: "iii",
+            returns: "hash"
+        },
+        getTotalRepReported: {
+            to: contracts.expiringEvents,
+            method: "getTotalRepReported",
+            signature: "ii",
+            returns: "number"
+        },
+        getReportHash: {
+            to: contracts.expiringEvents,
+            method: "getReportHash",
+            signature: "iiii",
+            returns: "hash"
+        },
+        moveEventsToCurrentPeriod: {
+            to: contracts.expiringEvents,
+            method: "moveEventsToCurrentPeriod",
+            signature: "iii",
+            send: true
+        },
+        addEvent: {
+            to: contracts.expiringEvents,
+            method: "addEvent",
+            signature: "iii",
+            send: true
+        },
+        setTotalRepReported: {
+            to: contracts.expiringEvents,
+            method: "setTotalRepReported",
+            signature: "iii",
+            send: true
+        },
+        setReporterBallot: {
+            to: contracts.expiringEvents,
+            method: "setReporterBallot",
+            signature: "iiiai",
+            send: true,
+            returns: "number"
+        },
+        getTotalReputation: {
+            to: contracts.expiringEvents,
+            method: "getTotalReputation",
+            signature: "ii",
+            returns: "unfix"
+        },
+        setTotalReputation: {
+            to: contracts.expiringEvents,
+            method: "setTotalReputation",
+            signature: "iii",
+            returns: "number"
+        },
+
+        // markets.se
+        price: {
+            to: contracts.markets,
+            method: "price",
+            signature: "ii",
+            returns: "unfix"
+        },
+        lsLmsr: {
+            to: contracts.markets,
+            method: "lsLmsr",
+            signature: "i",
+            returns: "unfix"
+        },
+        getMarketInfo: {
+            to: contracts.markets,
+            method: "getMarketInfo",
+            signature: "i",
+            returns: "hash[]",
+            gas: "0x9184e729fff"
+        },
+        getMarketsInfo: {
+            to: contracts.markets,
+            method: "getMarketsInfo",
+            signature: "iii",
+            returns: "hash[]",
+            gas: "0x9184e729fff"
+        },
+        getMarketEvents: {
+            to: contracts.markets,
+            method: "getMarketEvents",
+            signature: "i",
+            returns: "hash[]"
+        },
+        getNumEvents: {
+            to: contracts.markets,
+            method: "getNumEvents",
+            signature: "i",
+            returns: "number"
+        },
+        getBranchID: {
+            to: contracts.markets,
+            method: "getBranchID",
+            signature: "i",
+            returns: "hash"
+        },
+        getCurrentParticipantNumber: {
+            to: contracts.markets,
+            method: "getCurrentParticipantNumber",
+            signature: "i",
+            returns: "number"
+        },
+        getMarketNumOutcomes: {
+            to: contracts.markets,
+            method: "getMarketNumOutcomes",
+            signature: "i",
+            returns: "number"
+        },
+        getParticipantSharesPurchased: {
+            to: contracts.markets,
+            method: "getParticipantSharesPurchased",
+            signature: "iii",
+            returns: "unfix"
+        },
+        getSharesPurchased: {
+            to: contracts.markets,
+            method: "getSharesPurchased",
+            signature: "ii",
+            returns: "unfix"
+        },
+        getForkSelection: {
+            to: contracts.markets,
+            method: "getForkSelection",
+            signature: "i",
+            returns: "hash"
+        },
+        getVolume: {
+            to: contracts.markets,
+            method: "getVolume",
+            signature: "i",
+            returns: "unfix"
+        },
+        getWinningOutcomes: {
+            to: contracts.markets,
+            method: "getWinningOutcomes",
+            signature: "i",
+            returns: "number[]"
+        },
+        getParticipantNumber: {
+            to: contracts.markets,
+            method: "getParticipantNumber",
+            signature: "ii",
+            returns: "number"
+        },
+        getParticipantID: {
+            to: contracts.markets,
+            method: "getParticipantID",
+            signature: "ii",
+            returns: "address"
+        },
+        getAlpha: {
+            to: contracts.markets,
+            method: "getAlpha",
+            signature: "i",
+            returns: "unfix"
+        },
+        getCumScale: {
+            to: contracts.markets,
+            method: "getCumScale",
+            signature: "i",
+            returns: "unfix"
+        },
+        getTradingPeriod: {
+            to: contracts.markets,
+            method: "getTradingPeriod",
+            signature: "i",
+            returns: "number"
+        },
+        getTradingFee: {
+            to: contracts.markets,
+            method: "getTradingFee",
+            signature: "i",
+            returns: "unfix"
+        },
+        initialLiquidityAmount: {
+            to: contracts.markets,
+            method: "initialLiquidityAmount",
+            signature: "ii",
+            returns: "unfix"
+        },
+        initialLiquiditySetup: {
+            to: contracts.markets,
+            method: "initialLiquiditySetup",
+            signature: "iiii",
+            returns: "number",
+            send: true
+        },
+        modifyShares: {
+            to: contracts.markets,
+            method: "modifyShares",
+            signature: "iii",
+            returns: "number",
+            send: true
+        },
+        initializeMarket: {
+            to: contracts.markets,
+            method: "initializeMarket",
+            signature: "iaiii",
+            returns: "number",
+            send: true
+        },
+
+        // reporting.se
+        getRepBalance: {
+            to: contracts.reporting,
+            method: "getRepBalance",
+            signature: "ii",
+            returns: "unfix"
+        },
+        getRepByIndex: {
+            to: contracts.reporting,
+            method: "getRepByIndex",
+            signature: "ii",
+            returns: "unfix"
+        },
+        getReporterID: {
+            to: contracts.reporting,
+            method: "getReporterID",
+            signature: "ii",
+            returns: "address"
+        },
+        getReputation: {
+            to: contracts.reporting,
+            method: "getReputation",
+            signature: "i",
+            returns: "number[]"
+        },
+        getNumberReporters: {
+            to: contracts.reporting,
+            method: "getNumberReporters",
+            signature: "i",
+            returns: "number"
+        },
+        repIDToIndex: {
+            to: contracts.reporting,
+            method: "repIDToIndex",
+            signature: "ii",
+            returns: "number"
+        },
+        getTotalRep: {
+            to: contracts.reporting,
+            method: "getTotalRep",
+            signature: "i",
+            returns: "unfix"
+        },
+        hashReport: {
+            to: contracts.reporting,
+            method: "hashReport",
+            signature: "ai"
+        },
+
+        // buy&sellShares.se
+        commitTrade: {
+            to: contracts.buyAndSellShares,
+            method: "commitTrade",
+            signature: "ii",
+            returns: "number",
+            send: true
+        },
+        buyShares: {
+            to: contracts.buyAndSellShares,
+            method: "buyShares",
+            signature: "iiiii",
+            returns: "number",
+            send: true
+        },
+        sellShares: {
+            to: contracts.buyAndSellShares,
+            method: "sellShares",
+            signature: "iiiii",
+            returns: "number",
+            send: true
+        },
+
+        // createBranch.se
+        createSubbranch: {
+            to: contracts.createBranch,
+            method: "createSubbranch",
+            signature: "siiii",
+            returns: "hash",
+            send: true
+        },
+
+        // sendReputation.se
+        sendReputation: {
+            to: contracts.sendReputation,
+            method: "sendReputation",
+            signature: "iii",
+            send: true,
+            returns: "unfix"
+        },
+
+        // makeReports.se
+        getNumEventsToReport: {
+            to: contracts.makeReports,
+            method: "getNumEventsToReport",
+            signature: "ii",
+            returns: "number"
+        },
+        getReportedPeriod: {
+            to: contracts.makeReports,
+            method: "getReportedPeriod",
+            signature: "iii",
+            returns: "number"
+        },
+        getReportable: {
+            to: contracts.makeReports,
+            method: "getReportable",
+            signature: "ii",
+            returns: "number"
+        },
+        getNumReportsActual: {
+            to: contracts.makeReports,
+            method: "getNumReportsActual",
+            signature: "ii",
+            returns: "number"
+        },
+        getSubmittedHash: {
+            to: contracts.makeReports,
+            method: "getSubmittedHash",
+            signature: "iii",
+            returns: "hash"
+        },
+        getBeforeRep: {
+            to: contracts.makeReports,
+            method: "getBeforeRep",
+            signature: "ii",
+            returns: "unfix"
+        },
+        getAfterRep: {
+            to: contracts.makeReports,
+            method: "getAfterRep",
+            signature: "ii",
+            returns: "unfix"
+        },
+        getReport: {
+            to: contracts.makeReports,
+            method: "getReport",
+            signature: "iii",
+            returns: "unfix"
+        },
+        getRRUpToDate: {
+            to: contracts.makeReports,
+            method: "getRRUpToDate",
+            returns: "number"
+        },
+        getNumReportsExpectedEvent: {
+            to: contracts.makeReports,
+            method: "getNumReportsExpectedEvent",
+            signature: "iii",
+            returns: "hash"
+        },
+        getNumReportsEvent: {
+            to: contracts.makeReports,
+            method: "getNumReportsEvent",
+            signature: "iii",
+            returns: "hash"
+        },
+        makeHash: {
+            to: contracts.makeReports,
+            method: "makeHash",
+            signature: "iii",
+            returns: "hash"
+        },
+        calculateReportingThreshold: {
+            to: contracts.makeReports,
+            method: "calculateReportingThreshold",
+            signature: "iii",
+            returns: "hash"
+        },
+        submitReportHash: {
+            to: contracts.makeReports,
+            method: "submitReportHash",
+            signature: "iiiii",
+            returns: "number",
+            send: true
+        },
+        submitReport: {
+            to: contracts.makeReports,
+            method: "submitReport",
+            signature: "iiiiiii",
+            returns: "number",
+            send: true
+        },
+        checkReportValidity: {
+            to: contracts.makeReports,
+            method: "checkReportValidity",
+            signature: "iii",
+            returns: "number"
+        },
+
+        // createEvent.se
+        createEvent: {
+            to: contracts.createEvent,
+            method: "createEvent",
+            signature: "isiiii",
+            send: true
+        },
+
+        // createMarket.se
+        createMarket: {
+            to: contracts.createMarket,
+            method: "createMarket",
+            signature: "isiiiai",
+            send: true
+        },
+
+        // closeMarket.se
+        closeMarket: {
+            to: contracts.closeMarket,
+            method: "closeMarket",
+            signature: "ii",
+            returns: "number",
+            send: true
+        },
+        claimProceeds: {
+            to: contracts.closeMarket,
+            method: "claimProceeds",
+            signature: "ii",
+            returns: "number",
+            send: true
+        },
+
+        // dispatch.se
+        dispatch: {
+            to: contracts.dispatch,
+            method: "dispatch",
+            signature: "i",
+            returns: "number"
+        }
+    };
+
+};
+
+},{"./contracts":1}],5:[function(require,module,exports){
 (function (global){
 var connector = global.connector || require("./");
 global.connector = connector;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./":2}],2:[function(require,module,exports){
+},{"./":6}],6:[function(require,module,exports){
 (function (process){
 /**
  * Basic Ethereum connection tasks.
@@ -95,7 +1467,7 @@ module.exports = {
                 });
             } else {
                 var key, method;
-                this.network_id = this.rpc.version() || "7";
+                this.network_id = this.rpc.version() || "2";
                 // console.log("[sync] network ID:", this.network_id);
                 this.tx = new contracts.Tx(this.network_id);
                 this.contracts = clone(contracts[this.network_id]);
@@ -344,7 +1716,7 @@ module.exports = {
 };
 
 }).call(this,require('_process'))
-},{"_process":14,"async":3,"augur-contracts":6,"ethrpc":15}],3:[function(require,module,exports){
+},{"_process":14,"async":7,"augur-contracts":3,"ethrpc":15}],7:[function(require,module,exports){
 (function (process,global){
 /*!
  * async
@@ -1613,1386 +2985,7 @@ module.exports = {
 }());
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":14}],4:[function(require,module,exports){
-module.exports={
-    "2": {
-        "buyAndSellShares": "0xf37626aa99f29a4afe7406e386f68cc77be2cb6e",
-        "closeMarket": "0x9973183349c7fc536041d65108431e736cbb6f7e",
-        "closeMarketEight": "0xb6e28762fef57f336014643741544d4f197cc494",
-        "closeMarketFour": "0x1665ee14c0b07448c3d758c2792d2a328acd98c5",
-        "closeMarketOne": "0x8b4cd6f60de0362237dc0c5b22be15273b099b7e",
-        "closeMarketTwo": "0x0774e46e0cbddb58f09f2d8d53d4aa8bc53df714",
-        "consensus": "0xb816c3abdbb9967485f8645bc83143bb749572e0",
-        "createBranch": "0x21b87e562066e36da0bc599b3d016efb6fe80913",
-        "createEvent": "0xfab258ae92a2fe25ae4e4ddb9e63fb1c691cc2aa",
-        "createMarket": "0x8a1bbe841ceef103221ebcb7fc50bf3e0edc7773",
-        "createSingleEventMarket": "0xd5283e4f818de5c984f2221a421983f6040961c1",
-        "eventResolution": "0x2fac411c69994858409c24ed2a5567da29c61bca",
-        "faucets": "0x895d32f2db7d01ebb50053f9e48aacf26584fe40",
-        "makeReports": "0x79a406da9ea815fd8cbe75ba8a4cb6d493dbf9b4",
-        "orderBook": "0xc8bdc68526a959fcb932b57063c97b1fc6176709",
-        "ramble": "0x42a77acc59bb566aa670d6e7639b99efa235e6f7",
-        "sendReputation": "0x6b969e428c58d81429ef13240c0ecb3529aa91bb",
-        "transferShares": "0x95ecfe0ebd855931faec81cbb671e61bfe56082e",
-        "branches": "0x513087e06ea1a05b858f6da58befb0012c775e63",
-        "cash": "0x154edcf6418038f863c6cd3b395a16a02c037ae3",
-        "events": "0x2d446b3950fc5ea3cf18804b9ab8f79357978ab9",
-        "expiringEvents": "0x0ed2d24d31ed33b658aa2f1108698d5bc3a8b622",
-        "fxpFunctions": "0xe85133772801961725debe87ace3cefaffb01533",
-        "info": "0xf68dab896ca313cbd8946aecfdb965662a61aa3c",
-        "markets": "0x4b2a8b1cc3a2f686d835bfc2ca0c20671676efb0",
-        "reporting": "0x2828a20e3ce771571177928077bfbbcdd16df764"
-    },
-    "7": {
-        "buyAndSellShares": "0x271ee62a8577a97d648c4b4eb3a0e56306f711c1",
-        "closeMarket": "0x7a2e05c795fbf585af34cebe760602b8425846dd",
-        "closeMarketEight": "0x66021d8b17cd9b90dc53012ba6c8cec8aaef2d1b",
-        "closeMarketFour": "0xfb5c088e0d2b8400800c61ac0d69cfd11261401c",
-        "closeMarketOne": "0xbfaa24839dec3961c010c4831709bdecbac382f5",
-        "closeMarketTwo": "0x8bb3073196dbdbf425157b3d83156f18c5c0e776",
-        "consensus": "0xc4d92584ea34be5dd2b916c464e55ec9b4bd1f8f",
-        "createBranch": "0xb005839c49a328850bb22359bb66f9ba1a0f9994",
-        "createEvent": "0x0c532debb932ddb5d07eb957bf8ff5975e932ca3",
-        "createMarket": "0x26ff0f6452673ff11dd8497491b271a18c76990e",
-        "createSingleEventMarket": "0x6f5452dca9bbfe8ac9151dd0e67c8dde8b1c6572",
-        "eventResolution": "0xd399af9820be7ddda37c7d85e701bf8ee2337739",
-        "faucets": "0x94bab6be74df76e996b20329dff2ec39d3013dc3",
-        "makeReports": "0x0b7c36b76208e2c968b04dce0658c03c27bfdc00",
-        "orderBook": "0xf86bbf277ae88a8b50ae90d97e1aafb1390e2984",
-        "ramble": "0x2258a25e503b19dc3d2c2fdc9ca57a1d5985e30c",
-        "sendReputation": "0x7e049a60e0106d263ffd0a60bcfbf4f63dd1f2a4",
-        "transferShares": "0x40343b107ef5dee9c240ff5f1f87f0afb6f709dc",
-        "branches": "0x44cecf2528fbc502f31a58cfce99b8bae992b9c4",
-        "cash": "0x9ef25450d88c82118a3395f57e7a29931305ac6d",
-        "events": "0xa95fa8fe1f544d80afa29ffb0a959116c842e110",
-        "expiringEvents": "0xad225235b9da03bbfda4fb79bf4e2356296e7d7f",
-        "fxpFunctions": "0xa1a240f9f505aa06e9eabe405ffab14689dfdda3",
-        "info": "0x087785682381a1316303efb19d1d450562603fca",
-        "markets": "0xfd0f6987c7042e867db9c1dae6e681b2c3648de2",
-        "reporting": "0x9d358fee98edb880e6a4549e21f4ab66dfcadfa7"
-    },
-    "10101": {
-        "buyAndSellShares": "0xabe47f122a496a732d6c4b38b3ca376d597d75dd",
-        "closeMarket": "0x52ccb0490bc81a2ae363fccbb2b367bca546cec7",
-        "closeMarketEight": "0xd15a6cfc462ae76b9ec590cab8b34bfa8e1302d7",
-        "closeMarketFour": "0x81a7621e9a286d061b3dea040888a51c96693b1c",
-        "closeMarketOne": "0xe5b327630cfa7f4b2324f9066c897dceecfd88a3",
-        "closeMarketTwo": "0xc21cfa6688dbfd2eca2548d894aa55fd0bbf1c7e",
-        "consensus": "0xc1c4e2f32e4b84a60b8b7983b6356af4269aab79",
-        "createBranch": "0x8c19616de17acdfbc933b99d9f529a689d22098f",
-        "createEvent": "0x77c424f86a1b80f1e303d1c2651acd6aba653cb6",
-        "createMarket": "0x35152caa07026203a1add680771afb690d872d7d",
-        "createSingleEventMarket": "0x3f3276849a878a176b2f02dd48a483e8182a49e4",
-        "eventResolution": "0x60cb05deb51f92ee25ce99f67181ecaeb0b743ea",
-        "faucets": "0x5f67ab9ff79be97b27ac8f26ef9f4b429b82e2df",
-        "makeReports": "0x8caf2c0ce7cdc2e81b58f74322cefdef440b3f8d",
-        "orderBook": "0x8a4e2993a9972ee035453bb5674816fc3a698718",
-        "ramble": "0xa34c9f6fc047cea795f69b34a063d32e6cb6288c",
-        "sendReputation": "0x6c4c9fa11d6d8ed2c7a08ddcf4d4654c85194f68",
-        "transferShares": "0x9fe69262bbaa47f013b7dbd6ca5f01e17446c645",
-        "branches": "0x0fbddb6bfb81c8d0965a894567cf4061446072c2",
-        "cash": "0x8f2c2267687cb0f047b28a1b6f945da6e101a0d7",
-        "events": "0xbd19195b9e8a2d8ed14fc3a2823856b5c16f7f55",
-        "expiringEvents": "0x482c57abdce592b39434e3f619ffc3db62ab6d01",
-        "fxpFunctions": "0x708fdfe18bf28afe861a69e95419d183ace003eb",
-        "info": "0x4a61f3db785f1e2a23ffefeafaceeef2df551667",
-        "markets": "0x5069d883e31429c6dd1325d961f443007747c7a2",
-        "reporting": "0xe4714fcbdcdba49629bc408183ef40d120700b8d"
-    },
-    "errors": {
-        "0x": "no response or bad input",
-        "getSimulatedBuy": {
-            "-2": "cost updating error (did you enter a valid quantity?)"
-        },
-        "getSimulatedSell": {
-            "-2": "cost updating error (did you enter a valid quantity?)"
-        },
-        "closeMarket": {
-            "0": "fail/trading not over yet/event not expired or closed already",
-            "-1": "Market has no cash anyway / already closed",
-            "-2": "0 outcome",
-            "-4": "Outcome .5 once, pushback and retry",
-            "-6": "bonded pushed forward market not ready to be resolved",
-            "-7": "event not reportable >.99"
-        },
-        "claimProceeds": {
-            "0": "reporting not done",
-            "-1": "trader doesn't exist"
-        },
-        "report": {
-            "0": "could not set reporter ballot",
-            "-1": "report length does not match number of expiring events",
-            "-2": "voting period expired",
-            "-3": "incorrect hash"
-        },
-        "submitReportHash": {
-            "0": "could not set report hash",
-            "-1": "reporter (you) doesn't (don't) exist, or voting period over or hasn't started yet",
-            "-2": "not in hash submitting timeframe or event doesn't exist / not a valid event expiring then",
-            "-4": "already resolved",
-            "-5": ".99 market",
-            "-6": "no markets"
-        },
-        "submitReport": {
-            "-1": "has already reported",
-            "-2": "reporter (you) doesn't (don't) exist, or voting period over or hasn't started yet",
-            "-3": "hash doesn't match",
-            "-4": "no rep",
-            "-5": "bad report",
-            "-6": "hash not low enough",
-            "-8": "invalid event",
-            "-9": "already resolved",
-            "-10": "<24 hr left in period, too late to report, able to put up readj. bonds though"
-        },
-        "checkReportValidity": {
-            "-1": "report isn't long enough",
-            "-2": "reporter doesn't exist, voting period is over, or voting period hasn't started yet"
-        },
-        "penalizeNotEnoughReports": {
-            "-1": "already done",
-            "-2": "hasn't reported this period"
-        },
-        "penalizationCatchup": {
-            "-2": "can only be called during the first half of the reporting period"
-        },
-        "penalizeWrong": {
-            "-1": "pushed back event already resolved, so can't redistribute rep based off of its original expected expiration period",
-            "-2": "already past first half of new period and needed to penalize before then",
-            "-3": "need to do not enough reports penalization [or lackthereof]"
-        },
-        "collectFees": {
-            "-2": "needs to be second half of reporting period to claim rep [1st half is when redistribution is done]"
-        },
-        "slashRep": {
-            "0": "not a valid claim",
-            "-2": "reporter doesn't exist"
-        },
-        "createSubbranch": {
-            "-1": "bad input or parent doesn't exist",
-            "-2": "no money for creation fee or branch already exists"
-        },
-        "createEvent": {
-            "0": "not enough money to pay fees or event already exists",
-            "-1": "we're either already past that date, branch doesn't exist, or description is bad",
-            "-2": "max value < min value"
-        },
-        "createMarket": {
-            "-1": "bad input or parent doesn't exist",
-            "-2": "too many events",
-            "-3": "too many outcomes",
-            "-4": "not enough money or market already exists",
-            "-5": "fee too low",
-            "-6": "duplicate events",
-            "-7": "event already expired"
-        },
-        "createSingleEventMarket": {
-            "-1": "bad input or parent doesn't exist",
-            "-2": "too many events",
-            "-3": "too many outcomes",
-            "-4": "not enough money or market already exists",
-            "-5": "fee too low",
-            "-6": "duplicate events",
-            "-7": "event already expired"
-        },
-        "sendReputation": {
-            "0": "not enough reputation",
-            "-1": "Your reputation account was just created! Earn some reputation before you can send to others",
-            "-2": "Receiving address doesn't exist"
-        },
-        "buyShares": {
-            "-1": "invalid outcome or trading closed",
-            "-2": "entered a -amt of shares",
-            "-3": "not enough money / limit order too low",
-            "-4": "invalid outcome",
-            "-5": "bad commitment or no commitment",
-            "-6": "oracle only branch, no trading"
-        },
-        "sellShares": {
-            "-1": "invalid outcome, trading closed, or you haven't traded in this market",
-            "-2": "entered a -amt of shares",
-            "-3": "you own no shares / limit price too high",
-            "-5": "bad commitment or no commitment",
-            "-6": "oracle only branch, no trading"
-        },
-        "WHISPER_POST_FAILED": {
-            "error": 65,
-            "message": "could not post message to whisper"
-        },
-        "DB_DELETE_FAILED": {
-            "error": 97,
-            "message": "database delete failed"
-        },
-        "DB_WRITE_FAILED": {
-            "error": 98,
-            "message": "database write failed"
-        },
-        "DB_READ_FAILED": {
-            "error": 99,
-            "message": "database read failed"
-        },
-        "INVALID_CONTRACT_PARAMETER": {
-            "error": 400,
-            "message": "cannot send object parameter to contract"
-        },
-        "NOT_LOGGED_IN": {
-            "error": 401,
-            "message": "not logged in"
-        },
-        "PARAMETER_NUMBER_ERROR": {
-            "error": 402,
-            "message": "wrong number of parameters"
-        },
-        "BAD_CREDENTIALS": {
-            "error": 403,
-            "message": "incorrect handle or password"
-        },
-        "TRANSACTION_NOT_FOUND": {
-            "error": 404,
-            "message": "transaction not found"
-        },
-        "PASSWORD_TOO_SHORT": {
-            "error": 405,
-            "message": "password must be at least 6 characters long"
-        },
-        "NULL_CALL_RETURN": {
-            "error": 406,
-            "message": "expected contract call to return value, received null"
-        },
-        "NULL_RESPONSE": {
-            "error": 407,
-            "message": "expected transaction hash from Ethereum node, received null"
-        },
-        "NO_RESPONSE": {
-            "error": 408,
-            "message": "no response"
-        },
-        "INVALID_RESPONSE": {
-            "error": 409,
-            "message": "could not parse response from Ethereum node"
-        },
-        "LOCAL_NODE_FAILURE": {
-            "error": 410,
-            "message": "RPC request to local Ethereum node failed"
-        },
-        "HOSTED_NODE_FAILURE": {
-            "error": 411,
-            "message": "RPC request to hosted nodes failed"
-        },
-        "HANDLE_TAKEN": {
-            "error": 422,
-            "message": "handle already taken"
-        },
-        "FILTER_NOT_CREATED": {
-            "error": 450,
-            "message": "filter could not be created"
-        },
-        "TRANSACTION_FAILED": {
-            "error": 500,
-            "message": "transaction failed"
-        },
-        "TRANSACTION_NOT_CONFIRMED": {
-            "error": 501,
-            "message": "polled network but could not confirm transaction"
-        },
-        "DUPLICATE_TRANSACTION": {
-            "error": 502,
-            "message": "duplicate transaction"
-        },
-        "RAW_TRANSACTION_ERROR": {
-            "error": 503,
-            "message": "error sending client-side transaction"
-        },
-        "RLP_ENCODING_ERROR": {
-            "error": 504,
-            "message": "RLP encoding error"
-        },
-        "NO_MARKET_INFO": {
-            "error": 505,
-            "message": "could not retrieve market data"
-        },
-        "IPFS_ADD_FAILURE": {
-            "error": 506,
-            "message": "files could not be added to IPFS"
-        },
-        "IPFS_GET_FAILURE": {
-            "error": 507,
-            "message": "could not retrieve file from IPFS"
-        },
-        "RPC_TIMEOUT": {
-            "error": 599,
-            "message": "timed out while waiting for Ethereum network response"
-        },
-        "LOOPBACK_NOT_FOUND": {
-            "error": 650,
-            "message": "loopback interface required for synchronous local commands"
-        },
-        "ETHEREUM_NOT_FOUND": {
-            "error": 651,
-            "message": "no active ethereum node(s) found"
-        },
-        "ROOT_NOT_FOUND": {
-            "error": 700,
-            "message": "no LS-LMSR objectve function solution found"
-        },
-        "CHECK_ORDER_BOOK_FAILED": {
-            "error": 710,
-            "message": "could not check order book using current prices"
-        }
-    }
-}
-},{}],5:[function(require,module,exports){
-module.exports={
-    "0x": "no response or bad input",
-    "getSimulatedBuy": {
-        "-2": "cost updating error (did you enter a valid quantity?)"
-    },
-    "getSimulatedSell": {
-        "-2": "cost updating error (did you enter a valid quantity?)"
-    },
-    "closeMarket": {
-        "0": "fail/trading not over yet/event not expired or closed already",
-        "-1": "Market has no cash anyway / already closed",
-        "-2": "0 outcome",
-        "-4": "Outcome .5 once, pushback and retry",
-        "-6": "bonded pushed forward market not ready to be resolved",
-        "-7": "event not reportable >.99"
-    },
-    "claimProceeds": {
-        "0": "reporting not done",
-        "-1": "trader doesn't exist"
-    },
-    "report": {
-        "0": "could not set reporter ballot",
-        "-1": "report length does not match number of expiring events",
-        "-2": "voting period expired",
-        "-3": "incorrect hash"
-    },
-    "submitReportHash": {
-        "0": "could not set report hash",
-        "-1": "reporter (you) doesn't (don't) exist, or voting period over or hasn't started yet",
-        "-2": "not in hash submitting timeframe or event doesn't exist / not a valid event expiring then",
-        "-4": "already resolved",
-        "-5": ".99 market",
-        "-6": "no markets"
-    },
-    "submitReport": {
-        "-1": "has already reported",
-        "-2": "reporter (you) doesn't (don't) exist, or voting period over or hasn't started yet",
-        "-3": "hash doesn't match",
-        "-4": "no rep",
-        "-5": "bad report",
-        "-6": "hash not low enough",
-        "-8": "invalid event",
-        "-9": "already resolved",
-        "-10": "<24 hr left in period, too late to report, able to put up readj. bonds though"
-    },
-    "checkReportValidity": {
-        "-1": "report isn't long enough",
-        "-2": "reporter doesn't exist, voting period is over, or voting period hasn't started yet"
-    },
-    "penalizeNotEnoughReports": {
-        "-1": "already done",
-        "-2": "hasn't reported this period"
-    },
-    "penalizationCatchup": {
-        "-2": "can only be called during the first half of the reporting period"
-    },
-    "penalizeWrong": {
-        "-1": "pushed back event already resolved, so can't redistribute rep based off of its original expected expiration period",
-        "-2": "already past first half of new period and needed to penalize before then",
-        "-3": "need to do not enough reports penalization [or lackthereof]"
-    },
-    "collectFees": {
-        "-2": "needs to be second half of reporting period to claim rep [1st half is when redistribution is done]"
-    },
-    "slashRep": {
-        "0": "not a valid claim",
-        "-2": "reporter doesn't exist"
-    },
-    "createSubbranch": {
-        "-1": "bad input or parent doesn't exist",
-        "-2": "no money for creation fee or branch already exists"
-    },
-    "createEvent": {
-        "-1": "we're either already past that date, branch doesn't exist, or description is bad",
-        "0": "not enough money to pay fees or event already exists",
-        "-2": "max value < min value"
-    },
-    "createMarket": {
-        "-1": "bad input or parent doesn't exist",
-        "-2": "too many events",
-        "-3": "too many outcomes",
-        "-4": "not enough money or market already exists",
-        "-5": "fee too low",
-        "-6": "duplicate events",
-        "-7": "event already expired"
-    },
-    "createSingleEventMarket": {
-        "-1": "bad input or parent doesn't exist",
-        "-2": "too many events",
-        "-3": "too many outcomes",
-        "-4": "not enough money or market already exists",
-        "-5": "fee too low",
-        "-6": "duplicate events",
-        "-7": "event already expired"
-    },
-    "sendReputation": {
-        "0": "not enough reputation",
-        "-1": "Your reputation account was just created! Earn some reputation before you can send to others",
-        "-2": "Receiving address doesn't exist"
-    },
-    "buyShares": {
-        "-1": "invalid outcome or trading closed",
-        "-2": "entered a -amt of shares",
-        "-3": "not enough money / limit order too low",
-        "-4": "invalid outcome",
-        "-5": "bad commitment or no commitment",
-        "-6": "oracle only branch, no trading"
-    },
-    "sellShares": {
-        "-1": "invalid outcome, trading closed, or you haven't traded in this market",
-        "-2": "entered a -amt of shares",
-        "-3": "you own no shares / limit price too high",
-        "-5": "bad commitment or no commitment",
-        "-6": "oracle only branch, no trading"
-    },
-    "WHISPER_POST_FAILED": {
-        "error": 65,
-        "message": "could not post message to whisper"
-    },
-    "DB_DELETE_FAILED": {
-        "error": 97,
-        "message": "database delete failed"
-    },
-    "DB_WRITE_FAILED": {
-        "error": 98,
-        "message": "database write failed"
-    },
-    "DB_READ_FAILED": {
-        "error": 99,
-        "message": "database read failed"
-    },
-    "INVALID_CONTRACT_PARAMETER": {
-        "error": 400,
-        "message": "cannot send object parameter to contract"
-    },
-    "NOT_LOGGED_IN": {
-        "error": 401,
-        "message": "not logged in"
-    },
-    "PARAMETER_NUMBER_ERROR": {
-        "error": 402,
-        "message": "wrong number of parameters"
-    },
-    "BAD_CREDENTIALS": {
-        "error": 403,
-        "message": "incorrect handle or password"
-    },
-    "TRANSACTION_NOT_FOUND": {
-        "error": 404,
-        "message": "transaction not found"
-    },
-    "PASSWORD_TOO_SHORT": {
-        "error": 405,
-        "message": "password must be at least 6 characters long"
-    },
-    "NULL_CALL_RETURN": {
-        "error": 406,
-        "message": "expected contract call to return value, received null"
-    },
-    "NULL_RESPONSE": {
-        "error": 407,
-        "message": "expected transaction hash from Ethereum node, received null"
-    },
-    "NO_RESPONSE": {
-        "error": 408,
-        "message": "no response"
-    },
-    "INVALID_RESPONSE": {
-        "error": 409,
-        "message": "could not parse response from Ethereum node"
-    },
-    "LOCAL_NODE_FAILURE": {
-        "error": 410,
-        "message": "RPC request to local Ethereum node failed"
-    },
-    "HOSTED_NODE_FAILURE": {
-        "error": 411,
-        "message": "RPC request to hosted nodes failed"
-    },
-    "HANDLE_TAKEN": {
-        "error": 422,
-        "message": "handle already taken"
-    },
-    "FILTER_NOT_CREATED": {
-        "error": 450,
-        "message": "filter could not be created"
-    },
-    "TRANSACTION_FAILED": {
-        "error": 500,
-        "message": "transaction failed"
-    },
-    "TRANSACTION_NOT_CONFIRMED": {
-        "error": 501,
-        "message": "polled network but could not confirm transaction"
-    },
-    "DUPLICATE_TRANSACTION": {
-        "error": 502,
-        "message": "duplicate transaction"
-    },
-    "RAW_TRANSACTION_ERROR": {
-        "error": 503,
-        "message": "error sending client-side transaction"
-    },
-    "RLP_ENCODING_ERROR": {
-        "error": 504,
-        "message": "RLP encoding error"
-    },
-    "NO_MARKET_INFO": {
-        "error": 505,
-        "message": "could not retrieve market data"
-    },
-    "IPFS_ADD_FAILURE": {
-        "error": 506,
-        "message": "files could not be added to IPFS"
-    },
-    "IPFS_GET_FAILURE": {
-        "error": 507,
-        "message": "could not retrieve file from IPFS"
-    },
-    "RPC_TIMEOUT": {
-        "error": 599,
-        "message": "timed out while waiting for Ethereum network response"
-    },
-    "LOOPBACK_NOT_FOUND": {
-        "error": 650,
-        "message": "loopback interface required for synchronous local commands"
-    },
-    "ETHEREUM_NOT_FOUND": {
-        "error": 651,
-        "message": "no active ethereum node(s) found"
-    },
-    "ROOT_NOT_FOUND": {
-        "error": 700,
-        "message": "no LS-LMSR objectve function solution found"
-    },
-    "CHECK_ORDER_BOOK_FAILED": {
-        "error": 710,
-        "message": "could not check order book using current prices"
-    }
-}
-
-},{}],6:[function(require,module,exports){
-var contracts = require("./contracts");
-contracts.errors = require("./errors");
-contracts.Tx = require("./tx");
-
-module.exports = contracts;
-
-},{"./contracts":4,"./errors":5,"./tx":7}],7:[function(require,module,exports){
-/**
- * Augur transactions
- */
-
-"use strict";
-
-module.exports = function (network) {
-
-    var contracts = require("./contracts")[network];
-
-    return {
-
-        // faucets.se
-        reputationFaucet: {
-            to: contracts.faucets,
-            method: "reputationFaucet",
-            signature: "i",
-            returns: "number",
-            send: true
-        },
-        cashFaucet: {
-            to: contracts.faucets,
-            method: "cashFaucet",
-            returns: "number",
-            send: true
-        },
-        fundNewAccount: {
-            to: contracts.faucets,
-            method: "fundNewAccount",
-            signature: "i",
-            returns: "number",
-            send: true
-        },
-
-        // createSingleEventMarket.se
-        createSingleEventMarket: {
-            to: contracts.createSingleEventMarket,
-            method: "createSingleEventMarket",
-            signature: "isiiiiiiii",
-            returns: "hash",
-            send: true
-        },
-
-        // cash.se
-        addCash: {
-            to: contracts.cash,
-            method: "addCash",
-            signature: "ii",
-            send: true,
-            returns: "number"
-        },
-        setCash: {
-            to: contracts.cash,
-            method: "setCash",
-            signature: "ii",
-            send: true,
-            returns: "number"
-        },
-        initiateOwner: {
-            to: contracts.cash,
-            method: "initiateOwner",
-            signature: "i",
-            send: true,
-            returns: "number"
-        },
-        getCashBalance: {
-            to: contracts.cash,
-            method: "balance",
-            signature: "i",
-            returns: "unfix"
-        },
-        balance: {
-            to: contracts.cash,
-            method: "balance",
-            signature: "i",
-            returns: "unfix"
-        },
-        sendCash: {
-            to: contracts.cash,
-            method: "send",
-            send: true,
-            signature: "ii",
-            returns: "unfix"
-        },
-        sendCashFrom: {
-            to: contracts.cash,
-            method: "sendFrom",
-            send: true,
-            signature: "iii",
-            returns: "unfix"
-        },
-        depositEther: {
-            to: contracts.cash,
-            method: "depositEther",
-            send: true,
-            returns: "number"
-        },
-        withdrawEther: {
-            to: contracts.cash,
-            method: "withdrawEther",
-            signature: "ii",
-            send: true,
-            returns: "number"
-        },
-
-        // info.se
-        getCreator: {
-            to: contracts.info,
-            method: "getCreator",
-            signature: "i",
-            returns: "address"
-        },
-        getCreationFee: {
-            to: contracts.info,
-            method: "getCreationFee",
-            signature: "i",
-            returns: "unfix"
-        },
-        getDescription: {
-            to: contracts.info,
-            method: "getDescription",
-            signature: "i",
-            returns: "string"
-        },
-        setInfo: {
-            to: contracts.info,
-            method: "setInfo",
-            signature: "isii",
-            returns: "number",
-            send: true
-        },
-
-        // redeem_interpolate.se
-        redeem_interpolate: {
-            to: contracts.redeem_interpolate,
-            method: "interpolate",
-            signature: "iiiii"
-        },
-        read_ballots: {
-            to: contracts.redeem_interpolate,
-            method: "read_ballots",
-            signature: "iiiii"
-        },
-
-        // branches.se
-        initDefaultBranch: {
-            to: contracts.branches,
-            method: "initDefaultBranch",
-            returns: "number",
-            send: true
-        },
-        getBranches: {
-            to: contracts.branches,
-            method: "getBranches",
-            returns: "hash[]"
-        },
-        getMarketsInBranch: {
-            to: contracts.branches,
-            method: "getMarketsInBranch",
-            signature: "i",
-            returns: "hash[]"
-        },
-        getPeriodLength: {
-            to: contracts.branches,
-            method: "getPeriodLength",
-            signature: "i",
-            returns: "number"
-        },
-        getVotePeriod: {
-            to: contracts.branches,
-            method: "getVotePeriod",
-            signature: "i",
-            returns: "number"
-        },
-        getNumMarketsBranch: {
-            to: contracts.branches,
-            method: "getNumMarketsBranch",
-            signature: "i",
-            returns: "number"
-        },
-        getMinTradingFee: {
-            to: contracts.branches,
-            method: "getMinTradingFee",
-            signature: "i",
-            returns: "unfix"
-        },
-        getNumBranches: {
-            to: contracts.branches,
-            method: "getNumBranches",
-            returns: "number"
-        },
-        getBranch: {
-            to: contracts.branches,
-            method: "getBranch",
-            signature: "i",
-            returns: "hash"
-        },
-        incrementPeriod: {
-            to: contracts.branches,
-            method: "incrementPeriod",
-            signature: "i",
-            send: true,
-            returns: "number"
-        },
-        addMarket: {
-            to: contracts.branches,
-            method: "addMarket",
-            signature: "ii",
-            returns: "number",
-            send: true
-        },
-
-        // consensus.se
-        proportionCorrect: {
-            to: contracts.consensus,
-            method: "proportionCorrect",
-            signature: "iii",
-            returns: "unfix"
-        },
-        incrementPeriodAfterReporting: {
-            to: contracts.consensus,
-            method: "incrementPeriodAfterReporting",
-            signature: "i",
-            returns: "number",
-            send: true
-        },
-        penalizeNotEnoughReports: {
-            to: contracts.consensus,
-            method: "penalizeNotEnoughReports",
-            signature: "i",
-            returns: "number",
-            send: true
-        },
-        collectFees: {
-            to: contracts.consensus,
-            method: "collectFees",
-            signature: "i",
-            returns: "number",
-            send: true
-        },
-        penalizeWrong: {
-            to: contracts.consensus,
-            method: "penalizeWrong",
-            signature: "ii",
-            returns: "number",
-            send: true
-        },
-        penalizationCatchup: {
-            to: contracts.consensus,
-            method: "penalizationCatchup",
-            signature: "i",
-            returns: "number",
-            send: true
-        },
-        slashRep: {
-            to: contracts.consensus,
-            method: "slashRep",
-            signature: "iiiii",
-            returns: "number",
-            send: true
-        },
-
-        // events.se
-        getmode: {
-            to: contracts.events,
-            method: "getmode",
-            signature: "i",
-            returns: "unfix"
-        },
-        getUncaughtOutcome: {
-            to: contracts.events,
-            method: "getUncaughtOutcome",
-            signature: "i",
-            returns: "unfix"
-        },
-        getMarkets: {
-            to: contracts.events,
-            method: "getMarkets",
-            signature: "i",
-            returns: "hash[]"
-        },
-        getReportingThreshold: {
-            to: contracts.events,
-            method: "getReportingThreshold",
-            signature: "i",
-            returns: "unfix"
-        },
-        getEventInfo: {
-            to: contracts.events,
-            method: "getEventInfo",
-            signature: "i",
-            returns: "hash[]"
-        },
-        getEventBranch: {
-            to: contracts.events,
-            method: "getEventBranch",
-            signature: "i",
-            returns: "hash"
-        },
-        getExpiration: {
-            to: contracts.events,
-            method: "getExpiration",
-            signature: "i",
-            returns: "number"
-        },
-        getOutcome: {
-            to: contracts.events,
-            method: "getOutcome",
-            signature: "i",
-            returns: "unfix"
-        },
-        getMinValue: {
-            to: contracts.events,
-            method: "getMinValue",
-            signature: "i",
-            returns: "number"
-        },
-        getMaxValue: {
-            to: contracts.events,
-            method: "getMaxValue",
-            signature: "i",
-            returns: "number"
-        },
-        getNumOutcomes: {
-            to: contracts.events,
-            method: "getNumOutcomes",
-            signature: "i",
-            returns: "number"
-        },
-        setOutcome: {
-            to: contracts.events,
-            method: "setOutcome",
-            signature: "ii",
-            returns: "number",
-            send: true
-        },
-
-        // expiringEvents.se
-        getEventIndex: {
-            to: contracts.expiringEvents,
-            method: "getEventIndex",
-            signature: "ii",
-            returns: "number"
-        },
-        getEvents: {
-            to: contracts.expiringEvents,
-            method: "getEvents",
-            signature: "ii",
-            returns: "hash[]"
-        },
-        getNumberEvents: {
-            to: contracts.expiringEvents,
-            method: "getNumberEvents",
-            signature: "ii",
-            returns: "number"
-        },
-        getEvent: {
-            to: contracts.expiringEvents,
-            method: "getEvent",
-            signature: "iii",
-            returns: "hash"
-        },
-        getTotalRepReported: {
-            to: contracts.expiringEvents,
-            method: "getTotalRepReported",
-            signature: "ii",
-            returns: "number"
-        },
-        getReportHash: {
-            to: contracts.expiringEvents,
-            method: "getReportHash",
-            signature: "iiii",
-            returns: "hash"
-        },
-        moveEventsToCurrentPeriod: {
-            to: contracts.expiringEvents,
-            method: "moveEventsToCurrentPeriod",
-            signature: "iii",
-            send: true
-        },
-        addEvent: {
-            to: contracts.expiringEvents,
-            method: "addEvent",
-            signature: "iii",
-            send: true
-        },
-        setTotalRepReported: {
-            to: contracts.expiringEvents,
-            method: "setTotalRepReported",
-            signature: "iii",
-            send: true
-        },
-        setReporterBallot: {
-            to: contracts.expiringEvents,
-            method: "setReporterBallot",
-            signature: "iiiai",
-            send: true,
-            returns: "number"
-        },
-        getTotalReputation: {
-            to: contracts.expiringEvents,
-            method: "getTotalReputation",
-            signature: "ii",
-            returns: "unfix"
-        },
-        setTotalReputation: {
-            to: contracts.expiringEvents,
-            method: "setTotalReputation",
-            signature: "iii",
-            returns: "number"
-        },
-
-        // markets.se
-        price: {
-            to: contracts.markets,
-            method: "price",
-            signature: "ii",
-            returns: "unfix"
-        },
-        lsLmsr: {
-            to: contracts.markets,
-            method: "lsLmsr",
-            signature: "i",
-            returns: "unfix"
-        },
-        getMarketInfo: {
-            to: contracts.markets,
-            method: "getMarketInfo",
-            signature: "i",
-            returns: "hash[]",
-            gas: 9999999999999
-        },
-        getMarketsInfo: {
-            to: contracts.markets,
-            method: "getMarketsInfo",
-            signature: "iii",
-            returns: "hash[]",
-            gas: 9999999999999
-        },
-        getMarketEvents: {
-            to: contracts.markets,
-            method: "getMarketEvents",
-            signature: "i",
-            returns: "hash[]"
-        },
-        getNumEvents: {
-            to: contracts.markets,
-            method: "getNumEvents",
-            signature: "i",
-            returns: "number"
-        },
-        getBranchID: {
-            to: contracts.markets,
-            method: "getBranchID",
-            signature: "i",
-            returns: "hash"
-        },
-        getCurrentParticipantNumber: {
-            to: contracts.markets,
-            method: "getCurrentParticipantNumber",
-            signature: "i",
-            returns: "number"
-        },
-        getMarketNumOutcomes: {
-            to: contracts.markets,
-            method: "getMarketNumOutcomes",
-            signature: "i",
-            returns: "number"
-        },
-        getParticipantSharesPurchased: {
-            to: contracts.markets,
-            method: "getParticipantSharesPurchased",
-            signature: "iii",
-            returns: "unfix"
-        },
-        getSharesPurchased: {
-            to: contracts.markets,
-            method: "getSharesPurchased",
-            signature: "ii",
-            returns: "unfix"
-        },
-        getForkSelection: {
-            to: contracts.markets,
-            method: "getForkSelection",
-            signature: "i",
-            returns: "hash"
-        },
-        getVolume: {
-            to: contracts.markets,
-            method: "getVolume",
-            signature: "i",
-            returns: "unfix"
-        },
-        getWinningOutcomes: {
-            to: contracts.markets,
-            method: "getWinningOutcomes",
-            signature: "i",
-            returns: "number[]"
-        },
-        getParticipantNumber: {
-            to: contracts.markets,
-            method: "getParticipantNumber",
-            signature: "ii",
-            returns: "number"
-        },
-        getParticipantID: {
-            to: contracts.markets,
-            method: "getParticipantID",
-            signature: "ii",
-            returns: "address"
-        },
-        getAlpha: {
-            to: contracts.markets,
-            method: "getAlpha",
-            signature: "i",
-            returns: "unfix"
-        },
-        getCumScale: {
-            to: contracts.markets,
-            method: "getCumScale",
-            signature: "i",
-            returns: "unfix"
-        },
-        getTradingPeriod: {
-            to: contracts.markets,
-            method: "getTradingPeriod",
-            signature: "i",
-            returns: "number"
-        },
-        getTradingFee: {
-            to: contracts.markets,
-            method: "getTradingFee",
-            signature: "i",
-            returns: "unfix"
-        },
-        initialLiquidityAmount: {
-            to: contracts.markets,
-            method: "initialLiquidityAmount",
-            signature: "ii",
-            returns: "unfix"
-        },
-        initialLiquiditySetup: {
-            to: contracts.markets,
-            method: "initialLiquiditySetup",
-            signature: "iiii",
-            returns: "number",
-            send: true
-        },
-        modifyShares: {
-            to: contracts.markets,
-            method: "modifyShares",
-            signature: "iii",
-            returns: "number",
-            send: true
-        },
-        initializeMarket: {
-            to: contracts.markets,
-            method: "initializeMarket",
-            signature: "iaiii",
-            returns: "number",
-            send: true
-        },
-
-        // reporting.se
-        getRepBalance: {
-            to: contracts.reporting,
-            method: "getRepBalance",
-            signature: "ii",
-            returns: "unfix"
-        },
-        getRepByIndex: {
-            to: contracts.reporting,
-            method: "getRepByIndex",
-            signature: "ii",
-            returns: "unfix"
-        },
-        getReporterID: {
-            to: contracts.reporting,
-            method: "getReporterID",
-            signature: "ii",
-            returns: "address"
-        },
-        getReputation: {
-            to: contracts.reporting,
-            method: "getReputation",
-            signature: "i",
-            returns: "number[]"
-        },
-        getNumberReporters: {
-            to: contracts.reporting,
-            method: "getNumberReporters",
-            signature: "i",
-            returns: "number"
-        },
-        repIDToIndex: {
-            to: contracts.reporting,
-            method: "repIDToIndex",
-            signature: "ii",
-            returns: "number"
-        },
-        getTotalRep: {
-            to: contracts.reporting,
-            method: "getTotalRep",
-            signature: "i",
-            returns: "unfix"
-        },
-        hashReport: {
-            to: contracts.reporting,
-            method: "hashReport",
-            signature: "ai"
-        },
-
-        // buy&sellShares.se
-        commitTrade: {
-            to: contracts.buyAndSellShares,
-            method: "commitTrade",
-            signature: "ii",
-            returns: "number",
-            send: true
-        },
-        buyShares: {
-            to: contracts.buyAndSellShares,
-            method: "buyShares",
-            signature: "iiiii",
-            returns: "number",
-            send: true
-        },
-        sellShares: {
-            to: contracts.buyAndSellShares,
-            method: "sellShares",
-            signature: "iiiii",
-            returns: "number",
-            send: true
-        },
-
-        // createBranch.se
-        createSubbranch: {
-            to: contracts.createBranch,
-            method: "createSubbranch",
-            signature: "siiii",
-            returns: "hash",
-            send: true
-        },
-
-        // sendReputation.se
-        sendReputation: {
-            to: contracts.sendReputation,
-            method: "sendReputation",
-            signature: "iii",
-            send: true,
-            returns: "unfix"
-        },
-
-        // makeReports.se
-        getNumEventsToReport: {
-            to: contracts.makeReports,
-            method: "getNumEventsToReport",
-            signature: "ii",
-            returns: "number"
-        },
-        getReportedPeriod: {
-            to: contracts.makeReports,
-            method: "getReportedPeriod",
-            signature: "iii",
-            returns: "number"
-        },
-        getReportable: {
-            to: contracts.makeReports,
-            method: "getReportable",
-            signature: "ii",
-            returns: "number"
-        },
-        getNumReportsActual: {
-            to: contracts.makeReports,
-            method: "getNumReportsActual",
-            signature: "ii",
-            returns: "number"
-        },
-        getSubmittedHash: {
-            to: contracts.makeReports,
-            method: "getSubmittedHash",
-            signature: "iii",
-            returns: "hash"
-        },
-        getBeforeRep: {
-            to: contracts.makeReports,
-            method: "getBeforeRep",
-            signature: "ii",
-            returns: "unfix"
-        },
-        getAfterRep: {
-            to: contracts.makeReports,
-            method: "getAfterRep",
-            signature: "ii",
-            returns: "unfix"
-        },
-        getReport: {
-            to: contracts.makeReports,
-            method: "getReport",
-            signature: "iii",
-            returns: "unfix"
-        },
-        getRRUpToDate: {
-            to: contracts.makeReports,
-            method: "getRRUpToDate",
-            returns: "number"
-        },
-        getNumReportsExpectedEvent: {
-            to: contracts.makeReports,
-            method: "getNumReportsExpectedEvent",
-            signature: "iii",
-            returns: "hash"
-        },
-        getNumReportsEvent: {
-            to: contracts.makeReports,
-            method: "getNumReportsEvent",
-            signature: "iii",
-            returns: "hash"
-        },
-        makeHash: {
-            to: contracts.makeReports,
-            method: "makeHash",
-            signature: "iii",
-            returns: "hash"
-        },
-        report: {
-            to: contracts.makeReports,
-            method: "report",
-            signature: "iaii",
-            returns: "number",
-            send: true
-        },
-        calculateReportingThreshold: {
-            to: contracts.makeReports,
-            method: "calculateReportingThreshold",
-            signature: "iii",
-            returns: "hash"
-        },
-        submitReportHash: {
-            to: contracts.makeReports,
-            method: "submitReportHash",
-            signature: "iiiii",
-            returns: "number",
-            send: true
-        },
-        submitReport: {
-            to: contracts.makeReports,
-            method: "submitReport",
-            signature: "iiiiiii",
-            returns: "number",
-            send: true
-        },
-        checkReportValidity: {
-            to: contracts.makeReports,
-            method: "checkReportValidity",
-            signature: "iai",
-            returns: "number"
-        },
-
-        // createEvent.se
-        createEvent: {
-            to: contracts.createEvent,
-            method: "createEvent",
-            signature: "isiiii",
-            send: true
-        },
-
-        // createMarket.se
-        createMarket: {
-            to: contracts.createMarket,
-            method: "createMarket",
-            signature: "isiiiai",
-            send: true
-        },
-
-        // closeMarket.se
-        closeMarket: {
-            to: contracts.closeMarket,
-            method: "closeMarket",
-            signature: "ii",
-            returns: "number",
-            send: true
-        },
-        claimProceeds: {
-            to: contracts.closeMarket,
-            method: "claimProceeds",
-            signature: "ii",
-            returns: "number",
-            send: true
-        },
-
-        // dispatch.se
-        dispatch: {
-            to: contracts.dispatch,
-            method: "dispatch",
-            signature: "i",
-            returns: "number"
-        }
-    };
-
-};
-
-},{"./contracts":4}],8:[function(require,module,exports){
+},{"_process":14}],8:[function(require,module,exports){
 
 },{}],9:[function(require,module,exports){
 arguments[4][8][0].apply(exports,arguments)
@@ -4881,6 +4874,7 @@ if (NODE_JS) {
 }
 var async = require("async");
 var BigNumber = require("bignumber.js");
+var keccak_256 = require("js-sha3").keccak_256;
 var contracts = require("augur-contracts");
 var abi = require("augur-abi");
 var errors = contracts.errors;
@@ -4899,7 +4893,6 @@ function isFunction(f) {
 }
 
 var HOSTED_NODES = [
-    "https://eth1.augur.net",
     "https://eth3.augur.net",
     "https://eth4.augur.net",
     "https://eth5.augur.net"
@@ -4945,10 +4938,6 @@ module.exports = {
     Error: RPCError,
 
     errors: errors,
-
-    etherscanApi: "https://testnet.etherscan.io/api?module=proxy",
-
-    etherscan: true,
 
     nodes: {
         hosted: HOSTED_NODES.slice(),
@@ -5037,7 +5026,7 @@ module.exports = {
             if (response && typeof response === "string") {
                 response = JSON.parse(response);
             }
-            if (response && typeof response === "object" && response !== null) {
+            if (response !== undefined && typeof response === "object" && response !== null) {
                 if (response.error) {
                     response = {
                         error: response.error.code,
@@ -5051,8 +5040,7 @@ module.exports = {
                             response.result = this.applyReturns(returns, response.result);
                         } else {
                             if (response.result && response.result.length > 2 &&
-                                response.result.slice(0,2) === "0x")
-                            {
+                                response.result.slice(0,2) === "0x") {
                                 response.result = abi.remove_leading_zeros(response.result);
                                 response.result = abi.prefix_hex(response.result);
                             }
@@ -5104,6 +5092,7 @@ module.exports = {
 
     strip: function (tx) {
         var returns;
+        if (tx.method === "eth_coinbase") return "address";
         if (tx.params !== undefined && tx.params.length && tx.params[0]) {
             if (tx.params[0].returns) {
                 returns = tx.params[0].returns;
@@ -5299,8 +5288,7 @@ module.exports = {
         var start, nodes, numCommands, returns, result, completed, self = this;
 
         if (!command || (command.constructor === Object && !command.method) ||
-            (command.constructor === Array && !command.length))
-        {
+            (command.constructor === Array && !command.length)) {
             if (!callback) return null;
             return callback(null);
         }
@@ -5364,7 +5352,7 @@ module.exports = {
                 var received = '';
                 var socket = new net.Socket();
                 socket.setEncoding("utf8");
-                socket.connect({ path: this.ipcpath }, function () {
+                socket.connect({path: this.ipcpath}, function () {
                     socket.write(JSON.stringify(command));
                 });
                 socket.on("data", function (data) {
@@ -5451,22 +5439,26 @@ module.exports = {
                         this.exciseNode(e, nodes[j]);
                     }
                 }
-                if (result) return result;
+                if (result !== undefined) return result;
             }
             throw new this.Error(errors.NO_RESPONSE);
         }
     },
 
     marshal: function (command, params, prefix) {
-        var payload = {
-            id: this.requests++,
-            jsonrpc: "2.0"
-        };
+        var payload, action;
         if (prefix === "null") {
-            payload.method = command.toString();
+            action = command.toString();
         } else {
-            payload.method = (prefix || "eth_") + command.toString();
+            action = (prefix || "eth_") + command.toString();
         }
+
+        // direct-to-geth
+        payload = {
+            id: this.requests++,
+            jsonrpc: "2.0",
+            method: action
+        };
         if (params !== undefined && params !== null) {
             if (params.constructor === Object) {
                 if (this.debug.broadcast && params.debug) {
@@ -5482,6 +5474,11 @@ module.exports = {
                 }
             }
             if (params.constructor === Array) {
+                for (var i = 0, len = params.length; i < len; ++i) {
+                    if (params[i].constructor === Number) {
+                        params[i] = abi.prefix_hex(params[i].toString(16));
+                    }
+                }
                 payload.params = params;
             } else {
                 payload.params = [params];
@@ -5545,11 +5542,9 @@ module.exports = {
         return this.broadcast(this.marshal(command, params, "shh_"), f);
     },
 
-    sha3: function (data, f) {
-        return this.broadcast(this.marshal("sha3", data.toString(), "web3_"), f);
-    },
-    hash: function (data, f) {
-        return this.broadcast(this.marshal("sha3", data.toString(), "web3_"), f);
+    sha3: function (data, isHex) {
+        if (isHex) data = abi.decode_hex(data);
+        return abi.prefix_hex(keccak_256(data));
     },
 
     gasPrice: function (f) {
@@ -5586,10 +5581,10 @@ module.exports = {
     },
 
     txCount: function (address, f) {
-        return this.broadcast(this.marshal("getTransactionCount", address), f);
+        return this.broadcast(this.marshal("getTransactionCount", [address, "latest"]), f);
     },
     getTransactionCount: function (address, f) {
-        return this.broadcast(this.marshal("getTransactionCount", address), f);
+        return this.broadcast(this.marshal("getTransactionCount", [address, "latest"]), f);
     },
     pendingTxCount: function (address, f) {
         return this.broadcast(
@@ -5677,51 +5672,18 @@ module.exports = {
     // execute functions on contracts on the blockchain
     call: function (tx, f) {
         tx.to = tx.to || "";
-        tx.gas = (tx.gas) ? tx.gas : this.DEFAULT_GAS;
-        if (!this.etherscan) return this.broadcast(this.marshal("call", tx), f);
-        var self = this;
-        var returns, timeout;
-        if (tx.returns) {
-            returns = tx.returns;
-            delete tx.returns;
-        }
-        if (tx.timeout) {
-            timeout = tx.timeout;
-            delete tx.timeout;
-        } else {
-            timeout = this.POST_TIMEOUT;
-        }
-        var rpcUrl = this.etherscanApi + "&action=eth_call&" + Object.keys(tx).map(function (k) {
-            return encodeURIComponent(k) + '=' + encodeURIComponent(tx[k]);
-        }).join('&');
-        if (!f) {
-            var req = syncRequest("GET", rpcUrl, {timeout: timeout});
-            var response = req.getBody().toString();
-            return this.parse(response, returns);
-        }
-        request({
-            url: rpcUrl,
-            method: "GET",
-            timeout: timeout
-        }, function (e, response, body) {
-            if (e) {
-                console.error("etherscan eth_call error:", e);
-                self.etherscan = false;
-                f(e);
-            } else if (response.statusCode === 200) {
-                self.parse(body, returns, f);
-            }
-        });
+        tx.gas = tx.gas || this.DEFAULT_GAS;
+        return this.broadcast(this.marshal("call", [tx, "latest"]), f);
     },
 
     sendTx: function (tx, f) {
         tx.to = tx.to || "";
-        tx.gas = (tx.gas) ? tx.gas : this.DEFAULT_GAS;
+        tx.gas = tx.gas || this.DEFAULT_GAS;
         return this.broadcast(this.marshal("sendTransaction", tx), f);
     },
     sendTransaction: function (tx, f) {
         tx.to = tx.to || "";
-        tx.gas = (tx.gas) ? tx.gas : this.DEFAULT_GAS;
+        tx.gas = tx.gas || this.DEFAULT_GAS;
         return this.broadcast(this.marshal("sendTransaction", tx), f);
     },
 
@@ -5879,8 +5841,8 @@ module.exports = {
                             tx.params = [tx.params];
                         }
                     }
-                    if (tx.to) tx.to = abi.prefix_hex(tx.to);
-                    if (tx.from) tx.from = abi.prefix_hex(tx.from);
+                    if (tx.to) tx.to = abi.format_address(tx.to);
+                    if (tx.from) tx.from = abi.format_address(tx.from);
                     dataAbi = abi.encode(tx);
                     if (dataAbi) {
                         packaged = {
@@ -5948,8 +5910,8 @@ module.exports = {
                     tx.params = abi.hex(tx.params);
                 }
             }
-            if (tx.from) tx.from = abi.prefix_hex(tx.from);
-            tx.to = abi.prefix_hex(tx.to);
+            if (tx.from) tx.from = abi.format_address(tx.from);
+            tx.to = abi.format_address(tx.to);
             dataAbi = abi.encode(tx);
             if (dataAbi) {
                 if (tx.callback && tx.callback.constructor === Function) {
@@ -5971,7 +5933,7 @@ module.exports = {
                     packaged.debug.batch = true;
                 }
                 invocation = (tx.send) ? "sendTransaction" : "call";
-                rpclist[i] = this.marshal(invocation, packaged);
+                rpclist[i] = this.marshal(invocation, [packaged, "latest"]);
             } else {
                 console.error("unable to package commands for batch RPC");
                 return rpclist;
@@ -6284,7 +6246,1275 @@ module.exports = {
 };
 
 }).call(this,require('_process'))
-},{"_process":14,"async":3,"augur-abi":16,"augur-contracts":20,"bignumber.js":22,"browser-request":23,"net":8,"request":9,"sync-request":9}],16:[function(require,module,exports){
+},{"_process":14,"async":16,"augur-abi":17,"augur-contracts":3,"bignumber.js":19,"browser-request":20,"js-sha3":21,"net":8,"request":9,"sync-request":9}],16:[function(require,module,exports){
+(function (process,global){
+/*!
+ * async
+ * https://github.com/caolan/async
+ *
+ * Copyright 2010-2014 Caolan McMahon
+ * Released under the MIT license
+ */
+(function () {
+
+    var async = {};
+    function noop() {}
+    function identity(v) {
+        return v;
+    }
+    function toBool(v) {
+        return !!v;
+    }
+    function notId(v) {
+        return !v;
+    }
+
+    // global on the server, window in the browser
+    var previous_async;
+
+    // Establish the root object, `window` (`self`) in the browser, `global`
+    // on the server, or `this` in some virtual machines. We use `self`
+    // instead of `window` for `WebWorker` support.
+    var root = typeof self === 'object' && self.self === self && self ||
+            typeof global === 'object' && global.global === global && global ||
+            this;
+
+    if (root != null) {
+        previous_async = root.async;
+    }
+
+    async.noConflict = function () {
+        root.async = previous_async;
+        return async;
+    };
+
+    function only_once(fn) {
+        return function() {
+            if (fn === null) throw new Error("Callback was already called.");
+            fn.apply(this, arguments);
+            fn = null;
+        };
+    }
+
+    function _once(fn) {
+        return function() {
+            if (fn === null) return;
+            fn.apply(this, arguments);
+            fn = null;
+        };
+    }
+
+    //// cross-browser compatiblity functions ////
+
+    var _toString = Object.prototype.toString;
+
+    var _isArray = Array.isArray || function (obj) {
+        return _toString.call(obj) === '[object Array]';
+    };
+
+    // Ported from underscore.js isObject
+    var _isObject = function(obj) {
+        var type = typeof obj;
+        return type === 'function' || type === 'object' && !!obj;
+    };
+
+    function _isArrayLike(arr) {
+        return _isArray(arr) || (
+            // has a positive integer length property
+            typeof arr.length === "number" &&
+            arr.length >= 0 &&
+            arr.length % 1 === 0
+        );
+    }
+
+    function _arrayEach(arr, iterator) {
+        var index = -1,
+            length = arr.length;
+
+        while (++index < length) {
+            iterator(arr[index], index, arr);
+        }
+    }
+
+    function _map(arr, iterator) {
+        var index = -1,
+            length = arr.length,
+            result = Array(length);
+
+        while (++index < length) {
+            result[index] = iterator(arr[index], index, arr);
+        }
+        return result;
+    }
+
+    function _range(count) {
+        return _map(Array(count), function (v, i) { return i; });
+    }
+
+    function _reduce(arr, iterator, memo) {
+        _arrayEach(arr, function (x, i, a) {
+            memo = iterator(memo, x, i, a);
+        });
+        return memo;
+    }
+
+    function _forEachOf(object, iterator) {
+        _arrayEach(_keys(object), function (key) {
+            iterator(object[key], key);
+        });
+    }
+
+    function _indexOf(arr, item) {
+        for (var i = 0; i < arr.length; i++) {
+            if (arr[i] === item) return i;
+        }
+        return -1;
+    }
+
+    var _keys = Object.keys || function (obj) {
+        var keys = [];
+        for (var k in obj) {
+            if (obj.hasOwnProperty(k)) {
+                keys.push(k);
+            }
+        }
+        return keys;
+    };
+
+    function _keyIterator(coll) {
+        var i = -1;
+        var len;
+        var keys;
+        if (_isArrayLike(coll)) {
+            len = coll.length;
+            return function next() {
+                i++;
+                return i < len ? i : null;
+            };
+        } else {
+            keys = _keys(coll);
+            len = keys.length;
+            return function next() {
+                i++;
+                return i < len ? keys[i] : null;
+            };
+        }
+    }
+
+    // Similar to ES6's rest param (http://ariya.ofilabs.com/2013/03/es6-and-rest-parameter.html)
+    // This accumulates the arguments passed into an array, after a given index.
+    // From underscore.js (https://github.com/jashkenas/underscore/pull/2140).
+    function _restParam(func, startIndex) {
+        startIndex = startIndex == null ? func.length - 1 : +startIndex;
+        return function() {
+            var length = Math.max(arguments.length - startIndex, 0);
+            var rest = Array(length);
+            for (var index = 0; index < length; index++) {
+                rest[index] = arguments[index + startIndex];
+            }
+            switch (startIndex) {
+                case 0: return func.call(this, rest);
+                case 1: return func.call(this, arguments[0], rest);
+            }
+            // Currently unused but handle cases outside of the switch statement:
+            // var args = Array(startIndex + 1);
+            // for (index = 0; index < startIndex; index++) {
+            //     args[index] = arguments[index];
+            // }
+            // args[startIndex] = rest;
+            // return func.apply(this, args);
+        };
+    }
+
+    function _withoutIndex(iterator) {
+        return function (value, index, callback) {
+            return iterator(value, callback);
+        };
+    }
+
+    //// exported async module functions ////
+
+    //// nextTick implementation with browser-compatible fallback ////
+
+    // capture the global reference to guard against fakeTimer mocks
+    var _setImmediate = typeof setImmediate === 'function' && setImmediate;
+
+    var _delay = _setImmediate ? function(fn) {
+        // not a direct alias for IE10 compatibility
+        _setImmediate(fn);
+    } : function(fn) {
+        setTimeout(fn, 0);
+    };
+
+    if (typeof process === 'object' && typeof process.nextTick === 'function') {
+        async.nextTick = process.nextTick;
+    } else {
+        async.nextTick = _delay;
+    }
+    async.setImmediate = _setImmediate ? _delay : async.nextTick;
+
+
+    async.forEach =
+    async.each = function (arr, iterator, callback) {
+        return async.eachOf(arr, _withoutIndex(iterator), callback);
+    };
+
+    async.forEachSeries =
+    async.eachSeries = function (arr, iterator, callback) {
+        return async.eachOfSeries(arr, _withoutIndex(iterator), callback);
+    };
+
+
+    async.forEachLimit =
+    async.eachLimit = function (arr, limit, iterator, callback) {
+        return _eachOfLimit(limit)(arr, _withoutIndex(iterator), callback);
+    };
+
+    async.forEachOf =
+    async.eachOf = function (object, iterator, callback) {
+        callback = _once(callback || noop);
+        object = object || [];
+
+        var iter = _keyIterator(object);
+        var key, completed = 0;
+
+        while ((key = iter()) != null) {
+            completed += 1;
+            iterator(object[key], key, only_once(done));
+        }
+
+        if (completed === 0) callback(null);
+
+        function done(err) {
+            completed--;
+            if (err) {
+                callback(err);
+            }
+            // Check key is null in case iterator isn't exhausted
+            // and done resolved synchronously.
+            else if (key === null && completed <= 0) {
+                callback(null);
+            }
+        }
+    };
+
+    async.forEachOfSeries =
+    async.eachOfSeries = function (obj, iterator, callback) {
+        callback = _once(callback || noop);
+        obj = obj || [];
+        var nextKey = _keyIterator(obj);
+        var key = nextKey();
+        function iterate() {
+            var sync = true;
+            if (key === null) {
+                return callback(null);
+            }
+            iterator(obj[key], key, only_once(function (err) {
+                if (err) {
+                    callback(err);
+                }
+                else {
+                    key = nextKey();
+                    if (key === null) {
+                        return callback(null);
+                    } else {
+                        if (sync) {
+                            async.setImmediate(iterate);
+                        } else {
+                            iterate();
+                        }
+                    }
+                }
+            }));
+            sync = false;
+        }
+        iterate();
+    };
+
+
+
+    async.forEachOfLimit =
+    async.eachOfLimit = function (obj, limit, iterator, callback) {
+        _eachOfLimit(limit)(obj, iterator, callback);
+    };
+
+    function _eachOfLimit(limit) {
+
+        return function (obj, iterator, callback) {
+            callback = _once(callback || noop);
+            obj = obj || [];
+            var nextKey = _keyIterator(obj);
+            if (limit <= 0) {
+                return callback(null);
+            }
+            var done = false;
+            var running = 0;
+            var errored = false;
+
+            (function replenish () {
+                if (done && running <= 0) {
+                    return callback(null);
+                }
+
+                while (running < limit && !errored) {
+                    var key = nextKey();
+                    if (key === null) {
+                        done = true;
+                        if (running <= 0) {
+                            callback(null);
+                        }
+                        return;
+                    }
+                    running += 1;
+                    iterator(obj[key], key, only_once(function (err) {
+                        running -= 1;
+                        if (err) {
+                            callback(err);
+                            errored = true;
+                        }
+                        else {
+                            replenish();
+                        }
+                    }));
+                }
+            })();
+        };
+    }
+
+
+    function doParallel(fn) {
+        return function (obj, iterator, callback) {
+            return fn(async.eachOf, obj, iterator, callback);
+        };
+    }
+    function doParallelLimit(fn) {
+        return function (obj, limit, iterator, callback) {
+            return fn(_eachOfLimit(limit), obj, iterator, callback);
+        };
+    }
+    function doSeries(fn) {
+        return function (obj, iterator, callback) {
+            return fn(async.eachOfSeries, obj, iterator, callback);
+        };
+    }
+
+    function _asyncMap(eachfn, arr, iterator, callback) {
+        callback = _once(callback || noop);
+        arr = arr || [];
+        var results = _isArrayLike(arr) ? [] : {};
+        eachfn(arr, function (value, index, callback) {
+            iterator(value, function (err, v) {
+                results[index] = v;
+                callback(err);
+            });
+        }, function (err) {
+            callback(err, results);
+        });
+    }
+
+    async.map = doParallel(_asyncMap);
+    async.mapSeries = doSeries(_asyncMap);
+    async.mapLimit = doParallelLimit(_asyncMap);
+
+    // reduce only has a series version, as doing reduce in parallel won't
+    // work in many situations.
+    async.inject =
+    async.foldl =
+    async.reduce = function (arr, memo, iterator, callback) {
+        async.eachOfSeries(arr, function (x, i, callback) {
+            iterator(memo, x, function (err, v) {
+                memo = v;
+                callback(err);
+            });
+        }, function (err) {
+            callback(err, memo);
+        });
+    };
+
+    async.foldr =
+    async.reduceRight = function (arr, memo, iterator, callback) {
+        var reversed = _map(arr, identity).reverse();
+        async.reduce(reversed, memo, iterator, callback);
+    };
+
+    async.transform = function (arr, memo, iterator, callback) {
+        if (arguments.length === 3) {
+            callback = iterator;
+            iterator = memo;
+            memo = _isArray(arr) ? [] : {};
+        }
+
+        async.eachOf(arr, function(v, k, cb) {
+            iterator(memo, v, k, cb);
+        }, function(err) {
+            callback(err, memo);
+        });
+    };
+
+    function _filter(eachfn, arr, iterator, callback) {
+        var results = [];
+        eachfn(arr, function (x, index, callback) {
+            iterator(x, function (v) {
+                if (v) {
+                    results.push({index: index, value: x});
+                }
+                callback();
+            });
+        }, function () {
+            callback(_map(results.sort(function (a, b) {
+                return a.index - b.index;
+            }), function (x) {
+                return x.value;
+            }));
+        });
+    }
+
+    async.select =
+    async.filter = doParallel(_filter);
+
+    async.selectLimit =
+    async.filterLimit = doParallelLimit(_filter);
+
+    async.selectSeries =
+    async.filterSeries = doSeries(_filter);
+
+    function _reject(eachfn, arr, iterator, callback) {
+        _filter(eachfn, arr, function(value, cb) {
+            iterator(value, function(v) {
+                cb(!v);
+            });
+        }, callback);
+    }
+    async.reject = doParallel(_reject);
+    async.rejectLimit = doParallelLimit(_reject);
+    async.rejectSeries = doSeries(_reject);
+
+    function _createTester(eachfn, check, getResult) {
+        return function(arr, limit, iterator, cb) {
+            function done() {
+                if (cb) cb(getResult(false, void 0));
+            }
+            function iteratee(x, _, callback) {
+                if (!cb) return callback();
+                iterator(x, function (v) {
+                    if (cb && check(v)) {
+                        cb(getResult(true, x));
+                        cb = iterator = false;
+                    }
+                    callback();
+                });
+            }
+            if (arguments.length > 3) {
+                eachfn(arr, limit, iteratee, done);
+            } else {
+                cb = iterator;
+                iterator = limit;
+                eachfn(arr, iteratee, done);
+            }
+        };
+    }
+
+    async.any =
+    async.some = _createTester(async.eachOf, toBool, identity);
+
+    async.someLimit = _createTester(async.eachOfLimit, toBool, identity);
+
+    async.all =
+    async.every = _createTester(async.eachOf, notId, notId);
+
+    async.everyLimit = _createTester(async.eachOfLimit, notId, notId);
+
+    function _findGetResult(v, x) {
+        return x;
+    }
+    async.detect = _createTester(async.eachOf, identity, _findGetResult);
+    async.detectSeries = _createTester(async.eachOfSeries, identity, _findGetResult);
+    async.detectLimit = _createTester(async.eachOfLimit, identity, _findGetResult);
+
+    async.sortBy = function (arr, iterator, callback) {
+        async.map(arr, function (x, callback) {
+            iterator(x, function (err, criteria) {
+                if (err) {
+                    callback(err);
+                }
+                else {
+                    callback(null, {value: x, criteria: criteria});
+                }
+            });
+        }, function (err, results) {
+            if (err) {
+                return callback(err);
+            }
+            else {
+                callback(null, _map(results.sort(comparator), function (x) {
+                    return x.value;
+                }));
+            }
+
+        });
+
+        function comparator(left, right) {
+            var a = left.criteria, b = right.criteria;
+            return a < b ? -1 : a > b ? 1 : 0;
+        }
+    };
+
+    async.auto = function (tasks, concurrency, callback) {
+        if (typeof arguments[1] === 'function') {
+            // concurrency is optional, shift the args.
+            callback = concurrency;
+            concurrency = null;
+        }
+        callback = _once(callback || noop);
+        var keys = _keys(tasks);
+        var remainingTasks = keys.length;
+        if (!remainingTasks) {
+            return callback(null);
+        }
+        if (!concurrency) {
+            concurrency = remainingTasks;
+        }
+
+        var results = {};
+        var runningTasks = 0;
+
+        var hasError = false;
+
+        var listeners = [];
+        function addListener(fn) {
+            listeners.unshift(fn);
+        }
+        function removeListener(fn) {
+            var idx = _indexOf(listeners, fn);
+            if (idx >= 0) listeners.splice(idx, 1);
+        }
+        function taskComplete() {
+            remainingTasks--;
+            _arrayEach(listeners.slice(0), function (fn) {
+                fn();
+            });
+        }
+
+        addListener(function () {
+            if (!remainingTasks) {
+                callback(null, results);
+            }
+        });
+
+        _arrayEach(keys, function (k) {
+            if (hasError) return;
+            var task = _isArray(tasks[k]) ? tasks[k]: [tasks[k]];
+            var taskCallback = _restParam(function(err, args) {
+                runningTasks--;
+                if (args.length <= 1) {
+                    args = args[0];
+                }
+                if (err) {
+                    var safeResults = {};
+                    _forEachOf(results, function(val, rkey) {
+                        safeResults[rkey] = val;
+                    });
+                    safeResults[k] = args;
+                    hasError = true;
+
+                    callback(err, safeResults);
+                }
+                else {
+                    results[k] = args;
+                    async.setImmediate(taskComplete);
+                }
+            });
+            var requires = task.slice(0, task.length - 1);
+            // prevent dead-locks
+            var len = requires.length;
+            var dep;
+            while (len--) {
+                if (!(dep = tasks[requires[len]])) {
+                    throw new Error('Has inexistant dependency');
+                }
+                if (_isArray(dep) && _indexOf(dep, k) >= 0) {
+                    throw new Error('Has cyclic dependencies');
+                }
+            }
+            function ready() {
+                return runningTasks < concurrency && _reduce(requires, function (a, x) {
+                    return (a && results.hasOwnProperty(x));
+                }, true) && !results.hasOwnProperty(k);
+            }
+            if (ready()) {
+                runningTasks++;
+                task[task.length - 1](taskCallback, results);
+            }
+            else {
+                addListener(listener);
+            }
+            function listener() {
+                if (ready()) {
+                    runningTasks++;
+                    removeListener(listener);
+                    task[task.length - 1](taskCallback, results);
+                }
+            }
+        });
+    };
+
+
+
+    async.retry = function(times, task, callback) {
+        var DEFAULT_TIMES = 5;
+        var DEFAULT_INTERVAL = 0;
+
+        var attempts = [];
+
+        var opts = {
+            times: DEFAULT_TIMES,
+            interval: DEFAULT_INTERVAL
+        };
+
+        function parseTimes(acc, t){
+            if(typeof t === 'number'){
+                acc.times = parseInt(t, 10) || DEFAULT_TIMES;
+            } else if(typeof t === 'object'){
+                acc.times = parseInt(t.times, 10) || DEFAULT_TIMES;
+                acc.interval = parseInt(t.interval, 10) || DEFAULT_INTERVAL;
+            } else {
+                throw new Error('Unsupported argument type for \'times\': ' + typeof t);
+            }
+        }
+
+        var length = arguments.length;
+        if (length < 1 || length > 3) {
+            throw new Error('Invalid arguments - must be either (task), (task, callback), (times, task) or (times, task, callback)');
+        } else if (length <= 2 && typeof times === 'function') {
+            callback = task;
+            task = times;
+        }
+        if (typeof times !== 'function') {
+            parseTimes(opts, times);
+        }
+        opts.callback = callback;
+        opts.task = task;
+
+        function wrappedTask(wrappedCallback, wrappedResults) {
+            function retryAttempt(task, finalAttempt) {
+                return function(seriesCallback) {
+                    task(function(err, result){
+                        seriesCallback(!err || finalAttempt, {err: err, result: result});
+                    }, wrappedResults);
+                };
+            }
+
+            function retryInterval(interval){
+                return function(seriesCallback){
+                    setTimeout(function(){
+                        seriesCallback(null);
+                    }, interval);
+                };
+            }
+
+            while (opts.times) {
+
+                var finalAttempt = !(opts.times-=1);
+                attempts.push(retryAttempt(opts.task, finalAttempt));
+                if(!finalAttempt && opts.interval > 0){
+                    attempts.push(retryInterval(opts.interval));
+                }
+            }
+
+            async.series(attempts, function(done, data){
+                data = data[data.length - 1];
+                (wrappedCallback || opts.callback)(data.err, data.result);
+            });
+        }
+
+        // If a callback is passed, run this as a controll flow
+        return opts.callback ? wrappedTask() : wrappedTask;
+    };
+
+    async.waterfall = function (tasks, callback) {
+        callback = _once(callback || noop);
+        if (!_isArray(tasks)) {
+            var err = new Error('First argument to waterfall must be an array of functions');
+            return callback(err);
+        }
+        if (!tasks.length) {
+            return callback();
+        }
+        function wrapIterator(iterator) {
+            return _restParam(function (err, args) {
+                if (err) {
+                    callback.apply(null, [err].concat(args));
+                }
+                else {
+                    var next = iterator.next();
+                    if (next) {
+                        args.push(wrapIterator(next));
+                    }
+                    else {
+                        args.push(callback);
+                    }
+                    ensureAsync(iterator).apply(null, args);
+                }
+            });
+        }
+        wrapIterator(async.iterator(tasks))();
+    };
+
+    function _parallel(eachfn, tasks, callback) {
+        callback = callback || noop;
+        var results = _isArrayLike(tasks) ? [] : {};
+
+        eachfn(tasks, function (task, key, callback) {
+            task(_restParam(function (err, args) {
+                if (args.length <= 1) {
+                    args = args[0];
+                }
+                results[key] = args;
+                callback(err);
+            }));
+        }, function (err) {
+            callback(err, results);
+        });
+    }
+
+    async.parallel = function (tasks, callback) {
+        _parallel(async.eachOf, tasks, callback);
+    };
+
+    async.parallelLimit = function(tasks, limit, callback) {
+        _parallel(_eachOfLimit(limit), tasks, callback);
+    };
+
+    async.series = function(tasks, callback) {
+        _parallel(async.eachOfSeries, tasks, callback);
+    };
+
+    async.iterator = function (tasks) {
+        function makeCallback(index) {
+            function fn() {
+                if (tasks.length) {
+                    tasks[index].apply(null, arguments);
+                }
+                return fn.next();
+            }
+            fn.next = function () {
+                return (index < tasks.length - 1) ? makeCallback(index + 1): null;
+            };
+            return fn;
+        }
+        return makeCallback(0);
+    };
+
+    async.apply = _restParam(function (fn, args) {
+        return _restParam(function (callArgs) {
+            return fn.apply(
+                null, args.concat(callArgs)
+            );
+        });
+    });
+
+    function _concat(eachfn, arr, fn, callback) {
+        var result = [];
+        eachfn(arr, function (x, index, cb) {
+            fn(x, function (err, y) {
+                result = result.concat(y || []);
+                cb(err);
+            });
+        }, function (err) {
+            callback(err, result);
+        });
+    }
+    async.concat = doParallel(_concat);
+    async.concatSeries = doSeries(_concat);
+
+    async.whilst = function (test, iterator, callback) {
+        callback = callback || noop;
+        if (test()) {
+            var next = _restParam(function(err, args) {
+                if (err) {
+                    callback(err);
+                } else if (test.apply(this, args)) {
+                    iterator(next);
+                } else {
+                    callback.apply(null, [null].concat(args));
+                }
+            });
+            iterator(next);
+        } else {
+            callback(null);
+        }
+    };
+
+    async.doWhilst = function (iterator, test, callback) {
+        var calls = 0;
+        return async.whilst(function() {
+            return ++calls <= 1 || test.apply(this, arguments);
+        }, iterator, callback);
+    };
+
+    async.until = function (test, iterator, callback) {
+        return async.whilst(function() {
+            return !test.apply(this, arguments);
+        }, iterator, callback);
+    };
+
+    async.doUntil = function (iterator, test, callback) {
+        return async.doWhilst(iterator, function() {
+            return !test.apply(this, arguments);
+        }, callback);
+    };
+
+    async.during = function (test, iterator, callback) {
+        callback = callback || noop;
+
+        var next = _restParam(function(err, args) {
+            if (err) {
+                callback(err);
+            } else {
+                args.push(check);
+                test.apply(this, args);
+            }
+        });
+
+        var check = function(err, truth) {
+            if (err) {
+                callback(err);
+            } else if (truth) {
+                iterator(next);
+            } else {
+                callback(null);
+            }
+        };
+
+        test(check);
+    };
+
+    async.doDuring = function (iterator, test, callback) {
+        var calls = 0;
+        async.during(function(next) {
+            if (calls++ < 1) {
+                next(null, true);
+            } else {
+                test.apply(this, arguments);
+            }
+        }, iterator, callback);
+    };
+
+    function _queue(worker, concurrency, payload) {
+        if (concurrency == null) {
+            concurrency = 1;
+        }
+        else if(concurrency === 0) {
+            throw new Error('Concurrency must not be zero');
+        }
+        function _insert(q, data, pos, callback) {
+            if (callback != null && typeof callback !== "function") {
+                throw new Error("task callback must be a function");
+            }
+            q.started = true;
+            if (!_isArray(data)) {
+                data = [data];
+            }
+            if(data.length === 0 && q.idle()) {
+                // call drain immediately if there are no tasks
+                return async.setImmediate(function() {
+                    q.drain();
+                });
+            }
+            _arrayEach(data, function(task) {
+                var item = {
+                    data: task,
+                    callback: callback || noop
+                };
+
+                if (pos) {
+                    q.tasks.unshift(item);
+                } else {
+                    q.tasks.push(item);
+                }
+
+                if (q.tasks.length === q.concurrency) {
+                    q.saturated();
+                }
+            });
+            async.setImmediate(q.process);
+        }
+        function _next(q, tasks) {
+            return function(){
+                workers -= 1;
+
+                var removed = false;
+                var args = arguments;
+                _arrayEach(tasks, function (task) {
+                    _arrayEach(workersList, function (worker, index) {
+                        if (worker === task && !removed) {
+                            workersList.splice(index, 1);
+                            removed = true;
+                        }
+                    });
+
+                    task.callback.apply(task, args);
+                });
+                if (q.tasks.length + workers === 0) {
+                    q.drain();
+                }
+                q.process();
+            };
+        }
+
+        var workers = 0;
+        var workersList = [];
+        var q = {
+            tasks: [],
+            concurrency: concurrency,
+            payload: payload,
+            saturated: noop,
+            empty: noop,
+            drain: noop,
+            started: false,
+            paused: false,
+            push: function (data, callback) {
+                _insert(q, data, false, callback);
+            },
+            kill: function () {
+                q.drain = noop;
+                q.tasks = [];
+            },
+            unshift: function (data, callback) {
+                _insert(q, data, true, callback);
+            },
+            process: function () {
+                while(!q.paused && workers < q.concurrency && q.tasks.length){
+
+                    var tasks = q.payload ?
+                        q.tasks.splice(0, q.payload) :
+                        q.tasks.splice(0, q.tasks.length);
+
+                    var data = _map(tasks, function (task) {
+                        return task.data;
+                    });
+
+                    if (q.tasks.length === 0) {
+                        q.empty();
+                    }
+                    workers += 1;
+                    workersList.push(tasks[0]);
+                    var cb = only_once(_next(q, tasks));
+                    worker(data, cb);
+                }
+            },
+            length: function () {
+                return q.tasks.length;
+            },
+            running: function () {
+                return workers;
+            },
+            workersList: function () {
+                return workersList;
+            },
+            idle: function() {
+                return q.tasks.length + workers === 0;
+            },
+            pause: function () {
+                q.paused = true;
+            },
+            resume: function () {
+                if (q.paused === false) { return; }
+                q.paused = false;
+                var resumeCount = Math.min(q.concurrency, q.tasks.length);
+                // Need to call q.process once per concurrent
+                // worker to preserve full concurrency after pause
+                for (var w = 1; w <= resumeCount; w++) {
+                    async.setImmediate(q.process);
+                }
+            }
+        };
+        return q;
+    }
+
+    async.queue = function (worker, concurrency) {
+        var q = _queue(function (items, cb) {
+            worker(items[0], cb);
+        }, concurrency, 1);
+
+        return q;
+    };
+
+    async.priorityQueue = function (worker, concurrency) {
+
+        function _compareTasks(a, b){
+            return a.priority - b.priority;
+        }
+
+        function _binarySearch(sequence, item, compare) {
+            var beg = -1,
+                end = sequence.length - 1;
+            while (beg < end) {
+                var mid = beg + ((end - beg + 1) >>> 1);
+                if (compare(item, sequence[mid]) >= 0) {
+                    beg = mid;
+                } else {
+                    end = mid - 1;
+                }
+            }
+            return beg;
+        }
+
+        function _insert(q, data, priority, callback) {
+            if (callback != null && typeof callback !== "function") {
+                throw new Error("task callback must be a function");
+            }
+            q.started = true;
+            if (!_isArray(data)) {
+                data = [data];
+            }
+            if(data.length === 0) {
+                // call drain immediately if there are no tasks
+                return async.setImmediate(function() {
+                    q.drain();
+                });
+            }
+            _arrayEach(data, function(task) {
+                var item = {
+                    data: task,
+                    priority: priority,
+                    callback: typeof callback === 'function' ? callback : noop
+                };
+
+                q.tasks.splice(_binarySearch(q.tasks, item, _compareTasks) + 1, 0, item);
+
+                if (q.tasks.length === q.concurrency) {
+                    q.saturated();
+                }
+                async.setImmediate(q.process);
+            });
+        }
+
+        // Start with a normal queue
+        var q = async.queue(worker, concurrency);
+
+        // Override push to accept second parameter representing priority
+        q.push = function (data, priority, callback) {
+            _insert(q, data, priority, callback);
+        };
+
+        // Remove unshift function
+        delete q.unshift;
+
+        return q;
+    };
+
+    async.cargo = function (worker, payload) {
+        return _queue(worker, 1, payload);
+    };
+
+    function _console_fn(name) {
+        return _restParam(function (fn, args) {
+            fn.apply(null, args.concat([_restParam(function (err, args) {
+                if (typeof console === 'object') {
+                    if (err) {
+                        if (console.error) {
+                            console.error(err);
+                        }
+                    }
+                    else if (console[name]) {
+                        _arrayEach(args, function (x) {
+                            console[name](x);
+                        });
+                    }
+                }
+            })]));
+        });
+    }
+    async.log = _console_fn('log');
+    async.dir = _console_fn('dir');
+    /*async.info = _console_fn('info');
+    async.warn = _console_fn('warn');
+    async.error = _console_fn('error');*/
+
+    async.memoize = function (fn, hasher) {
+        var memo = {};
+        var queues = {};
+        hasher = hasher || identity;
+        var memoized = _restParam(function memoized(args) {
+            var callback = args.pop();
+            var key = hasher.apply(null, args);
+            if (key in memo) {
+                async.setImmediate(function () {
+                    callback.apply(null, memo[key]);
+                });
+            }
+            else if (key in queues) {
+                queues[key].push(callback);
+            }
+            else {
+                queues[key] = [callback];
+                fn.apply(null, args.concat([_restParam(function (args) {
+                    memo[key] = args;
+                    var q = queues[key];
+                    delete queues[key];
+                    for (var i = 0, l = q.length; i < l; i++) {
+                        q[i].apply(null, args);
+                    }
+                })]));
+            }
+        });
+        memoized.memo = memo;
+        memoized.unmemoized = fn;
+        return memoized;
+    };
+
+    async.unmemoize = function (fn) {
+        return function () {
+            return (fn.unmemoized || fn).apply(null, arguments);
+        };
+    };
+
+    function _times(mapper) {
+        return function (count, iterator, callback) {
+            mapper(_range(count), iterator, callback);
+        };
+    }
+
+    async.times = _times(async.map);
+    async.timesSeries = _times(async.mapSeries);
+    async.timesLimit = function (count, limit, iterator, callback) {
+        return async.mapLimit(_range(count), limit, iterator, callback);
+    };
+
+    async.seq = function (/* functions... */) {
+        var fns = arguments;
+        return _restParam(function (args) {
+            var that = this;
+
+            var callback = args[args.length - 1];
+            if (typeof callback == 'function') {
+                args.pop();
+            } else {
+                callback = noop;
+            }
+
+            async.reduce(fns, args, function (newargs, fn, cb) {
+                fn.apply(that, newargs.concat([_restParam(function (err, nextargs) {
+                    cb(err, nextargs);
+                })]));
+            },
+            function (err, results) {
+                callback.apply(that, [err].concat(results));
+            });
+        });
+    };
+
+    async.compose = function (/* functions... */) {
+        return async.seq.apply(null, Array.prototype.reverse.call(arguments));
+    };
+
+
+    function _applyEach(eachfn) {
+        return _restParam(function(fns, args) {
+            var go = _restParam(function(args) {
+                var that = this;
+                var callback = args.pop();
+                return eachfn(fns, function (fn, _, cb) {
+                    fn.apply(that, args.concat([cb]));
+                },
+                callback);
+            });
+            if (args.length) {
+                return go.apply(this, args);
+            }
+            else {
+                return go;
+            }
+        });
+    }
+
+    async.applyEach = _applyEach(async.eachOf);
+    async.applyEachSeries = _applyEach(async.eachOfSeries);
+
+
+    async.forever = function (fn, callback) {
+        var done = only_once(callback || noop);
+        var task = ensureAsync(fn);
+        function next(err) {
+            if (err) {
+                return done(err);
+            }
+            task(next);
+        }
+        next();
+    };
+
+    function ensureAsync(fn) {
+        return _restParam(function (args) {
+            var callback = args.pop();
+            args.push(function () {
+                var innerArgs = arguments;
+                if (sync) {
+                    async.setImmediate(function () {
+                        callback.apply(null, innerArgs);
+                    });
+                } else {
+                    callback.apply(null, innerArgs);
+                }
+            });
+            var sync = true;
+            fn.apply(this, args);
+            sync = false;
+        });
+    }
+
+    async.ensureAsync = ensureAsync;
+
+    async.constant = _restParam(function(values) {
+        var args = [null].concat(values);
+        return function (callback) {
+            return callback.apply(this, args);
+        };
+    });
+
+    async.wrapSync =
+    async.asyncify = function asyncify(func) {
+        return _restParam(function (args) {
+            var callback = args.pop();
+            var result;
+            try {
+                result = func.apply(this, args);
+            } catch (e) {
+                return callback(e);
+            }
+            // if result is Promise object
+            if (_isObject(result) && typeof result.then === "function") {
+                result.then(function(value) {
+                    callback(null, value);
+                })["catch"](function(err) {
+                    callback(err.message ? err : new Error(err));
+                });
+            } else {
+                callback(null, result);
+            }
+        });
+    };
+
+    // Node.js
+    if (typeof module === 'object' && module.exports) {
+        module.exports = async;
+    }
+    // AMD / RequireJS
+    else if (typeof define === 'function' && define.amd) {
+        define([], function () {
+            return async;
+        });
+    }
+    // included directly via <script> tag
+    else {
+        root.async = async;
+    }
+
+}());
+
+}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"_process":14}],17:[function(require,module,exports){
 (function (Buffer){
 /**
  * Ethereum contract ABI data serialization.
@@ -6893,7 +8123,7 @@ module.exports = {
 };
 
 }).call(this,require("buffer").Buffer)
-},{"bignumber.js":22,"buffer":10,"js-sha3":17}],17:[function(require,module,exports){
+},{"bignumber.js":19,"buffer":10,"js-sha3":18}],18:[function(require,module,exports){
 (function (global){
 /*
  * js-sha3 v0.3.1
@@ -7329,25 +8559,17 @@ module.exports = {
 }(this));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],18:[function(require,module,exports){
-arguments[4][4][0].apply(exports,arguments)
-},{"dup":4}],19:[function(require,module,exports){
-arguments[4][5][0].apply(exports,arguments)
-},{"dup":5}],20:[function(require,module,exports){
-arguments[4][6][0].apply(exports,arguments)
-},{"./contracts":18,"./errors":19,"./tx":21,"dup":6}],21:[function(require,module,exports){
-arguments[4][7][0].apply(exports,arguments)
-},{"./contracts":18,"dup":7}],22:[function(require,module,exports){
-/*! bignumber.js v2.3.0 https://github.com/MikeMcl/bignumber.js/LICENCE */
+},{}],19:[function(require,module,exports){
+/*! bignumber.js v2.1.3 https://github.com/MikeMcl/bignumber.js/LICENCE */
 
 ;(function (globalObj) {
     'use strict';
 
     /*
-      bignumber.js v2.3.0
+      bignumber.js v2.1.3
       A JavaScript library for arbitrary-precision arithmetic.
       https://github.com/MikeMcl/bignumber.js
-      Copyright (c) 2016 Michael Mclaughlin <M8ch88l@gmail.com>
+      Copyright (c) 2015 Michael Mclaughlin <M8ch88l@gmail.com>
       MIT Expat Licence
     */
 
@@ -7600,9 +8822,7 @@ arguments[4][7][0].apply(exports,arguments)
 
                 // Disallow numbers with over 15 significant digits if number type.
                 // 'new BigNumber() number type has more than 15 significant digits: {n}'
-                if ( num && ERRORS && len > 15 && ( n > MAX_SAFE_INTEGER || n !== mathfloor(n) ) ) {
-                    raise( id, tooManyDigits, x.s * n );
-                }
+                if ( num && ERRORS && len > 15 ) raise( id, tooManyDigits, x.s * n );
 
                 e = e - i - 1;
 
@@ -9703,85 +10923,50 @@ arguments[4][7][0].apply(exports,arguments)
 
         /*
          * Return a BigNumber whose value is the value of this BigNumber raised to the power n.
-         * If m is present, return the result modulo m.
          * If n is negative round according to DECIMAL_PLACES and ROUNDING_MODE.
-         * If POW_PRECISION is non-zero and m is not present, round to POW_PRECISION using
-         * ROUNDING_MODE.
+         * If POW_PRECISION is not 0, round to POW_PRECISION using ROUNDING_MODE.
          *
-         * The modular power operation works efficiently when x, n, and m are positive integers,
-         * otherwise it is equivalent to calculating x.toPower(n).modulo(m) (with POW_PRECISION 0).
-         *
-         * n {number} Integer, -MAX_SAFE_INTEGER to MAX_SAFE_INTEGER inclusive.
-         * [m] {number|string|BigNumber} The modulus.
+         * n {number} Integer, -9007199254740992 to 9007199254740992 inclusive.
+         * (Performs 54 loop iterations for n of 9007199254740992.)
          *
          * 'pow() exponent not an integer: {n}'
          * 'pow() exponent out of range: {n}'
-         *
-         * Performs 54 loop iterations for n of 9007199254740991.
          */
-        P.toPower = P.pow = function ( n, m ) {
-            var k, y, z,
+        P.toPower = P.pow = function (n) {
+            var k, y,
                 i = mathfloor( n < 0 ? -n : +n ),
                 x = this;
-
-            if ( m != null ) {
-                id = 23;
-                m = new BigNumber(m);
-            }
 
             // Pass ±Infinity to Math.pow if exponent is out of range.
             if ( !isValidInt( n, -MAX_SAFE_INTEGER, MAX_SAFE_INTEGER, 23, 'exponent' ) &&
               ( !isFinite(n) || i > MAX_SAFE_INTEGER && ( n /= 0 ) ||
-                parseFloat(n) != n && !( n = NaN ) ) || n == 0 ) {
-                k = Math.pow( +x, n );
-                return new BigNumber( m ? k % m : k );
+                parseFloat(n) != n && !( n = NaN ) ) ) {
+                return new BigNumber( Math.pow( +x, n ) );
             }
 
-            if (m) {
-                if ( n > 1 && x.gt(ONE) && x.isInt() && m.gt(ONE) && m.isInt() ) {
-                    x = x.mod(m);
-                } else {
-                    z = m;
-
-                    // Nullify m so only a single mod operation is performed at the end.
-                    m = null;
-                }
-            } else if (POW_PRECISION) {
-
-                // Truncating each coefficient array to a length of k after each multiplication
-                // equates to truncating significant digits to POW_PRECISION + [28, 41],
-                // i.e. there will be a minimum of 28 guard digits retained.
-                // (Using + 1.5 would give [9, 21] guard digits.)
-                k = mathceil( POW_PRECISION / LOG_BASE + 2 );
-            }
-
+            // Truncating each coefficient array to a length of k after each multiplication equates
+            // to truncating significant digits to POW_PRECISION + [28, 41], i.e. there will be a
+            // minimum of 28 guard digits retained. (Using + 1.5 would give [9, 21] guard digits.)
+            k = POW_PRECISION ? mathceil( POW_PRECISION / LOG_BASE + 2 ) : 0;
             y = new BigNumber(ONE);
 
             for ( ; ; ) {
+
                 if ( i % 2 ) {
                     y = y.times(x);
                     if ( !y.c ) break;
-                    if (k) {
-                        if ( y.c.length > k ) y.c.length = k;
-                    } else if (m) {
-                        y = y.mod(m);
-                    }
+                    if ( k && y.c.length > k ) y.c.length = k;
                 }
 
                 i = mathfloor( i / 2 );
                 if ( !i ) break;
+
                 x = x.times(x);
-                if (k) {
-                    if ( x.c && x.c.length > k ) x.c.length = k;
-                } else if (m) {
-                    x = x.mod(m);
-                }
+                if ( k && x.c && x.c.length > k ) x.c.length = k;
             }
 
-            if (m) return y;
             if ( n < 0 ) y = ONE.div(y);
-
-            return z ? y.mod(z) : k ? round( y, POW_PRECISION, ROUNDING_MODE ) : y;
+            return k ? round( y, POW_PRECISION, ROUNDING_MODE ) : y;
         };
 
 
@@ -10072,7 +11257,7 @@ arguments[4][7][0].apply(exports,arguments)
     }
 })(this);
 
-},{}],23:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 // Browser Request
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -10568,4 +11753,481 @@ function b64_enc (data) {
 }));
 //UMD FOOTER END
 
-},{}]},{},[1]);
+},{}],21:[function(require,module,exports){
+(function (global){
+/*
+ * js-sha3 v0.5.1
+ * https://github.com/emn178/js-sha3
+ *
+ * Copyright 2015, emn178@gmail.com
+ *
+ * Licensed under the MIT license:
+ * http://www.opensource.org/licenses/MIT
+ */
+;(function(root, undefined) {
+  'use strict';
+
+  var NODE_JS = typeof(module) != 'undefined';
+  if(NODE_JS) {
+    root = global;
+    if(root.JS_SHA3_TEST) {
+      root.navigator = { userAgent: 'Chrome'};
+    }
+  }
+  var HEX_CHARS = '0123456789abcdef'.split('');
+  var SHAKE_PADDING = [31, 7936, 2031616, 520093696];
+  var KECCAK_PADDING = [1, 256, 65536, 16777216];
+  var PADDING = [6, 1536, 393216, 100663296];
+  var SHIFT = [0, 8, 16, 24];
+  var RC = [1, 0, 32898, 0, 32906, 2147483648, 2147516416, 2147483648, 32907, 0, 2147483649,
+            0, 2147516545, 2147483648, 32777, 2147483648, 138, 0, 136, 0, 2147516425, 0, 
+            2147483658, 0, 2147516555, 0, 139, 2147483648, 32905, 2147483648, 32771, 
+            2147483648, 32770, 2147483648, 128, 2147483648, 32778, 0, 2147483658, 2147483648,
+            2147516545, 2147483648, 32896, 2147483648, 2147483649, 0, 2147516424, 2147483648];
+  var BITS = [224, 256, 384, 512];
+  var SHAKE_BITS = [128, 256];
+  var OUTPUT_TYPES = ['hex', 'buffer', 'array'];
+
+  var createOutputMethod = function(bits, padding, outputType) {
+    return function(message) {
+      return new Keccak(bits, padding, bits).update(message)[outputType]();
+    }
+  };
+
+  var createShakeOutputMethod = function(bits, padding, outputType) {
+    return function(message, outputBits) {
+      return new Keccak(bits, padding, outputBits).update(message)[outputType]();
+    }
+  };
+
+  var createMethod = function(bits, padding) {
+    var method = createOutputMethod(bits, padding, 'hex');
+    method.create = function() {
+      return new Keccak(bits, padding, bits);
+    };
+    method.update = function(message) {
+      return method.create().update(message);
+    };
+    for(var i = 0;i < OUTPUT_TYPES.length;++i) {
+      var type = OUTPUT_TYPES[i];
+      method[type] = createOutputMethod(bits, padding, type);
+    }
+    return method;
+  };
+
+  var createShakeMethod = function(bits, padding) {
+    var method = createShakeOutputMethod(bits, padding, 'hex');
+    method.create = function(outputBits) {
+      return new Keccak(bits, padding, outputBits);
+    };
+    method.update = function(message, outputBits) {
+      return method.create(outputBits).update(message);
+    };
+    for(var i = 0;i < OUTPUT_TYPES.length;++i) {
+      var type = OUTPUT_TYPES[i];
+      method[type] = createShakeOutputMethod(bits, padding, type);
+    }
+    return method;
+  };
+
+  var algorithms = [
+    {name: 'keccak', padding: KECCAK_PADDING, bits: BITS, createMethod: createMethod},
+    {name: 'sha3', padding: PADDING, bits: BITS, createMethod: createMethod},
+    {name: 'shake', padding: SHAKE_PADDING, bits: SHAKE_BITS, createMethod: createShakeMethod}
+  ];
+
+  var methods = {};
+
+  for(var i = 0;i < algorithms.length;++i) {
+    var algorithm = algorithms[i];
+    var bits  = algorithm.bits;
+    var createMethod = algorithm.createMethod;
+    for(var j = 0;j < bits.length;++j) {
+      var method = algorithm.createMethod(bits[j], algorithm.padding);
+      methods[algorithm.name +'_' + bits[j]] = method;
+    }
+  }
+
+  function Keccak(bits, padding, outputBits) {
+    this.blocks = [];
+    this.s = [];
+    this.padding = padding;
+    this.outputBits = outputBits;
+    this.reset = true;
+    this.block = 0;
+    this.start = 0;
+    this.blockCount = (1600 - (bits << 1)) >> 5;
+    this.byteCount = this.blockCount << 2;
+    this.outputBlocks = outputBits >> 5;
+    this.extraBytes = (outputBits & 31) >> 3;
+
+    for(var i = 0;i < 50;++i) {
+      this.s[i] = 0;
+    }
+  };
+
+  Keccak.prototype.update = function(message) {
+    var notString = typeof(message) != 'string';
+    if(notString && message.constructor == root.ArrayBuffer) {
+      message = new Uint8Array(message);
+    }
+    var length = message.length, blocks = this.blocks, byteCount = this.byteCount, 
+        blockCount = this.blockCount, index = 0, s = this.s, i, code;
+    
+    while(index < length) {
+      if(this.reset) {
+        this.reset = false;
+        blocks[0] = this.block;
+        for(i = 1;i < blockCount + 1;++i) {
+          blocks[i] = 0;
+        }
+      }
+      if(notString) {
+        for (i = this.start;index < length && i < byteCount; ++index) {
+          blocks[i >> 2] |= message[index] << SHIFT[i++ & 3];
+        }
+      } else {
+        for (i = this.start;index < length && i < byteCount; ++index) {
+          code = message.charCodeAt(index);
+          if (code < 0x80) {
+            blocks[i >> 2] |= code << SHIFT[i++ & 3];
+          } else if (code < 0x800) {
+            blocks[i >> 2] |= (0xc0 | (code >> 6)) << SHIFT[i++ & 3];
+            blocks[i >> 2] |= (0x80 | (code & 0x3f)) << SHIFT[i++ & 3];
+          } else if (code < 0xd800 || code >= 0xe000) {
+            blocks[i >> 2] |= (0xe0 | (code >> 12)) << SHIFT[i++ & 3];
+            blocks[i >> 2] |= (0x80 | ((code >> 6) & 0x3f)) << SHIFT[i++ & 3];
+            blocks[i >> 2] |= (0x80 | (code & 0x3f)) << SHIFT[i++ & 3];
+          } else {
+            code = 0x10000 + (((code & 0x3ff) << 10) | (message.charCodeAt(++index) & 0x3ff));
+            blocks[i >> 2] |= (0xf0 | (code >> 18)) << SHIFT[i++ & 3];
+            blocks[i >> 2] |= (0x80 | ((code >> 12) & 0x3f)) << SHIFT[i++ & 3];
+            blocks[i >> 2] |= (0x80 | ((code >> 6) & 0x3f)) << SHIFT[i++ & 3];
+            blocks[i >> 2] |= (0x80 | (code & 0x3f)) << SHIFT[i++ & 3];
+          }
+        }
+      }
+      this.lastByteIndex = i;
+      if(i >= byteCount) {
+        this.start = i - byteCount;
+        this.block = blocks[blockCount];
+        for(i = 0;i < blockCount;++i) {
+          s[i] ^= blocks[i];
+        }
+        f(s);
+        this.reset = true;
+      } else {
+        this.start = i;
+      }
+    }
+    return this;
+  };
+
+  Keccak.prototype.finalize = function() {
+    var blocks = this.blocks, i = this.lastByteIndex, blockCount = this.blockCount, s = this.s;
+    blocks[i >> 2] |= this.padding[i & 3];
+    if(this.lastByteIndex == this.byteCount) {
+      blocks[0] = blocks[blockCount];
+      for(i = 1;i < blockCount + 1;++i) {
+        blocks[i] = 0;
+      }
+    }
+    blocks[blockCount - 1] |= 0x80000000;
+    for(i = 0;i < blockCount;++i) {
+      s[i] ^= blocks[i];
+    }
+    f(s);
+  };
+
+  Keccak.prototype.toString = Keccak.prototype.hex = function() {
+    this.finalize();
+
+    var blockCount = this.blockCount, s = this.s, outputBlocks = this.outputBlocks, 
+        extraBytes = this.extraBytes, i = 0, j = 0;
+    var hex = '', block;
+    while(j < outputBlocks) {
+      for(i = 0;i < blockCount && j < outputBlocks;++i, ++j) {
+        block = s[i];
+        hex += HEX_CHARS[(block >> 4) & 0x0F] + HEX_CHARS[block & 0x0F] +
+               HEX_CHARS[(block >> 12) & 0x0F] + HEX_CHARS[(block >> 8) & 0x0F] +
+               HEX_CHARS[(block >> 20) & 0x0F] + HEX_CHARS[(block >> 16) & 0x0F] +
+               HEX_CHARS[(block >> 28) & 0x0F] + HEX_CHARS[(block >> 24) & 0x0F];
+      }
+      if(j % blockCount == 0) {
+        f(s);
+      }
+    }
+    if(extraBytes) {
+      block = s[i];
+      if(extraBytes > 0) {
+        hex += HEX_CHARS[(block >> 4) & 0x0F] + HEX_CHARS[block & 0x0F];
+      }
+      if(extraBytes > 1) {
+        hex += HEX_CHARS[(block >> 12) & 0x0F] + HEX_CHARS[(block >> 8) & 0x0F];
+      }
+      if(extraBytes > 2) {
+        hex += HEX_CHARS[(block >> 20) & 0x0F] + HEX_CHARS[(block >> 16) & 0x0F];
+      }
+    }
+    return hex;
+  };
+
+  Keccak.prototype.buffer = function() {
+    this.finalize();
+
+    var blockCount = this.blockCount, s = this.s, outputBlocks = this.outputBlocks, 
+        extraBytes = this.extraBytes, i = 0, j = 0;
+    var bytes = this.outputBits >> 3;
+    var buffer;
+    if(extraBytes) {
+      buffer = new ArrayBuffer((outputBlocks + 1) << 2);
+    } else {
+      buffer = new ArrayBuffer(bytes);
+    }
+    var array = new Uint32Array(buffer);
+    while(j < outputBlocks) {
+      for(i = 0;i < blockCount && j < outputBlocks;++i, ++j) {
+        array[j] = s[i];
+      }
+      if(j % blockCount == 0) {
+        f(s);
+      }
+    }
+    if(extraBytes) {
+      array[i] = s[i];
+      buffer = buffer.slice(0, bytes);
+    }
+    return buffer;
+  };
+
+  Keccak.prototype.digest = Keccak.prototype.array = function() {
+    this.finalize();
+
+    var blockCount = this.blockCount, s = this.s, outputBlocks = this.outputBlocks, 
+        extraBytes = this.extraBytes, i = 0, j = 0;
+    var array = [], offset, block;
+    while(j < outputBlocks) {
+      for(i = 0;i < blockCount && j < outputBlocks;++i, ++j) {
+        offset = j << 2;
+        block = s[i];
+        array[offset] = block & 0xFF;
+        array[offset + 1] = (block >> 8) & 0xFF;
+        array[offset + 2] = (block >> 16) & 0xFF;
+        array[offset + 3] = (block >> 24) & 0xFF;
+      }
+      if(j % blockCount == 0) {
+        f(s);
+      }
+    }
+    if(extraBytes) {
+      offset = j << 2;
+      block = s[i];
+      if(extraBytes > 0) {
+        array[offset] = block & 0xFF;
+      }
+      if(extraBytes > 1) {
+        array[offset + 1] = (block >> 8) & 0xFF;
+      }
+      if(extraBytes > 2) {
+        array[offset + 2] = (block >> 16) & 0xFF;
+      }
+    }
+    return array;
+  };
+
+  var f = function(s) {
+    var h, l, n, c0, c1, c2, c3, c4, c5, c6, c7, c8, c9, 
+        b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15, b16, b17, 
+        b18, b19, b20, b21, b22, b23, b24, b25, b26, b27, b28, b29, b30, b31, b32, b33, 
+        b34, b35, b36, b37, b38, b39, b40, b41, b42, b43, b44, b45, b46, b47, b48, b49;
+    for(n = 0; n < 48; n += 2) {
+      c0 = s[0] ^ s[10] ^ s[20] ^ s[30] ^ s[40];
+      c1 = s[1] ^ s[11] ^ s[21] ^ s[31] ^ s[41];
+      c2 = s[2] ^ s[12] ^ s[22] ^ s[32] ^ s[42];
+      c3 = s[3] ^ s[13] ^ s[23] ^ s[33] ^ s[43];
+      c4 = s[4] ^ s[14] ^ s[24] ^ s[34] ^ s[44];
+      c5 = s[5] ^ s[15] ^ s[25] ^ s[35] ^ s[45];
+      c6 = s[6] ^ s[16] ^ s[26] ^ s[36] ^ s[46];
+      c7 = s[7] ^ s[17] ^ s[27] ^ s[37] ^ s[47];
+      c8 = s[8] ^ s[18] ^ s[28] ^ s[38] ^ s[48];
+      c9 = s[9] ^ s[19] ^ s[29] ^ s[39] ^ s[49];
+
+      h = c8 ^ ((c2 << 1) | (c3 >>> 31));
+      l = c9 ^ ((c3 << 1) | (c2 >>> 31));
+      s[0] ^= h;
+      s[1] ^= l;
+      s[10] ^= h;
+      s[11] ^= l;
+      s[20] ^= h;
+      s[21] ^= l;
+      s[30] ^= h;
+      s[31] ^= l;
+      s[40] ^= h;
+      s[41] ^= l;
+      h = c0 ^ ((c4 << 1) | (c5 >>> 31));
+      l = c1 ^ ((c5 << 1) | (c4 >>> 31));
+      s[2] ^= h;
+      s[3] ^= l;
+      s[12] ^= h;
+      s[13] ^= l;
+      s[22] ^= h;
+      s[23] ^= l;
+      s[32] ^= h;
+      s[33] ^= l;
+      s[42] ^= h;
+      s[43] ^= l;
+      h = c2 ^ ((c6 << 1) | (c7 >>> 31));
+      l = c3 ^ ((c7 << 1) | (c6 >>> 31));
+      s[4] ^= h;
+      s[5] ^= l;
+      s[14] ^= h;
+      s[15] ^= l;
+      s[24] ^= h;
+      s[25] ^= l;
+      s[34] ^= h;
+      s[35] ^= l;
+      s[44] ^= h;
+      s[45] ^= l;
+      h = c4 ^ ((c8 << 1) | (c9 >>> 31));
+      l = c5 ^ ((c9 << 1) | (c8 >>> 31));
+      s[6] ^= h;
+      s[7] ^= l;
+      s[16] ^= h;
+      s[17] ^= l;
+      s[26] ^= h;
+      s[27] ^= l;
+      s[36] ^= h;
+      s[37] ^= l;
+      s[46] ^= h;
+      s[47] ^= l;
+      h = c6 ^ ((c0 << 1) | (c1 >>> 31));
+      l = c7 ^ ((c1 << 1) | (c0 >>> 31));
+      s[8] ^= h;
+      s[9] ^= l;
+      s[18] ^= h;
+      s[19] ^= l;
+      s[28] ^= h;
+      s[29] ^= l;
+      s[38] ^= h;
+      s[39] ^= l;
+      s[48] ^= h;
+      s[49] ^= l;
+
+      b0 = s[0];
+      b1 = s[1];
+      b32 = (s[11] << 4) | (s[10] >>> 28);
+      b33 = (s[10] << 4) | (s[11] >>> 28);
+      b14 = (s[20] << 3) | (s[21] >>> 29);
+      b15 = (s[21] << 3) | (s[20] >>> 29);
+      b46 = (s[31] << 9) | (s[30] >>> 23);
+      b47 = (s[30] << 9) | (s[31] >>> 23);
+      b28 = (s[40] << 18) | (s[41] >>> 14);
+      b29 = (s[41] << 18) | (s[40] >>> 14);
+      b20 = (s[2] << 1) | (s[3] >>> 31);
+      b21 = (s[3] << 1) | (s[2] >>> 31);
+      b2 = (s[13] << 12) | (s[12] >>> 20);
+      b3 = (s[12] << 12) | (s[13] >>> 20);
+      b34 = (s[22] << 10) | (s[23] >>> 22);
+      b35 = (s[23] << 10) | (s[22] >>> 22);
+      b16 = (s[33] << 13) | (s[32] >>> 19);
+      b17 = (s[32] << 13) | (s[33] >>> 19);
+      b48 = (s[42] << 2) | (s[43] >>> 30);
+      b49 = (s[43] << 2) | (s[42] >>> 30);
+      b40 = (s[5] << 30) | (s[4] >>> 2);
+      b41 = (s[4] << 30) | (s[5] >>> 2);
+      b22 = (s[14] << 6) | (s[15] >>> 26);
+      b23 = (s[15] << 6) | (s[14] >>> 26);
+      b4 = (s[25] << 11) | (s[24] >>> 21);
+      b5 = (s[24] << 11) | (s[25] >>> 21);
+      b36 = (s[34] << 15) | (s[35] >>> 17);
+      b37 = (s[35] << 15) | (s[34] >>> 17);
+      b18 = (s[45] << 29) | (s[44] >>> 3);
+      b19 = (s[44] << 29) | (s[45] >>> 3);
+      b10 = (s[6] << 28) | (s[7] >>> 4);
+      b11 = (s[7] << 28) | (s[6] >>> 4);
+      b42 = (s[17] << 23) | (s[16] >>> 9);
+      b43 = (s[16] << 23) | (s[17] >>> 9);
+      b24 = (s[26] << 25) | (s[27] >>> 7);
+      b25 = (s[27] << 25) | (s[26] >>> 7);
+      b6 = (s[36] << 21) | (s[37] >>> 11);
+      b7 = (s[37] << 21) | (s[36] >>> 11);
+      b38 = (s[47] << 24) | (s[46] >>> 8);
+      b39 = (s[46] << 24) | (s[47] >>> 8);
+      b30 = (s[8] << 27) | (s[9] >>> 5);
+      b31 = (s[9] << 27) | (s[8] >>> 5);
+      b12 = (s[18] << 20) | (s[19] >>> 12);
+      b13 = (s[19] << 20) | (s[18] >>> 12);
+      b44 = (s[29] << 7) | (s[28] >>> 25);
+      b45 = (s[28] << 7) | (s[29] >>> 25);
+      b26 = (s[38] << 8) | (s[39] >>> 24);
+      b27 = (s[39] << 8) | (s[38] >>> 24);
+      b8 = (s[48] << 14) | (s[49] >>> 18);
+      b9 = (s[49] << 14) | (s[48] >>> 18);
+
+      s[0] = b0 ^ (~b2 & b4);
+      s[1] = b1 ^ (~b3 & b5);
+      s[10] = b10 ^ (~b12 & b14);
+      s[11] = b11 ^ (~b13 & b15);
+      s[20] = b20 ^ (~b22 & b24);
+      s[21] = b21 ^ (~b23 & b25);
+      s[30] = b30 ^ (~b32 & b34);
+      s[31] = b31 ^ (~b33 & b35);
+      s[40] = b40 ^ (~b42 & b44);
+      s[41] = b41 ^ (~b43 & b45);
+      s[2] = b2 ^ (~b4 & b6);
+      s[3] = b3 ^ (~b5 & b7);
+      s[12] = b12 ^ (~b14 & b16);
+      s[13] = b13 ^ (~b15 & b17);
+      s[22] = b22 ^ (~b24 & b26);
+      s[23] = b23 ^ (~b25 & b27);
+      s[32] = b32 ^ (~b34 & b36);
+      s[33] = b33 ^ (~b35 & b37);
+      s[42] = b42 ^ (~b44 & b46);
+      s[43] = b43 ^ (~b45 & b47);
+      s[4] = b4 ^ (~b6 & b8);
+      s[5] = b5 ^ (~b7 & b9);
+      s[14] = b14 ^ (~b16 & b18);
+      s[15] = b15 ^ (~b17 & b19);
+      s[24] = b24 ^ (~b26 & b28);
+      s[25] = b25 ^ (~b27 & b29);
+      s[34] = b34 ^ (~b36 & b38);
+      s[35] = b35 ^ (~b37 & b39);
+      s[44] = b44 ^ (~b46 & b48);
+      s[45] = b45 ^ (~b47 & b49);
+      s[6] = b6 ^ (~b8 & b0);
+      s[7] = b7 ^ (~b9 & b1);
+      s[16] = b16 ^ (~b18 & b10);
+      s[17] = b17 ^ (~b19 & b11);
+      s[26] = b26 ^ (~b28 & b20);
+      s[27] = b27 ^ (~b29 & b21);
+      s[36] = b36 ^ (~b38 & b30);
+      s[37] = b37 ^ (~b39 & b31);
+      s[46] = b46 ^ (~b48 & b40);
+      s[47] = b47 ^ (~b49 & b41);
+      s[8] = b8 ^ (~b0 & b2);
+      s[9] = b9 ^ (~b1 & b3);
+      s[18] = b18 ^ (~b10 & b12);
+      s[19] = b19 ^ (~b11 & b13);
+      s[28] = b28 ^ (~b20 & b22);
+      s[29] = b29 ^ (~b21 & b23);
+      s[38] = b38 ^ (~b30 & b32);
+      s[39] = b39 ^ (~b31 & b33);
+      s[48] = b48 ^ (~b40 & b42);
+      s[49] = b49 ^ (~b41 & b43);
+
+      s[0] ^= RC[n];
+      s[1] ^= RC[n + 1];
+    }
+  }
+
+  if(!root.JS_SHA3_TEST && NODE_JS) {
+    module.exports = methods;
+  } else if(root) {
+    for(var key in methods) {
+      root[key] = methods[key];
+    }
+  }
+}(this));
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}]},{},[5]);

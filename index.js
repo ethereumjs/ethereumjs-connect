@@ -87,7 +87,7 @@ module.exports = {
                 });
             } else {
                 var key, method;
-                this.network_id = this.rpc.version() || "7";
+                this.network_id = this.rpc.version() || "2";
                 // console.log("[sync] network ID:", this.network_id);
                 this.tx = new contracts.Tx(this.network_id);
                 this.contracts = clone(contracts[this.network_id]);
