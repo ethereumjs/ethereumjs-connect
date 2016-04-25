@@ -8,7 +8,7 @@
 var async = require("async");
 var rpc = require("ethrpc");
 var contracts = require("augur-contracts");
-var network_id = "7";
+var network_id = "2";
 
 function is_function(f) {
     return Object.prototype.toString.call(f) === "[object Function]";

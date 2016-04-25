@@ -15,6 +15,7 @@ module.exports={
         "eventResolution": "0x2fac411c69994858409c24ed2a5567da29c61bca",
         "faucets": "0x895d32f2db7d01ebb50053f9e48aacf26584fe40",
         "makeReports": "0x79a406da9ea815fd8cbe75ba8a4cb6d493dbf9b4",
+        "metadata": "0x5cf043ea28e287e818e15181485b3d5d61474126",
         "orderBook": "0xc8bdc68526a959fcb932b57063c97b1fc6176709",
         "ramble": "0x42a77acc59bb566aa670d6e7639b99efa235e6f7",
         "sendReputation": "0x6b969e428c58d81429ef13240c0ecb3529aa91bb",
@@ -43,6 +44,7 @@ module.exports={
         "eventResolution": "0xd399af9820be7ddda37c7d85e701bf8ee2337739",
         "faucets": "0x94bab6be74df76e996b20329dff2ec39d3013dc3",
         "makeReports": "0x0b7c36b76208e2c968b04dce0658c03c27bfdc00",
+        "metadata": "0x5cf043ea28e287e818e15181485b3d5d61474126",
         "orderBook": "0xf86bbf277ae88a8b50ae90d97e1aafb1390e2984",
         "ramble": "0x2258a25e503b19dc3d2c2fdc9ca57a1d5985e30c",
         "sendReputation": "0x7e049a60e0106d263ffd0a60bcfbf4f63dd1f2a4",
@@ -71,6 +73,7 @@ module.exports={
         "eventResolution": "0x60cb05deb51f92ee25ce99f67181ecaeb0b743ea",
         "faucets": "0x5f67ab9ff79be97b27ac8f26ef9f4b429b82e2df",
         "makeReports": "0x8caf2c0ce7cdc2e81b58f74322cefdef440b3f8d",
+        "metadata": "0x5cf043ea28e287e818e15181485b3d5d61474126",
         "orderBook": "0x8a4e2993a9972ee035453bb5674816fc3a698718",
         "ramble": "0xa34c9f6fc047cea795f69b34a063d32e6cb6288c",
         "sendReputation": "0x6c4c9fa11d6d8ed2c7a08ddcf4d4654c85194f68",
@@ -587,6 +590,21 @@ module.exports = function (network) {
 
     return {
 
+        // metadata.se
+        setMetadata: {
+            to: contracts.metadata,
+            method: "setMetadata",
+            signature: "iiiiss",
+            returns: "number",
+            send: true
+        },
+        getMetadata: {
+            to: contracts.metadata,
+            method: "getMetadata",
+            signature: "i",
+            returns: "hash[]"
+        },
+
         // faucets.se
         reputationFaucet: {
             to: contracts.faucets,
@@ -705,18 +723,6 @@ module.exports = function (network) {
             signature: "isii",
             returns: "number",
             send: true
-        },
-
-        // redeem_interpolate.se
-        redeem_interpolate: {
-            to: contracts.redeem_interpolate,
-            method: "interpolate",
-            signature: "iiiii"
-        },
-        read_ballots: {
-            to: contracts.redeem_interpolate,
-            method: "read_ballots",
-            signature: "iiiii"
         },
 
         // branches.se
@@ -1181,11 +1187,6 @@ module.exports = function (network) {
             signature: "i",
             returns: "unfix"
         },
-        hashReport: {
-            to: contracts.reporting,
-            method: "hashReport",
-            signature: "ai"
-        },
 
         // buy&sellShares.se
         commitTrade: {
@@ -1388,7 +1389,7 @@ global.connector = connector;
 var async = require("async");
 var rpc = require("ethrpc");
 var contracts = require("augur-contracts");
-var network_id = "7";
+var network_id = "2";
 
 function is_function(f) {
     return Object.prototype.toString.call(f) === "[object Function]";
@@ -4893,9 +4894,8 @@ function isFunction(f) {
 }
 
 var HOSTED_NODES = [
-    "https://eth3.augur.net",
-    "https://eth4.augur.net",
-    "https://eth5.augur.net"
+    // "https://morden-state.ether.camp/api/v1/transaction/submit"
+    "https://eth3.augur.net"
 ];
 
 module.exports = {
@@ -4904,15 +4904,8 @@ module.exports = {
         tx: false,
         broadcast: false,
         fallback: false,
-        latency: true,
         logs: false
     },
-
-    // network load balancer
-    balancer: true,
-
-    // remove unresponsive nodes
-    excision: false,
 
     // use IPC (only available on Node + Linux/OSX)
     ipcpath: null,
@@ -4929,8 +4922,6 @@ module.exports = {
     // Default timeout for asynchronous POST
     POST_TIMEOUT: 30000,
 
-    BALANCER_SAMPLES: 20,
-
     DEFAULT_GAS: "0x2fd618",
 
     ETHER: new BigNumber(10).toPower(18),
@@ -4943,22 +4934,6 @@ module.exports = {
         hosted: HOSTED_NODES.slice(),
         local: null
     },
-
-    primaryNode: null,
-
-    // Mean network latency for each node
-    latency: {},
-
-    // Number of latency samples taken for each node
-    samples: {},
-
-    // Unweighted mean network latency across all nodes
-    // (use debug.latency=true to see this)
-    netLatency: null,
-
-    // Total number of samples taken across all nodes
-    // (use debug.latency=true to see this)
-    netSamples: 0,
 
     requests: 1,
 
@@ -5022,6 +4997,9 @@ module.exports = {
 
     parse: function (response, returns, callback) {
         var results, len, err;
+        if (response && response.error) {
+            console.log("response:", JSON.stringify(response, null, 2));
+        }
         try {
             if (response && typeof response === "string") {
                 response = JSON.parse(response);
@@ -5105,25 +5083,6 @@ module.exports = {
         return returns;
     },
 
-    exciseNode: function (err, deadNode, callback) {
-        if (deadNode && !this.nodes.local && !this.ipcpath) {
-            if (this.debug.logs) {
-                console.warn("[ethrpc] request to", deadNode, "failed:", err);
-            }
-            var deadIndex = this.nodes.hosted.indexOf(deadNode);
-            if (deadIndex > -1) {
-                this.nodes.hosted.splice(deadIndex, 1);
-                if (!this.nodes.hosted.length) {
-                    if (isFunction(callback)) {
-                        return callback(errors.HOSTED_NODE_FAILURE);
-                    }
-                    throw new this.Error(errors.HOSTED_NODE_FAILURE);
-                }
-            }
-            if (isFunction(callback)) callback();
-        }
-    },
-
     postSync: function (rpcUrl, command, returns) {
         var timeout, req = null;
         if (command.timeout) {
@@ -5174,8 +5133,6 @@ module.exports = {
                     e.bubble = err;
                     e.command = command;
                     return callback(e);
-                } else if (self.excision) {
-                    return self.exciseNode(err.code, rpcUrl, callback);
                 }
                 console.warn("[ethrpc] asynchronous RPC timed out", rpcUrl, command);
                 e = errors.RPC_TIMEOUT;
@@ -5188,95 +5145,9 @@ module.exports = {
         });
     },
 
-    // random primary node selection, weighted by (normalized)
-    // inverse mean network latency
-    selectPrimaryNode: function (nodes) {
-        var select, rand, numNodes, total, weights, cdf, high, low;
-        rand = Math.random();
-        numNodes = nodes.length;
-        weights = new Array(numNodes);
-        for (var k = 0; k < numNodes; ++k) {
-            weights[k] = 1 / this.latency[nodes[k]];
-        }
-        cdf = new Array(numNodes);
-        total = 0;
-        for (k = 0; k < numNodes; ++k) {
-            total += weights[k];
-            cdf[k] = total;
-        }
-        for (k = 0; k < numNodes; ++k) {
-            cdf[k] /= total;
-        }
-        high = numNodes - 1;
-        low = 0;
-        while (low < high) {
-            select = Math.ceil((high + low) / 2);
-            if (cdf[select] < rand) {
-                low = select + 1;
-            } else if (cdf[select] > rand) {
-                high = select - 1;
-            } else {
-                return nodes[select];
-            }
-        }
-        if (low != high) {
-            select = (cdf[low] >= rand) ? low : select;
-        } else {
-            select = (cdf[low] >= rand) ? low : low + 1;
-        }
-        console.debug("[ethrpc] primary node:", nodes[select]);
-        return [nodes[select]].concat(nodes);
-    },
-
     selectNodes: function () {
         if (this.nodes.local) return [this.nodes.local];
-        if (!this.balancer || this.nodes.hosted.length === 1) {
-            return this.nodes.hosted.slice();
-        }
-
-        // rotate nodes until we have enough samples to weight them
-        if (!this.samples[HOSTED_NODES[0]] ||
-            this.samples[HOSTED_NODES[0]] < this.BALANCER_SAMPLES) {
-            this.nodes.hosted.unshift(this.nodes.hosted.pop());
-            return this.nodes.hosted.slice();
-
-        // if we have sufficient data, select a primary node
-        } else {
-            if (this.primaryNode === null) {
-                this.primaryNode = this.selectPrimaryNode(this.nodes.hosted);
-            }
-            return this.primaryNode;
-        }
-    },
-
-    // update the active node's mean network latency
-    updateMeanLatency: function (node, latency) {
-        if (!this.samples[node]) {
-            this.samples[node] = 1;
-            this.latency[node] = latency;
-        } else {
-            ++this.samples[node];
-            this.latency[node] = (
-                (this.samples[node] - 1)*this.latency[node] + latency
-            ) / this.samples[node];
-        }
-        if (this.debug.latency) {
-            if (this.netLatency === null) {
-                this.netSamples = 1;
-                this.netLatency = latency;
-            } else {
-                ++this.netSamples;
-                this.netLatency = (
-                    (this.netSamples - 1)*this.netLatency + latency
-                ) / this.netSamples;
-                if (this.debug.logs) {
-                    console.log(
-                        "[" + this.netSamples.toString() + "] mean network latency:",
-                        this.netLatency
-                    );
-                }
-            }
-        }
+        return this.nodes.hosted.slice();
     },
 
     contracts: function (network) {
@@ -5285,7 +5156,7 @@ module.exports = {
 
     // Post JSON-RPC command to all Ethereum nodes
     broadcast: function (command, callback) {
-        var start, nodes, numCommands, returns, result, completed, self = this;
+        var nodes, numCommands, returns, result, completed, self = this;
 
         if (!command || (command.constructor === Object && !command.method) ||
             (command.constructor === Array && !command.length)) {
@@ -5388,9 +5259,6 @@ module.exports = {
                         console.log("nodes:", JSON.stringify(nodes));
                         console.log("post", command.method, "to:", node);
                     }
-                    if (self.balancer) {
-                        start = new Date().getTime();
-                    }
                     self.post(node, command, returns, function (res) {
                         if (self.debug.logs) {
                             if (res && res.constructor === BigNumber) {
@@ -5404,9 +5272,6 @@ module.exports = {
                             !res.error && res !== "0x"))
                         {
                             completed = true;
-                            if (self.balancer) {
-                                self.updateMeanLatency(node, new Date().getTime() - start);
-                            }
                             return nextNode({ output: res });
                         }
                         nextNode();
@@ -5425,18 +5290,10 @@ module.exports = {
                         console.log("nodes:", JSON.stringify(nodes));
                         console.log("synchronous post", command.method, "to:", nodes[j]);
                     }
-                    if (this.balancer) {
-                        start = new Date().getTime();
-                    }
                     result = this.postSync(nodes[j], command, returns);
-                    if (this.balancer) {
-                        this.updateMeanLatency(nodes[j], new Date().getTime() - start);
-                    }
                 } catch (e) {
                     if (this.nodes.local) {
                         throw new this.Error(errors.LOCAL_NODE_FAILURE);
-                    } else if (this.excision) {
-                        this.exciseNode(e, nodes[j]);
                     }
                 }
                 if (result !== undefined) return result;
@@ -5500,8 +5357,6 @@ module.exports = {
 
     // delete cached network, notification, and transaction data
     clear: function () {
-        this.latency = {};
-        this.samples = {};
         this.txs = {};
         for (var n in this.notifications) {
             if (!this.notifications.hasOwnProperty(n)) continue;
@@ -5665,34 +5520,30 @@ module.exports = {
 
     // estimate a transaction's gas cost
     estimateGas: function (tx, f) {
-        tx.to = tx.to || "";
         return this.broadcast(this.marshal("estimateGas", tx), f);
     },
 
     // execute functions on contracts on the blockchain
     call: function (tx, f) {
-        tx.to = tx.to || "";
         tx.gas = tx.gas || this.DEFAULT_GAS;
         return this.broadcast(this.marshal("call", [tx, "latest"]), f);
     },
 
     sendTx: function (tx, f) {
-        tx.to = tx.to || "";
         tx.gas = tx.gas || this.DEFAULT_GAS;
         return this.broadcast(this.marshal("sendTransaction", tx), f);
     },
     sendTransaction: function (tx, f) {
-        tx.to = tx.to || "";
         tx.gas = tx.gas || this.DEFAULT_GAS;
         return this.broadcast(this.marshal("sendTransaction", tx), f);
     },
 
     // sendRawTx(RLP(tx.signed(privateKey))) -> txhash
     sendRawTx: function (rawTx, f) {
-        return this.broadcast(this.marshal("sendRawTransaction", rawTx), f);
+        return this.broadcast(this.marshal("sendRawTransaction", abi.prefix_hex(rawTx)), f);
     },
     sendRawTransaction: function (rawTx, f) {
-        return this.broadcast(this.marshal("sendRawTransaction", rawTx), f);
+        return this.broadcast(this.marshal("sendRawTransaction", abi.prefix_hex(rawTx)), f);
     },
 
     receipt: function (txhash, f) {
@@ -5720,7 +5571,7 @@ module.exports = {
 
     // publish a new contract to the blockchain (from the coinbase account)
     publish: function (compiled, f) {
-        return this.sendTx({ from: this.coinbase(), data: compiled }, f);
+        return this.sendTx({from: this.coinbase(), data: compiled}, f);
     },
 
     // Read the code in a contract on the blockchain
@@ -5911,7 +5762,7 @@ module.exports = {
                 }
             }
             if (tx.from) tx.from = abi.format_address(tx.from);
-            tx.to = abi.format_address(tx.to);
+            if (tx.to) tx.to = abi.format_address(tx.to);
             dataAbi = abi.encode(tx);
             if (dataAbi) {
                 if (tx.callback && tx.callback.constructor === Function) {
