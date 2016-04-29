@@ -299,7 +299,10 @@ module.exports = {
             ], function (err) {
                 if (err) {
                     console.error("[async] connect error:", err);
-                    return self.connect(rpcinfo, ipcpath, callback, true);
+                    if (!retry) {
+                        return self.connect(rpcinfo, ipcpath, callback, true);
+                    }
+                    return callback(false);
                 }
                 self.update_contracts();
                 self.connection = true;
@@ -314,7 +317,10 @@ module.exports = {
                 return true;
             } catch (exc) {
                 console.error("[sync] connect error:", exc);
-                return this.connect(rpcinfo, ipcpath, callback, true);
+                if (!retry) {
+                    return this.connect(rpcinfo, ipcpath, callback, true);
+                }
+                return false;
             }
         }
     },
