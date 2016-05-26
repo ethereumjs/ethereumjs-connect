@@ -27,7 +27,7 @@
   "dependencies": {
     "async": "^1.5.1",
     "augur-contracts": "AugurProject/augur-contracts",
-    "ethrpc": "^0.7.7"
+    "ethrpc": "^0.8.0"
   },
   "devDependencies": {
     "browserify": "^12.0.1",

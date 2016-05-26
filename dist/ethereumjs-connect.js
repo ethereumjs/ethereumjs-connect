@@ -24761,7 +24761,6 @@ module.exports = {
                     var key;
                     if (version !== null && version !== undefined && !version.error) {
                         self.network_id = version;
-                        // console.log("[async] network ID:", self.network_id);
                         self.tx = new contracts.Tx(version);
                         self.contracts = clone(contracts[self.network_id]);
                         for (var method in self.tx) {
@@ -24777,7 +24776,6 @@ module.exports = {
             } else {
                 var key, method;
                 this.network_id = this.rpc.version() || "2";
-                // console.log("[sync] network ID:", this.network_id);
                 this.tx = new contracts.Tx(this.network_id);
                 this.contracts = clone(contracts[this.network_id]);
                 for (method in this.tx) {
@@ -41574,13 +41572,14 @@ if (NODE_JS) {
     request = require("browser-request");
 }
 var async = require("async");
+var WebSocketClient = require("websocket").client;
 var BigNumber = require("bignumber.js");
 var keccak_256 = require("js-sha3").keccak_256;
 var contracts = require("augur-contracts");
 var abi = require("augur-abi");
 var errors = contracts.errors;
 
-BigNumber.config({ MODULO_MODE: BigNumber.EUCLID });
+BigNumber.config({MODULO_MODE: BigNumber.EUCLID});
 
 function RPCError(err) {
     this.name = err.error || err.name;
@@ -41607,8 +41606,22 @@ module.exports = {
         logs: false
     },
 
-    // use IPC (only available on Node + Linux/OSX)
+    // use IPC (only available on Node)
     ipcpath: null,
+
+    // geth websocket endpoint
+    wsUrl: "wss://ws.augur.net",
+
+    // initial value 0
+    // if connection fails: -1
+    // if connection succeeds: 1
+    wsStatus: 0,
+
+    // null or WebSocketClient instance
+    wsClient: null,
+
+    // active websocket (if connected)
+    websocket: null,
 
     // local ethereum node address
     localnode: "http://127.0.0.1:8545",
@@ -41908,8 +41921,7 @@ module.exports = {
 
         // if we're on Node, use IPC if available and ipcpath is specified
         if (NODE_JS && this.ipcpath && command.method &&
-            command.method.indexOf("Filter") === -1)
-        {
+            command.method.indexOf("Filter") === -1) {
             var loopback = this.nodes.local && (
                 (this.nodes.local.indexOf("127.0.0.1") > -1 ||
                 this.nodes.local.indexOf("localhost") > -1)
@@ -41951,34 +41963,84 @@ module.exports = {
 
         // asynchronous request if callback exists
         if (isFunction(callback)) {
-            async.eachSeries(nodes, function (node, nextNode) {
-                if (!completed) {
-                    if (self.debug.logs) {
-                        console.log("nodes:", JSON.stringify(nodes));
-                        console.log("post", command.method, "to:", node);
-                    }
-                    self.post(node, command, returns, function (res) {
-                        if (self.debug.logs) {
-                            if (res && res.constructor === BigNumber) {
-                                console.log(node, "response:", abi.string(res));
-                            } else {
-                                console.log(node, "response:", res);
-                            }
-                        }
-                        if (node === nodes[nodes.length - 1] ||
-                            (res !== undefined && res !== null &&
-                            !res.error && res !== "0x"))
-                        {
-                            completed = true;
-                            return nextNode({ output: res });
-                        }
-                        nextNode();
-                    });
+
+            // use websocket if available
+            if (!this.wsUrl) this.wsStatus = -1;
+            switch (this.wsStatus) {
+
+            // [0] websocket closed / not connected: try to connect
+            case 0:
+                if (this.websocket && this.websocket.state === "open") {
+                    this.websocket.close();
                 }
-            }, function (res) {
-                if (!res && res.output === undefined) return callback();
-                callback(res.output);
-            });
+                this.wsClient = new WebSocketClient();
+                this.wsClient.on("connectFailed", function (err) {
+                    if (self.debug.logs) console.error(err);
+                    self.wsStatus = -1;
+                    self.broadcast(command, callback);
+                });
+                this.wsClient.on("connect", function (ws) {
+                    self.wsStatus = 1;
+                    ws.on("error", function (err) {
+                        if (self.debug.logs) console.error(err);
+                        self.wsStatus = -1;
+                        self.broadcast(command, callback);
+                    });
+                    ws.on("close", function () {
+                        self.wsStatus = 0;
+                    });
+                    ws.on("message", function (msg) {
+                        self.parse(msg.utf8Data, returns, callback);
+                    });
+                    self.websocket = ws;
+                    self.websocket.sendUTF(JSON.stringify(command));
+                });
+                this.wsClient.connect(this.wsUrl);
+                break;
+
+            // [1] websocket connected
+            case 1:
+                this.websocket._events.error = function (err) {
+                    if (self.debug.logs) console.error(err);
+                    self.wsStatus = -1;
+                    self.broadcast(command, callback);
+                };
+                this.websocket._events.message = function (msg) {
+                    self.parse(msg.utf8Data, returns, callback);
+                };
+                this.websocket.sendUTF(JSON.stringify(command));
+                break;
+
+            // [-1] websocket errored or unavailable: fallback to HTTP RPC
+            default:
+                async.eachSeries(nodes, function (node, nextNode) {
+                    if (!completed) {
+                        if (self.debug.logs) {
+                            console.log("nodes:", JSON.stringify(nodes));
+                            console.log("post", command.method, "to:", node);
+                        }
+                        self.post(node, command, returns, function (res) {
+                            if (self.debug.logs) {
+                                if (res && res.constructor === BigNumber) {
+                                    console.log(node, "response:", abi.string(res));
+                                } else {
+                                    console.log(node, "response:", res);
+                                }
+                            }
+                            if (node === nodes[nodes.length - 1] ||
+                                (res !== undefined && res !== null &&
+                                !res.error && res !== "0x")) {
+                                completed = true;
+                                return nextNode({output: res});
+                            }
+                            nextNode();
+                        });
+                    }
+                }, function (res) {
+                    if (!res && res.output === undefined) return callback();
+                    callback(res.output);
+                });
+            }
 
         // use synchronous http if no callback provided
         } else {
@@ -42432,8 +42494,16 @@ module.exports = {
                     return itx.invocation.invoke.call(itx.invocation.context, itx, f);
                 } else {
                     tx = abi.copy(itx);
-                    if (tx.params !== undefined && tx.params.constructor !== Array) {
+                    if (tx.params === undefined || tx.params === null) {
+                        tx.params = [];
+                    } else if (tx.params.constructor !== Array) {
                         tx.params = [tx.params];
+                    }
+                    for (var j = 0; j < tx.params.length; ++j) {
+                        if (tx.params[j] !== undefined && tx.params[j] !== null &&
+                            tx.params[j].constructor === Number) {
+                            tx.params[j] = abi.prefix_hex(tx.params[j].toString(16));
+                        }
                     }
                     if (tx.to) tx.to = abi.format_address(tx.to);
                     if (tx.from) tx.from = abi.format_address(tx.from);
@@ -42491,8 +42561,15 @@ module.exports = {
         callbacks = new Array(numCommands);
         for (var i = 0; i < numCommands; ++i) {
             tx = abi.copy(txlist[i]);
-            if (tx.params !== undefined && tx.params.constructor !== Array) {
+            if (tx.params === undefined || tx.params === null) {
+                tx.params = [];
+            } else if (tx.params.constructor !== Array) {
                 tx.params = [tx.params];
+            }
+            for (var j = 0; j < tx.params.length; ++j) {
+                if (tx.params[j].constructor === Number) {
+                    tx.params[j] = abi.prefix_hex(tx.params[j].toString(16));
+                }
             }
             if (tx.from) tx.from = abi.format_address(tx.from);
             if (tx.to) tx.to = abi.format_address(tx.to);
@@ -42830,7 +42907,7 @@ module.exports = {
 };
 
 }).call(this,require('_process'),require("buffer").Buffer)
-},{"_process":269,"async":291,"augur-abi":1,"augur-contracts":6,"bignumber.js":292,"browser-request":293,"buffer":70,"js-sha3":294,"net":67,"request":69,"sync-request":69}],291:[function(require,module,exports){
+},{"_process":269,"async":291,"augur-abi":1,"augur-contracts":6,"bignumber.js":292,"browser-request":293,"buffer":70,"js-sha3":294,"net":67,"request":69,"sync-request":69,"websocket":295}],291:[function(require,module,exports){
 (function (process,global){
 /*!
  * async
@@ -47769,4 +47846,140 @@ function b64_enc (data) {
 }(this));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],295:[function(require,module,exports){
+var _global = (function() { return this; })();
+var nativeWebSocket = _global.WebSocket || _global.MozWebSocket;
+var websocket_version = require('./version');
+
+
+/**
+ * Expose a W3C WebSocket class with just one or two arguments.
+ */
+function W3CWebSocket(uri, protocols) {
+	var native_instance;
+
+	if (protocols) {
+		native_instance = new nativeWebSocket(uri, protocols);
+	}
+	else {
+		native_instance = new nativeWebSocket(uri);
+	}
+
+	/**
+	 * 'native_instance' is an instance of nativeWebSocket (the browser's WebSocket
+	 * class). Since it is an Object it will be returned as it is when creating an
+	 * instance of W3CWebSocket via 'new W3CWebSocket()'.
+	 *
+	 * ECMAScript 5: http://bclary.com/2004/11/07/#a-13.2.2
+	 */
+	return native_instance;
+}
+
+
+/**
+ * Module exports.
+ */
+module.exports = {
+    'w3cwebsocket' : nativeWebSocket ? W3CWebSocket : null,
+    'version'      : websocket_version
+};
+
+},{"./version":296}],296:[function(require,module,exports){
+module.exports = require('../package.json').version;
+
+},{"../package.json":297}],297:[function(require,module,exports){
+module.exports={
+  "name": "websocket",
+  "description": "Websocket Client & Server Library implementing the WebSocket protocol as specified in RFC 6455.",
+  "keywords": [
+    "websocket",
+    "websockets",
+    "socket",
+    "networking",
+    "comet",
+    "push",
+    "RFC-6455",
+    "realtime",
+    "server",
+    "client"
+  ],
+  "author": {
+    "name": "Brian McKelvey",
+    "email": "brian@worlize.com",
+    "url": "https://www.worlize.com/"
+  },
+  "contributors": [
+    {
+      "name": "Iñaki Baz Castillo",
+      "email": "ibc@aliax.net",
+      "url": "http://dev.sipdoc.net"
+    }
+  ],
+  "version": "1.0.23",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/theturtle32/WebSocket-Node.git"
+  },
+  "homepage": "https://github.com/theturtle32/WebSocket-Node",
+  "engines": {
+    "node": ">=0.8.0"
+  },
+  "dependencies": {
+    "debug": "^2.2.0",
+    "nan": "^2.3.3",
+    "typedarray-to-buffer": "^3.1.2",
+    "yaeti": "^0.0.4"
+  },
+  "devDependencies": {
+    "buffer-equal": "^0.0.1",
+    "faucet": "^0.0.1",
+    "gulp": "git+https://github.com/gulpjs/gulp.git#4.0",
+    "gulp-jshint": "^1.11.2",
+    "jshint-stylish": "^1.0.2",
+    "tape": "^4.0.1"
+  },
+  "config": {
+    "verbose": false
+  },
+  "scripts": {
+    "install": "(node-gyp rebuild 2> builderror.log) || (exit 0)",
+    "test": "faucet test/unit",
+    "gulp": "gulp"
+  },
+  "main": "index",
+  "directories": {
+    "lib": "./lib"
+  },
+  "browser": "lib/browser.js",
+  "license": "Apache-2.0",
+  "gitHead": "ba2fa7e9676c456bcfb12ad160655319af66faed",
+  "bugs": {
+    "url": "https://github.com/theturtle32/WebSocket-Node/issues"
+  },
+  "_id": "websocket@1.0.23",
+  "_shasum": "20de8ec4a7126b09465578cd5dbb29a9c296aac6",
+  "_from": "websocket@latest",
+  "_npmVersion": "2.15.1",
+  "_nodeVersion": "0.10.45",
+  "_npmUser": {
+    "name": "theturtle32",
+    "email": "brian@worlize.com"
+  },
+  "maintainers": [
+    {
+      "name": "theturtle32",
+      "email": "brian@worlize.com"
+    }
+  ],
+  "dist": {
+    "shasum": "20de8ec4a7126b09465578cd5dbb29a9c296aac6",
+    "tarball": "https://registry.npmjs.org/websocket/-/websocket-1.0.23.tgz"
+  },
+  "_npmOperationalInternal": {
+    "host": "packages-16-east.internal.npmjs.com",
+    "tmp": "tmp/websocket-1.0.23.tgz_1463625793005_0.4532310354989022"
+  },
+  "_resolved": "https://registry.npmjs.org/websocket/-/websocket-1.0.23.tgz"
+}
+
 },{}]},{},[64]);
