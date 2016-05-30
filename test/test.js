@@ -330,37 +330,6 @@ describe("connect", function () {
                     });
                 }
             );
-            it("[sync] switch to network 2 contract addresses", function () {
-                this.timeout(TIMEOUT);
-                delete require.cache[require.resolve("../")];
-                var connector = require("../");
-                assert.isTrue(connector.connect("http://localhost:8545"));
-                assert.strictEqual(connector.contracts.branches, contracts["2"].branches);
-                assert.strictEqual(connector.contracts.createMarket, contracts["2"].createMarket);
-                assert.isTrue(connector.connect({host: "localhost", port: 8545}));
-                assert.strictEqual(connector.contracts.branches, contracts["2"].branches);
-                assert.strictEqual(connector.contracts.createMarket, contracts["2"].createMarket);
-                assert.isTrue(connector.connect({host: "127.0.0.1", port: 8545}));
-                assert.strictEqual(connector.contracts.branches, contracts["2"].branches);
-                assert.strictEqual(connector.contracts.createMarket, contracts["2"].createMarket);
-            });
-            it("[sync+IPC] switch to network 2 contract addresses", function () {
-                this.timeout(TIMEOUT);
-                delete require.cache[require.resolve("../")];
-                var connector = require("../");
-                assert.isTrue(connector.connect("http://127.0.0.1:8545", IPCPATH));
-                assert.strictEqual(connector.contracts.branches, contracts["2"].branches);
-                assert.strictEqual(connector.contracts.createMarket, contracts["2"].createMarket);
-                assert.isTrue(connector.connect("http://localhost:8545", IPCPATH));
-                assert.strictEqual(connector.contracts.branches, contracts["2"].branches);
-                assert.strictEqual(connector.contracts.createMarket, contracts["2"].createMarket);
-                assert.isTrue(connector.connect({host: "localhost", port: 8545}, IPCPATH));
-                assert.strictEqual(connector.contracts.branches, contracts["2"].branches);
-                assert.strictEqual(connector.contracts.createMarket, contracts["2"].createMarket);
-                assert.isTrue(connector.connect({host: "127.0.0.1", port: 8545}, IPCPATH));
-                assert.strictEqual(connector.contracts.branches, contracts["2"].branches);
-                assert.strictEqual(connector.contracts.createMarket, contracts["2"].createMarket);
-            });
         });
     }
 
