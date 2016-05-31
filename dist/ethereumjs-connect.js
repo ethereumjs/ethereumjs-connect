@@ -106,6 +106,8 @@ module.exports = {
             bytearray = bytearray.toString("hex");
         }
         bytearray = this.strip_0x(bytearray);
+        // console.log(bytearray);
+        
         return this.remove_trailing_zeros(
             this.abi.rawDecode(
                 ["string"],
@@ -120,11 +122,10 @@ module.exports = {
     short_string_to_int256: function (s) {
         if (s.length > 32) s = s.slice(0, 32);
         return this.prefix_hex(this.pad_right(new Buffer(s, "utf8").toString("hex")));
-        // return this.prefix_hex(ethabi.rawEncode(["string"], [s]).slice(64).toString("hex"));
     },
 
     int256_to_short_string: function (n) {
-        return this.bytes_to_utf16(this.remove_trailing_zeros(n));
+        return new Buffer(this.strip_0x(this.remove_trailing_zeros(n)), "hex").toString("utf8");
     },
 
     decode_hex: function (h, strip) {
@@ -3723,7 +3724,7 @@ module.exports={
         "closeMarketTwo": "0x0d6c2fab4529c275ce0f1ada01ea025f9ad6c9f8",
         "collectFees": "0x8e16c43eadcb81a5cceafe8b2d693dbea4976ab0",
         "completeSets": "0x02102aadb33d5af80cb02c15701f791f2b82b0b3",
-        "compositeGetters": "0xa1b8f9226b884c501a20b3bf830bf39073a50147",
+        "compositeGetters": "0x0c82d30572c038ba7b4c98fcfcfb76c92a042e4a",
         "consensus": "0x13af9740aa6bfb1c16b7be01374e4021b281c01c",
         "createBranch": "0xe26e56cd96da49d19fe7471311af2e4ba4129df7",
         "createMarket": "0x0f5512956b1bf9f03a461783495b647f05bea520",
@@ -3760,7 +3761,7 @@ module.exports={
         "closeMarketTwo": "0x7ba9727bd11556abe84d577da769c3c654485b91",
         "collectFees": "0xa9d19963a10b6cd6c4ccf93990aa27d09269e704",
         "completeSets": "0x470f9a8742c7ae216a61cd7c5c639495929c42cb",
-        "compositeGetters": "0x0542deac8debbc9cdf1d16ddadd75b3464bee084",
+        "compositeGetters": "0x251e9204ee36e518e8dddc85ac6924418b7b0c9e",
         "consensus": "0xd5e6b60100f91a7b193e1eb99229cb6ad053b589",
         "createBranch": "0xcfe7ff3615e407b03aee9be253575e690bc80a17",
         "createMarket": "0xfa0b869cc786e0c25ce1f718c49b942ca5a55817",
