@@ -248,7 +248,7 @@ module.exports = {
         return this.urlstring(rpc_obj);
     },
 
-    connect: function (rpcinfo, ipcpath, callback, retry) {
+    connect: function (rpcinfo, ipcpath, callback, isRetry) {
         var localnode, self = this;
         if (!ipcpath && is_function(rpcinfo)) {
             callback = rpcinfo;
@@ -258,10 +258,9 @@ module.exports = {
             callback = ipcpath;
             ipcpath = null;
         }
-        if (!retry) {
-            rpcinfo = rpcinfo || process.env.AUGUR_HOST;
+        if (!isRetry) {
+            // console.log("attempt 1...");
             if (ipcpath) {
-                this.rpc.balancer = false;
                 this.rpc.ipcpath = ipcpath;
                 if (rpcinfo) {
                     localnode = this.parse_rpcinfo(rpcinfo);
@@ -274,21 +273,21 @@ module.exports = {
             }
             if (rpcinfo) {
                 localnode = this.parse_rpcinfo(rpcinfo);
+                // console.log("local node:", localnode);
                 if (localnode) {
                     this.rpc.setLocalNode(localnode);
-                    this.rpc.balancer = false;
                 } else {
+                    console.log("using hosted:");
                     this.rpc.useHostedNode();
-                    this.rpc.balancer = true;
                 }
             } else {
+                console.log("using hosted");
                 this.rpc.useHostedNode();
-                this.rpc.balancer = true;
             }
         } else {
+            console.log("attempt 2...");
             this.rpc.ipcpath = null;
             this.rpc.useHostedNode();
-            this.rpc.balancer = true;
         }
         if (is_function(callback)) {
             async.series([
@@ -297,7 +296,7 @@ module.exports = {
             ], function (err) {
                 if (err) {
                     console.error("[async] connect error:", err);
-                    if (!retry) {
+                    if (!isRetry) {
                         return self.connect(rpcinfo, ipcpath, callback, true);
                     }
                     return callback(false);
@@ -315,7 +314,7 @@ module.exports = {
                 return true;
             } catch (exc) {
                 console.error("[sync] connect error:", exc);
-                if (!retry) {
+                if (!isRetry) {
                     return this.connect(rpcinfo, ipcpath, callback, true);
                 }
                 return false;
