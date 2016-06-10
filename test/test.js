@@ -12,60 +12,9 @@ var connector = require("../");
 connector.debug = true;
 
 var TIMEOUT = 48000;
-var IPCPATH = join(process.env.HOME, ".ethereum", "geth.ipc");
+var IPCPATH = process.env.GETH_IPC;
 
 require('it-each')({ testPerIteration: true });
-
-function clone(obj) {
-    if (null === obj || "object" !== typeof obj) return obj;
-    var copy = obj.constructor();
-    for (var attr in obj) {
-        if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
-    }
-    return copy;
-}
-
-describe("urlstring", function () {
-
-    var test = function (t) {
-        it(JSON.stringify(t.object) + " -> " + t.string, function () {
-            assert.strictEqual(connector.urlstring(t.object), t.string);
-        });
-    };
-
-    test({
-        object: {host: "localhost", port: 8545, protocol: "http"},
-        string: "http://localhost:8545"
-    });
-    test({
-        object: {host: "localhost", port: 8545},
-        string: "http://localhost:8545"
-    });
-    test({
-        object: {host: "localhost"},
-        string: "http://localhost"
-    });
-    test({
-        object: {port: 8545},
-        string: "http://127.0.0.1:8545"
-    });
-    test({
-        object: {host: "127.0.0.1"},
-        string: "http://127.0.0.1"
-    });
-    test({
-        object: {host: "eth3.augur.net"},
-        string: "http://eth3.augur.net"
-    });
-    test({
-        object: {host: "eth3.augur.net", protocol: "https"},
-        string: "https://eth3.augur.net"
-    });
-    test({
-        object: {host: "127.0.0.1", port: 8547, protocol: "https"},
-        string: "https://127.0.0.1:8547"
-    });
-});
 
 describe("has_value", function () {
 
@@ -154,182 +103,161 @@ describe("has_value", function () {
 
 describe("connect", function () {
 
-    describe("hosted nodes", function () {
-
-        var test = function (t) {
-            it(t.node, function () {
-                this.timeout(TIMEOUT);
-                delete require.cache[require.resolve("../")];
-                var connector = require("../");
-                assert.isTrue(connector.connect(t.node));
-                assert.strictEqual(connector.coinbase, t.address);
-            });
-        };
-
-        test({
-            node: "https://eth3.augur.net",
-            address: "0x00bae5113ee9f252cceb0001205b88fad175461a"
-        });
-        test({
-            node: "https://eth4.augur.net",
-            address: "0x8296eb59079f435275b76058c08b47c4f8965b78"
-        });
-        test({
-            node: "https://eth5.augur.net",
-            address: "0xe434ed7f4684e3d2db25c4937c9e0b7b1faf54c6"
-        });
-    });
+    // describe("hosted nodes", function () {
+    //     var test = function (t) {
+    //         it("[sync] " + JSON.stringify(t.node), function () {
+    //             this.timeout(TIMEOUT);
+    //             delete require.cache[require.resolve("../")];
+    //             var connector = require("../");
+    //             var conn = connector.connect(t.node);
+    //             assert.isObject(conn);
+    //             assert.strictEqual(conn.http, t.node.http);
+    //             assert.strictEqual(conn.ws, t.node.ws);
+    //             assert.isUndefined(conn.ipc);
+    //             assert.strictEqual(connector.coinbase, t.address);
+    //         });
+    //         it("[async] " + JSON.stringify(t.node), function () {
+    //             this.timeout(TIMEOUT);
+    //             delete require.cache[require.resolve("../")];
+    //             var connector = require("../");
+    //             connector.connect(t.node, function (conn) {
+    //                 assert.isObject(conn);
+    //                 assert.strictEqual(conn.http, t.node.http);
+    //                 assert.strictEqual(conn.ws, t.node.ws);
+    //                 assert.isUndefined(conn.ipc);
+    //                 assert.strictEqual(connector.coinbase, t.address);
+    //             });
+    //         });
+    //     };
+    //     test({
+    //         node: {http: "https://eth3.augur.net"},
+    //         address: "0x00bae5113ee9f252cceb0001205b88fad175461a"
+    //     });
+    //     test({
+    //         node: {http: "https://eth3.augur.net", ws: "wss://ws.augur.net"},
+    //         address: "0x00bae5113ee9f252cceb0001205b88fad175461a"
+    //     });
+    // });
 
     if (!process.env.CONTINUOUS_INTEGRATION) {
         describe("local node", function () {
-            var connectString = [
-                undefined,
-                "http://localhost:8545",
-                "localhost:8545",
-                "127.0.0.1:8545",
-                "http://127.0.0.1:8545"
+            var connectOptions = [
+                {http: "http://localhost:8545"},
+                {http: "http://127.0.0.1:8545"}
             ];
-            var connectObj = [
-                {host: "localhost", port: 8545, protocol: "http"},
-                {host: "localhost", port: 8545},
-                {port: 8545},
-            ];
-            it.each(connectString,
-                "[sync] connect to %s",
+            it.each(connectOptions,
+                "[sync] connect to",
                 ["element"],
                 function (element, next) {
                     this.timeout(TIMEOUT);
                     delete require.cache[require.resolve("../")];
                     var connector = require("../");
-                    assert.isTrue(connector.connect(element));
+                    var conn = connector.connect(element);
+                    assert.isObject(conn);
+                    assert.strictEqual(conn.http, element.http);
+                    assert.strictEqual(conn.ws, element.ws);
+                    assert.strictEqual(conn.ipc, element.ipc);
                     assert.isTrue(connector.connected());
                     assert.isString(connector.coinbase);
                     next();
                 }
             );
-            it.each(connectString,
-                "[sync] connect to %s with IPC support",
+            it.each(connectOptions,
+                "[sync] connect with IPC support",
                 ["element"],
                 function (element, next) {
                     this.timeout(TIMEOUT);
                     delete require.cache[require.resolve("../")];
                     var connector = require("../");
-                    assert.isTrue(connector.connect(element, IPCPATH));
+                    var options = element;
+                    options.ipc = IPCPATH;
+                    var conn = connector.connect(options);
+                    assert.isObject(conn);
+                    assert.strictEqual(conn.http, element.http);
+                    assert.strictEqual(conn.ws, element.ws);
+                    assert.strictEqual(conn.ipc, element.ipc);
                     assert.isTrue(connector.connected());
                     assert.isString(connector.coinbase);
                     next();
                 }
             );
-            it.each(connectString,
-                "[async] connect to %s",
+            it.each(connectOptions,
+                "[async] connect to",
                 ["element"],
                 function (element, next) {
                     this.timeout(TIMEOUT);
                     delete require.cache[require.resolve("../")];
                     var connector = require("../");
-                    connector.connect(element, null, function (connected) {
-                        assert.isTrue(connected);
+                    connector.connect(element, function (conn) {
+                        assert.isObject(conn);
+                        assert.strictEqual(conn.http, element.http);
+                        assert.strictEqual(conn.ws, element.ws);
+                        assert.strictEqual(conn.ipc, element.ipc);
+                        assert.isTrue(connector.connected());
                         assert.isString(connector.coinbase);
                         next();
                     });
                 }
             );
-            it.each(connectString,
-                "[async] connect to %s",
+            it.each(connectOptions,
+                "[async] connect to",
                 ["element"],
                 function (element, next) {
                     this.timeout(TIMEOUT);
                     delete require.cache[require.resolve("../")];
                     var connector = require("../");
-                    connector.connect(element, function (connected) {
-                        assert.isTrue(connected);
+                    connector.connect(element, function (conn) {
+                        assert.isObject(conn);
+                        assert.strictEqual(conn.http, element.http);
+                        assert.strictEqual(conn.ws, element.ws);
+                        assert.strictEqual(conn.ipc, element.ipc);
+                        assert.isTrue(connector.connected());
                         assert.isString(connector.coinbase);
                         next();
                     });
                 }
             );
-            it.each(connectString,
-                "[async] connect to %s with IPC support",
+            it.each(connectOptions,
+                "[async] connect with IPC support",
                 ["element"],
                 function (element, next) {
                     this.timeout(TIMEOUT);
                     delete require.cache[require.resolve("../")];
                     var connector = require("../");
-                    connector.connect(element, IPCPATH, function (connected) {
-                        assert.isTrue(connected);
+                    var options = element;
+                    options.ipc = IPCPATH;
+                    connector.connect(options, function (conn) {
+                        assert.isObject(conn);
+                        assert.strictEqual(conn.http, element.http);
+                        assert.strictEqual(conn.ws, element.ws);
+                        assert.strictEqual(conn.ipc, element.ipc);
+                        assert.isTrue(connector.connected());
                         assert.isString(connector.coinbase);
                         next();
                     });
                 }
             );
-            it.each(connectObj,
-                "[sync] connect to {protocol: '%s', host: '%s', port: '%s'}",
-                ["protocol", "host", "port"],
-                function (element, next) {
-                    this.timeout(TIMEOUT);
-                    delete require.cache[require.resolve("../")];
-                    var connector = require("../");
-                    assert.isTrue(connector.connect(element));
-                    assert.isTrue(connector.connected());
-                    assert.isString(connector.coinbase);
-                    next();
-                }
-            );
-            it.each(connectObj,
-                "[sync] connect to {protocol: '%s', host: '%s', port: '%s'} with IPC support",
-                ["protocol", "host", "port"],
-                function (element, next) {
-                    this.timeout(TIMEOUT);
-                    delete require.cache[require.resolve("../")];
-                    var connector = require("../");
-                    assert.isTrue(connector.connect(element, IPCPATH));
-                    assert.isTrue(connector.connected());
-                    assert.isString(connector.coinbase);
-                    next();
-                }
-            );
-            it.each(connectObj,
-                "[async] connect to {protocol: '%s', host: '%s', port: '%s'}",
-                ["protocol", "host", "port"],
-                function (element, next) {
-                    this.timeout(TIMEOUT);
-                    delete require.cache[require.resolve("../")];
-                    var connector = require("../");
-                    connector.connect(element, null, function (connected) {
-                        assert.isTrue(connected);
-                        assert.isString(connector.coinbase);
-                        next();
-                    });
-                }
-            );
-            it.each(connectObj,
-                "[async] connect to {protocol: '%s', host: '%s', port: '%s'}",
-                ["protocol", "host", "port"],
-                function (element, next) {
-                    this.timeout(TIMEOUT);
-                    delete require.cache[require.resolve("../")];
-                    var connector = require("../");
-                    connector.connect(element, function (connected) {
-                        assert.isTrue(connected);
-                        assert.isString(connector.coinbase);
-                        next();
-                    });
-                }
-            );
-            it.each(connectObj,
-                "[async] connect to {protocol: '%s', host: '%s', port: '%s'} with IPC support",
-                ["protocol", "host", "port"],
-                function (element, next) {
-                    this.timeout(TIMEOUT);
-                    delete require.cache[require.resolve("../")];
-                    var connector = require("../");
-                    connector.connect(element, IPCPATH, function (connected) {
-                        assert.isTrue(connected);
-                        assert.isString(connector.coinbase);
-                        next();
-                    });
-                }
-            );
+        });
+
+        it("[sync] unlocked", function () {
+            this.timeout(TIMEOUT);
+            delete require.cache[require.resolve("../")];
+            var connector = require("../");
+            var conn = connector.connect({http: "http://localhost:8545"});
+            assert.isNotNull(connector.rpc.nodes.local);
+            assert.isTrue(connector.rpc.unlocked(connector.coinbase));
+        });
+        it("[async] unlocked", function (done) {
+            this.timeout(TIMEOUT);
+            delete require.cache[require.resolve("../")];
+            var connector = require("../");
+            connector.connect({http: "http://localhost:8545"}, function (conn) {
+                connector.rpc.unlocked(connector.coinbase, function (unlocked) {
+                    assert.isNotNull(connector.rpc.nodes.local);
+                    assert.isTrue(unlocked);
+                    done();
+                });
+            });
         });
     }
 
@@ -337,19 +265,18 @@ describe("connect", function () {
         this.timeout(TIMEOUT);
         delete require.cache[require.resolve("../")];
         var connector = require("../");
-        assert.isTrue(connector.connect("https://eth3.augur.net"));
+        var conn = connector.connect({http: "https://eth3.augur.net"});
         assert.isNotNull(connector.rpc.nodes.local);
-        assert.isFalse(connector.rpc.unlocked(connector.coinbase));
+        assert.isTrue(connector.rpc.unlocked(connector.coinbase));
     });
     it("[async] unlocked", function (done) {
         this.timeout(TIMEOUT);
         delete require.cache[require.resolve("../")];
         var connector = require("../");
-        connector.connect("https://eth3.augur.net", function (connected) {
-            assert.isTrue(connected);
+        connector.connect({http: "https://eth3.augur.net"}, function (conn) {
             connector.rpc.unlocked(connector.coinbase, function (unlocked) {
                 assert.isNotNull(connector.rpc.nodes.local);
-                assert.isFalse(unlocked);
+                assert.isTrue(unlocked);
                 done();
             });
         });
@@ -358,7 +285,7 @@ describe("connect", function () {
     it("network_id = 0, 1, 2, 7, or 10101", function () {
         delete require.cache[require.resolve("../")];
         var connector = require("../");
-        assert.isTrue(connector.connect());
+        connector.connect();
         assert.include(["0", "1", "2", "7", "10101"], connector.network_id);
     });
 

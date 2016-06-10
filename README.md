@@ -22,7 +22,11 @@ A minified, browserified file `dist/ethereumjs-connect.min.js` is included for u
 ```
 ethereumjs-connect can connect to an Ethereum node, which can be either remote (hosted) or local.  To specify the connection endpoint, pass your RPC/IPC connection info to `connector.connect`:
 ```javascript
-connector.connect("http://localhost:8545");
+// Connect with only HTTP RPC support
+connector.connect({http: "http://localhost:8545"});
+
+// Connect to a local node using HTTP (on port 8545) and WebSockets (on port 8546)
+connector.connect({http: "http://localhost:8545", ws: "ws://localhost:8546"});
 ```
 After connecting, several network properties are attached to the `connector` object:
 ```javascript
@@ -37,29 +41,32 @@ connector.debug      // turns on debugging logs
 `connector.from` is used to set the `from` field for outgoing transactions.  By default, it is set to the coinbase address.  However, if you manually set it to something else (for example, for client-side transactions):
 ```javascript
 connector.from = "0x05ae1d0ca6206c6168b42efcd1fbe0ed144e821b";
-connector.connect("http://localhost:8545");
+connector.connect({http: "http://localhost:8545"});
 ```
 To connect to a remote Ethereum node, pass its address to `connector.connect`.  For example, to connect to one of Augur's public nodes:
 ```javascript
-connector.connect("https://eth1.augur.net");
+connector.connect({http: "https://eth3.augur.net", ws: "wss://ws.augur.net"});
 ```
-`connector.connect` also accepts a second argument specifying the path to geth's IPC (inter-process communication) file.  IPC creates a persistent connection using a Unix domain socket (named pipe on Windows).  This is significantly faster than HTTP RPC, but requires access to the filesystem, so it cannot be used from the browser.
+The argument to `connector.connect` can also contain an `ipc` field, which is the path to geth's IPC (inter-process communication) file.  IPC creates a persistent connection using a Unix domain socket (named pipe on Windows).  This is significantly faster than HTTP RPC, but requires access to the filesystem, so it cannot be used from the browser.
 
-If your Ethereum data directory is `~/.ethereum`, then to connect to a local Ethereum node with IPC support:
+For example, if your Ethereum data directory is `~/.ethereum`, then to connect to a local Ethereum node with IPC support:
 ```javascript
 var ipcpath = require("path").join(process.env.HOME, ".ethereum", "geth.ipc");
-connector.connect(null, ipcpath);
+connector.connect({http: "http://localhost:8545", ipcpath: ipcpath});
 ```
+(Note: the `.ethereum/testnet` subdirectory has its own `geth.ipc` file which must be used to connect to geth via IPC on the Morden testnet.)
+
 If the last argument provided to `connector.connect` is a function, it will connect asynchronously.  This is recommended, especially for in-browser use!  For example:
 ```javascript
-connector.connect("https://eth1.augur.net", function (connected) {
-    // fun times
+connector.connect({http: "https://eth3.augur.net", ws: "ws://ws.augur.net"}, function (connected) {
+    // fun times may be had here
 });
 ```
 
 Tests
 -----
 
+ethereumjs-connect uses Mocha for unit tests.  To run them:
 ```
-$ mocha
+$ npm test
 ```

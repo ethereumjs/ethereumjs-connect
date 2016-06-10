@@ -43,23 +43,12 @@ module.exports = {
 
     tx: new contracts.Tx(network_id),
 
-    urlstring: function (obj) {
-        var port = (obj.port) ? ":" + obj.port : "";
-        return (obj.protocol || "http") + "://" + (obj.host || "127.0.0.1") + port;
-    },
-
     has_value: function (o, v) {
         for (var p in o) {
             if (o.hasOwnProperty(p)) {
                 if (o[p] === v) return p;
             }
         }
-    },
-
-    default_rpc: function () {
-        this.rpc.reset();
-        this.rpc.useHostedNode();
-        return false;
     },
 
     detect_network: function (callback) {
@@ -114,7 +103,7 @@ module.exports = {
         var self = this;
         if (is_function(callback)) {
             this.rpc.coinbase(function (coinbase) {
-                if (coinbase && !coinbase.error) {
+                if (coinbase && !coinbase.error && coinbase !== "0x") {
                     self.coinbase = coinbase;
                     self.from = self.from || coinbase;
                     self.from_field_tx(self.from);
@@ -124,17 +113,14 @@ module.exports = {
                     self.rpc.accounts(function (accounts) {
                         if (accounts && accounts.constructor === Array && accounts.length) {
                             async.eachSeries(accounts, function (account, nextAccount) {
-                                if (self.unlocked(account)) {
-                                    return nextAccount(account);
-                                }
+                                if (self.unlocked(account)) return nextAccount(account);
                                 nextAccount();
                             }, function (account) {
-                                if (account) {
-                                    self.coinbase = account;
-                                    self.from = self.from || account;
-                                    self.from_field_tx(self.from);
-                                    if (callback) callback(null, account);
-                                }
+                                if (!account) return callback("get_coinbase: coinbase not found");
+                                self.coinbase = account;
+                                self.from = self.from || account;
+                                self.from_field_tx(self.from);
+                                callback(null, account);
                             });
                         }
                     });
@@ -161,7 +147,7 @@ module.exports = {
                     }
                 }
             }
-            if (this.coinbase && this.coinbase !== "0x") {
+            if (this.coinbase && !this.coinbase.error && this.coinbase !== "0x") {
                 this.from = this.from || this.coinbase;
                 for (method in this.tx) {
                     if (!this.tx.hasOwnProperty(method)) continue;
@@ -175,7 +161,7 @@ module.exports = {
                     }
                 }
             } else {
-                return this.default_rpc();
+                throw new Error("get_coinbase: coinbase not found");
             }
         }
     },
@@ -204,106 +190,54 @@ module.exports = {
         this.init_contracts = clone(this.contracts);
     },
 
-    parse_rpcinfo: function (rpcinfo) {
-        var rpcstr, rpc_obj = {};
-        if (rpcinfo.constructor === Object) {
-            if (rpcinfo.protocol) rpc_obj.protocol = rpcinfo.protocol;
-            if (rpcinfo.host) rpc_obj.host = rpcinfo.host;
-            if (rpcinfo.port) {
-                rpc_obj.port = rpcinfo.port;
-            } else {
-                if (rpcinfo.host) {
-                    rpcstr = rpcinfo.host.split(":");
-                    if (rpcstr.length === 2) {
-                        rpc_obj.host = rpcstr[0];
-                        rpc_obj.port = rpcstr[1];
-                    }
-                }
-            }
-        } else if (rpcinfo.constructor === String) {
-            if (rpcinfo.indexOf("://") === -1 && rpcinfo.indexOf(':') === -1) {
-                rpc_obj.host = rpcinfo;
-            } else if (rpcinfo.indexOf("://") > -1) {
-                rpcstr = rpcinfo.split("://");
-                rpc_obj.protocol = rpcstr[0];
-                rpcstr = rpcstr[1].split(':');
-                if (rpcstr.length === 2) {
-                    rpc_obj.host = rpcstr[0];
-                    rpc_obj.port = rpcstr[1];
-                } else {
-                    rpc_obj.host = rpcstr;
-                }
-            } else if (rpcinfo.indexOf(':') > -1) {
-                rpcstr = rpcinfo.split(':');
-                if (rpcstr.length === 2) {
-                    rpc_obj.host = rpcstr[0];
-                    rpc_obj.port = rpcstr[1];
-                } else {
-                    rpc_obj.host = rpcstr;
-                }
-            } else {
-                return this.default_rpc();
-            }
+    connect: function (options, callback) {
+        var self = this;
+        if (!callback && is_function(options)) {
+            callback = options;
+            options = null;
         }
-        return this.urlstring(rpc_obj);
-    },
+        options = options || {};
 
-    connect: function (rpcinfo, ipcpath, callback, isRetry) {
-        var localnode, self = this;
-        if (!ipcpath && is_function(rpcinfo)) {
-            callback = rpcinfo;
-            rpcinfo = null;
-        }
-        if (!callback && is_function(ipcpath)) {
-            callback = ipcpath;
-            ipcpath = null;
-        }
-        if (!isRetry) {
-            // console.log("attempt 1...");
-            if (ipcpath) {
-                this.rpc.ipcpath = ipcpath;
-                if (rpcinfo) {
-                    localnode = this.parse_rpcinfo(rpcinfo);
-                    if (localnode) this.rpc.nodes.local = localnode;
-                } else {
-                    this.rpc.nodes.local = "http://127.0.0.1:8545";
-                }
-            } else {
-                this.rpc.ipcpath = null;
-            }
-            if (rpcinfo) {
-                localnode = this.parse_rpcinfo(rpcinfo);
-                // console.log("local node:", localnode);
-                if (localnode) {
-                    this.rpc.setLocalNode(localnode);
-                } else {
-                    console.log("using hosted:");
-                    this.rpc.useHostedNode();
-                }
-            } else {
-                console.log("using hosted");
-                this.rpc.useHostedNode();
-            }
+        // if this is the first attempt to connect, connect using the
+        // parameters provided by the user exactly
+        if ((options.http || options.ipc || options.ws) && !options.attempts) {
+            this.rpc.ipcpath = options.ipc;
+            this.rpc.nodes.local = options.http;
+            this.rpc.nodes.hosted = [];
+            this.rpc.wsUrl = options.ws;
+
+        // if this is the second attempt to connect, fall back to the
+        // default hosted nodes
         } else {
-            console.log("attempt 2...");
+            console.debug("Connecting to hosted Ethereum node...");
             this.rpc.ipcpath = null;
+            this.rpc.reset();
             this.rpc.useHostedNode();
+            console.debug("HTTP RPC:", JSON.stringify(this.rpc.nodes.hosted, null, 2));
+            console.debug("WebSocket:", this.rpc.wsUrl);
         }
+
         if (is_function(callback)) {
             async.series([
                 this.detect_network.bind(this),
                 this.get_coinbase.bind(this)
             ], function (err) {
                 if (err) {
-                    console.error("[async] connect error:", err);
-                    if (!isRetry) {
-                        return self.connect(rpcinfo, ipcpath, callback, true);
+                    console.warn("[async] Couldn't connect to Ethereum", err, JSON.stringify(options, null, 2));
+                    self.connection = false;
+                    if (!options.attempts) {
+                        options.attempts = 1;
+                        return self.connect(options, callback);
                     }
                     return callback(false);
                 }
                 self.update_contracts();
                 self.connection = true;
-                callback(true);
+                callback({
+                    http: self.rpc.nodes.local || self.rpc.nodes.hosted,
+                    ws: self.rpc.wsUrl,
+                    ipc: self.rpc.ipcpath
+                });
             });
         } else {
             try {
@@ -311,11 +245,17 @@ module.exports = {
                 this.get_coinbase();
                 this.update_contracts();
                 this.connection = true;
-                return true;
+                return {
+                    http: this.rpc.nodes.local || this.rpc.nodes.hosted,
+                    ws: this.rpc.wsUrl,
+                    ipc: this.rpc.ipcpath
+                };
             } catch (exc) {
-                console.error("[sync] connect error:", exc);
-                if (!isRetry) {
-                    return this.connect(rpcinfo, ipcpath, callback, true);
+                console.warn("[sync] Couldn't connect to Ethereum", exc, JSON.stringify(options, null, 2));
+                this.connection = false;
+                if (!options.attempts) {
+                    options.attempts = 1;
+                    return this.connect(options);
                 }
                 return false;
             }
