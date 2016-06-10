@@ -16,6 +16,45 @@ var IPCPATH = process.env.GETH_IPC;
 
 require('it-each')({ testPerIteration: true });
 
+var custom_contracts = {
+    "buyAndSellShares": "0x1",
+    "closeMarket": "0x2",
+    "closeMarketEight": "0x3",
+    "closeMarketFour": "0x4",
+    "closeMarketOne": "0x5",
+    "closeMarketTwo": "0x6",
+    "collectFees": "0x7",
+    "completeSets": "0x8",
+    "compositeGetters": "0x9",
+    "consensus": "0x10",
+    "createBranch": "0x11",
+    "createMarket": "0x12",
+    "createSingleEventMarket": "0x13",
+    "eventResolution": "0x14",
+    "faucets": "0x15",
+    "forkPenalize": "0x16",
+    "forking": "0x17",
+    "makeReports": "0x18",
+    "penalizationCatchup": "0x19",
+    "penalizeNotEnoughReports": "0x20",
+    "roundTwo": "0x21",
+    "roundTwoPenalize": "0x22",
+    "sendReputation": "0x23",
+    "slashRep": "0x24",
+    "trade": "0x25",
+    "backstops": "0x26",
+    "branches": "0x27",
+    "cash": "0x28",
+    "consensusData": "0x29",
+    "events": "0x30",
+    "expiringEvents": "0x31",
+    "fxpFunctions": "0x32",
+    "info": "0x33",
+    "markets": "0x34",
+    "reporting": "0x35",
+    "trades": "0x36"
+};
+
 describe("has_value", function () {
 
     var test = function (t) {
@@ -163,6 +202,28 @@ describe("connect", function () {
                 }
             );
             it.each(connectOptions,
+                "[sync] connect with custom contracts",
+                ["element"],
+                function (element, next) {
+                    this.timeout(TIMEOUT);
+                    delete require.cache[require.resolve("../")];
+                    var connector = require("../");
+                    var options = element;
+                    options.contracts = custom_contracts;
+                    var conn = connector.connect(options);
+                    assert.isObject(conn);
+                    assert.strictEqual(conn.http, element.http);
+                    assert.strictEqual(conn.ws, element.ws);
+                    assert.strictEqual(conn.ipc, element.ipc);
+                    assert.isTrue(connector.connected());
+                    assert.isString(connector.coinbase);
+                    assert.deepEqual(connector.contracts, custom_contracts);
+                    assert.deepEqual(connector.init_contracts, custom_contracts);
+                    assert.deepEqual(connector.custom_contracts, custom_contracts);
+                    next();
+                }
+            );
+            it.each(connectOptions,
                 "[sync] connect with IPC support",
                 ["element"],
                 function (element, next) {
@@ -213,6 +274,29 @@ describe("connect", function () {
                         assert.strictEqual(conn.ipc, element.ipc);
                         assert.isTrue(connector.connected());
                         assert.isString(connector.coinbase);
+                        next();
+                    });
+                }
+            );
+            it.each(connectOptions,
+                "[async] connect with custom contracts",
+                ["element"],
+                function (element, next) {
+                    this.timeout(TIMEOUT);
+                    delete require.cache[require.resolve("../")];
+                    var connector = require("../");
+                    var options = element;
+                    options.contracts = custom_contracts;
+                    connector.connect(options, function (conn) {
+                        assert.isObject(conn);
+                        assert.strictEqual(conn.http, element.http);
+                        assert.strictEqual(conn.ws, element.ws);
+                        assert.strictEqual(conn.ipc, element.ipc);
+                        assert.isTrue(connector.connected());
+                        assert.isString(connector.coinbase);
+                        assert.deepEqual(connector.contracts, custom_contracts);
+                        assert.deepEqual(connector.init_contracts, custom_contracts);
+                        assert.deepEqual(connector.custom_contracts, custom_contracts);
                         next();
                     });
                 }

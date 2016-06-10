@@ -41,6 +41,8 @@ module.exports = {
 
     init_contracts: contracts[network_id],
 
+    custom_contracts: null,
+
     tx: new contracts.Tx(network_id),
 
     has_value: function (o, v) {
@@ -61,8 +63,8 @@ module.exports = {
                     var key;
                     if (version !== null && version !== undefined && !version.error) {
                         self.network_id = version;
-                        self.tx = new contracts.Tx(version);
-                        self.contracts = clone(contracts[self.network_id]);
+                        self.tx = new contracts.Tx(version, self.custom_contracts);
+                        self.contracts = clone(self.custom_contracts || contracts[self.network_id]);
                         for (var method in self.tx) {
                             if (!self.tx.hasOwnProperty(method)) continue;
                             key = self.has_value(self.init_contracts, self.tx[method].to);
@@ -76,8 +78,8 @@ module.exports = {
             } else {
                 var key, method;
                 this.network_id = this.rpc.version() || "2";
-                this.tx = new contracts.Tx(this.network_id);
-                this.contracts = clone(contracts[this.network_id]);
+                this.tx = new contracts.Tx(this.network_id, this.custom_contracts);
+                this.contracts = clone(this.custom_contracts || contracts[this.network_id]);
                 for (method in this.tx) {
                     if (!this.tx.hasOwnProperty(method)) continue;
                     key = this.has_value(this.init_contracts, this.tx[method].to);
@@ -197,6 +199,11 @@ module.exports = {
             options = null;
         }
         options = options || {};
+        if (options.contracts) {
+            this.contracts = clone(options.contracts);
+            this.init_contracts = clone(options.contracts);
+            this.custom_contracts = clone(options.contracts);
+        }
 
         // if this is the first attempt to connect, connect using the
         // parameters provided by the user exactly
@@ -231,7 +238,11 @@ module.exports = {
                     }
                     return callback(false);
                 }
-                self.update_contracts();
+                if (options.contracts) {
+
+                } else {
+                    self.update_contracts();
+                }
                 self.connection = true;
                 callback({
                     http: self.rpc.nodes.local || self.rpc.nodes.hosted,
