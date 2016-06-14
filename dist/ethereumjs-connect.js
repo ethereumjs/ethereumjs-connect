@@ -3732,7 +3732,7 @@ module.exports={
         "compositeGetters": "0xce65c10f58c0ba0fe6dd98c4872af2b14a97a539",
         "consensus": "0xfcd9b63e2a8a2b869db64f8dd25f599b0b172ffd",
         "createBranch": "0xf2fc3c829ad9a271a64e6f437fb6f9e8ed0f9770",
-        "createMarket": "0x2bcf1482f030d37de85528fb405e9864922d3ba6",
+        "createMarket": "0x660cdfdf3d0e7443e7935343a1131b961575ccc7",
         "eventResolution": "0xfa01e10196e9575835e08d0af12383119b43ea5e",
         "faucets": "0x59997e2d0d9fb15cb4bb3ff41a79e8e3041e817f",
         "forkPenalize": "0x3ffd684dc0ff3c49eb137b8ceb3a6a825bd62a84",
@@ -3853,10 +3853,6 @@ module.exports={
     "penalizationCatchup": {
         "-2": "can only be called during the first half of the reporting period"
     },
-    "penalizeNotEnoughReports": {
-        "-1": "already done",
-        "-2": "hasn't reported this period"
-    },
     "penalizeOnForkedEvent": {
         "-2": "already past first half of new period and needed to penalize before then",
         "-4": "fork event isn't resolved yet",
@@ -3878,6 +3874,16 @@ module.exports={
         "-5": "already done for all events in this period",
         "-6": "forked events should be penalized using the fork penalization function",
         "-7": "no outcome"
+    },
+    "proveReporterDidntReportEnough": {
+        "-1": "already done",
+        "-2": "not in right part of period"
+    },
+    "pushMarketForward": {
+        "-1": "fork period cannot be the current or previous period",
+        "-2": "market is already closed or pushed forward",
+        "-3": "not enough cash to post early resolution bond",
+        "-4": "early resolution already attempted or outcome already exists"
     },
     "sell": {
         "-1": "amount/price bad or no market",
@@ -3928,6 +3934,10 @@ module.exports={
         "-3": "trader doesn't exist / own shares in this market",
         "-4": "must buy at least .00000001 in value",
         "10": "insufficient balance"
+    },
+    "updateTradingFee": {
+        "-1": "invalid trading fee: either fee is below the minimum trading fee or you are trying to raise the trading fee (trading fees can be lowered, but not raised)",
+        "-4": "sender's address does not match the market creator's address"
     },
     "INSUFFICIENT_LIQUIDITY": {
         "error": 42,
@@ -5103,15 +5113,29 @@ module.exports = function (network, contracts) {
             signature: "isiaiiiis",
             send: true
         },
+        updateTradingFee: {
+            to: contracts.createMarket,
+            method: "updateTradingFee",
+            signature: "iii",
+            send: true,
+            returns: "number"
+        },
+        pushMarketForward: {
+            to: contracts.createMarket,
+            method: "pushMarketForward",
+            signature: "ii",
+            send: true,
+            returns: "number"
+        },
 
         // createSingleEventMarket.se
-        createSingleEventMarket: {
-            to: contracts.createMarket,
-            method: "createSingleEventMarket",
-            signature: "isiiiisiiiiis",
-            returns: "hash",
-            send: true
-        },
+        // createSingleEventMarket: {
+        //     to: contracts.createMarket,
+        //     method: "createSingleEventMarket",
+        //     signature: "isiiiisiiiiis",
+        //     returns: "hash",
+        //     send: true
+        // },
 
         // closeMarket.se
         closeMarket: {
