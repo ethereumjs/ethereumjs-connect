@@ -216,12 +216,16 @@ module.exports = {
         // if this is the second attempt to connect, fall back to the
         // default hosted nodes
         } else {
-            console.debug("Connecting to hosted Ethereum node...");
+            if (this.debug) {
+                console.debug("Connecting to hosted Ethereum node...");
+            }
             this.rpc.ipcpath = null;
             this.rpc.reset();
             this.rpc.useHostedNode();
-            console.debug("HTTP RPC:", JSON.stringify(this.rpc.nodes.hosted, null, 2));
-            console.debug("WebSocket:", this.rpc.wsUrl);
+            if (this.debug) {
+                console.debug("HTTP RPC:", JSON.stringify(this.rpc.nodes.hosted, null, 2));
+                console.debug("WebSocket:", this.rpc.wsUrl);
+            }
         }
 
         if (is_function(callback)) {

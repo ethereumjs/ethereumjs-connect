@@ -4761,7 +4761,7 @@ module.exports = function (network, contracts) {
             to: contracts.reporting,
             method: "getReporterID",
             signature: "ii",
-            returns: "address"
+            returns: "hash"
         },
         getTotalRep: {
             to: contracts.reporting,
@@ -17750,12 +17750,16 @@ module.exports = {
         // if this is the second attempt to connect, fall back to the
         // default hosted nodes
         } else {
-            console.debug("Connecting to hosted Ethereum node...");
+            if (this.debug) {
+                console.debug("Connecting to hosted Ethereum node...");
+            }
             this.rpc.ipcpath = null;
             this.rpc.reset();
             this.rpc.useHostedNode();
-            console.debug("HTTP RPC:", JSON.stringify(this.rpc.nodes.hosted, null, 2));
-            console.debug("WebSocket:", this.rpc.wsUrl);
+            if (this.debug) {
+                console.debug("HTTP RPC:", JSON.stringify(this.rpc.nodes.hosted, null, 2));
+                console.debug("WebSocket:", this.rpc.wsUrl);
+            }
         }
 
         if (is_function(callback)) {
@@ -34748,7 +34752,6 @@ module.exports = {
     debug: {
         tx: false,
         broadcast: false,
-        fallback: false,
         logs: false
     },
 
@@ -34974,14 +34977,19 @@ module.exports = {
         });
         this.socket.on("end", function () { received = ""; });
         this.socket.on("error", function (err) {
-            console.error("IPC socket error:", err);
             self.ipcStatus = -1;
             self.socket.destroy();
             received = "";
+            if (self.debug.broadcast) {
+                console.error("[ethrpc] IPC socket error", self.ipcpath, self.ipcStatus, err);
+            }
         });
         this.socket.on("close", function (err) {
             self.ipcStatus = (err) ? -1 : 0;
             received = "";
+            if (self.debug.broadcast) {
+                console.warn("[ethrpc] IPC socket closed", self.ipcpath, self.ipcStatus);
+            }
         });
         this.socket.connect({path: this.ipcpath}, function () {
             self.ipcStatus = 1;
@@ -34994,9 +35002,15 @@ module.exports = {
         this.websocket = new W3CWebSocket(this.wsUrl);
         this.websocket.onerror = function () {
             self.wsStatus = -1;
+            if (self.debug.broadcast) {
+                console.error("[ethrpc] WebSocket error", self.wsUrl, self.wsStatus);
+            }
         };
         this.websocket.onclose = function () {
             self.wsStatus = 0;
+            if (self.debug.broadcast) {
+                console.warn("[ethrpc] WebSocket closed", self.wsUrl, self.wsStatus);
+            }
         };
         this.websocket.onmessage = function (msg) {
             if (msg && msg.data && typeof msg.data === "string") {
@@ -35020,11 +35034,17 @@ module.exports = {
     },
 
     ipcSend: function (command, returns, callback) {
+        if (this.debug.broadcast) {
+            console.log("[ethrpc] IPC request to", this.ipcpath + "\n" + JSON.stringify(command));
+        }
         this.ipcRequests[command.id] = {returns: returns, callback: callback};
         if (this.ipcStatus === 1) this.socket.write(JSON.stringify(command));
     },
 
     wsSend: function (command, returns, callback) {
+        if (this.debug.broadcast) {
+            console.log("[ethrpc] WebSocket request to", this.wsUrl + "\n" + JSON.stringify(command));
+        }
         this.wsRequests[command.id] = {returns: returns, callback: callback};
         if (this.websocket.readyState === this.websocket.OPEN) {
             this.websocket.send(JSON.stringify(command));
@@ -35038,6 +35058,9 @@ module.exports = {
             delete command.timeout;
         } else {
             timeout = this.POST_TIMEOUT;
+        }
+        if (this.debug.broadcast) {
+            console.warn("[ethrpc] Synchronous HTTP request to", rpcUrl + "\n" + JSON.stringify(command));
         }
         if (NODE_JS) {
             req = syncRequest("POST", rpcUrl, {json: command, timeout: timeout});
@@ -35062,6 +35085,9 @@ module.exports = {
             delete command.timeout;
         } else {
             timeout = this.POST_TIMEOUT;
+        }
+        if (this.debug.broadcast) {
+            console.log("[ethrpc] Asynchronous HTTP request to", rpcUrl + "\n" + JSON.stringify(command));
         }
         request({
             url: rpcUrl,
