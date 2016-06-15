@@ -35268,7 +35268,7 @@ module.exports = {
         if (params !== undefined && params !== null) {
             if (params.constructor === Object) {
                 if (this.debug.broadcast && params.debug) {
-                    payload.debug = abi.copy(params.debug);
+                    payload.debug = clone(params.debug);
                     delete params.debug;
                 }
                 if (params.timeout) {
@@ -35709,15 +35709,17 @@ module.exports = {
      * }
      */
     invoke: function (itx, f) {
-        var tx, dataAbi, packaged, invocation, invoked, err;
+        var tx, dataAbi, packaged, invocation, invoke, invoked, err, context;
         try {
             if (itx) {
                 if (itx.send && itx.invocation && itx.invocation.invoke &&
-                    itx.invocation.invoke.constructor === Function)
-                {
-                    return itx.invocation.invoke.call(itx.invocation.context, itx, f);
+                    itx.invocation.invoke.constructor === Function) {
+                    invoke = itx.invocation.invoke;
+                    context = clone(itx.invocation.context);
+                    delete itx.invocation;
+                    return invoke.call(context, itx, f);
                 } else {
-                    tx = abi.copy(itx);
+                    tx = clone(itx);
                     if (tx.params === undefined || tx.params === null) {
                         tx.params = [];
                     } else if (tx.params.constructor !== Array) {
@@ -35744,7 +35746,7 @@ module.exports = {
                         if (tx.value) packaged.value = tx.value;
                         if (tx.returns) packaged.returns = tx.returns;
                         if (this.debug.broadcast) {
-                            packaged.debug = abi.copy(tx);
+                            packaged.debug = clone(tx);
                             packaged.debug.batch = false;
                         }
                         invocation = (tx.send) ? this.sendTx : this.call;
@@ -35754,14 +35756,19 @@ module.exports = {
                 }
             }
         } catch (exc) {
-            err = abi.copy(errors.TRANSACTION_FAILED);
-            err.bubble = exc;
-            err.tx = itx;
-            if (isFunction(f)) return f(err);
-            return err;
+            if (exc && exc.name === "TypeError" && this.ipcpath && itx.invocation) {
+                delete itx.invocation;
+                return this.invoke(itx, f);
+            } else {
+                err = clone(errors.TRANSACTION_FAILED);
+                err.bubble = exc;
+                err.tx = itx;
+                if (isFunction(f)) return f(err);
+                return err;
+            }
         }
         if (!invoked) {
-            err = abi.copy(errors.TRANSACTION_FAILED);
+            err = clone(errors.TRANSACTION_FAILED);
             err.bubble = "!invoked";
             err.tx = itx;
             if (isFunction(f)) return f(err);
@@ -35786,7 +35793,7 @@ module.exports = {
         callbacks = new Array(numCommands);
         returns = [];
         for (var i = 0; i < numCommands; ++i) {
-            tx = abi.copy(txlist[i]);
+            tx = clone(txlist[i]);
             if (tx.params === undefined || tx.params === null) {
                 tx.params = [];
             } else if (tx.params.constructor !== Array) {
@@ -35817,7 +35824,7 @@ module.exports = {
                 if (tx.returns) packaged.returns = tx.returns;
                 returns.push(tx.returns);
                 if (this.debug.broadcast) {
-                    packaged.debug = abi.copy(tx);
+                    packaged.debug = clone(tx);
                     packaged.debug.batch = true;
                 }
                 invocation = (tx.send) ? "sendTransaction" : "call";
@@ -35910,7 +35917,7 @@ module.exports = {
 
     fire: function (itx, callback) {
         var self = this;
-        var tx = abi.copy(itx);
+        var tx = clone(itx);
         if (!isFunction(callback)) {
             var res = this.errorCodes(itx.method, itx.returns, this.applyReturns(itx.returns, this.invoke(tx)));
             if (res) return res;
