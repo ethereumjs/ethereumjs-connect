@@ -3950,7 +3950,11 @@ module.exports={
     "INITIAL_PRICE_OUT_OF_BOUNDS": {
         "error": 43,
         "message": "one or more initial fair prices are out-of-bounds"
-    }, 
+    },
+    "PRICE_WIDTH_OUT_OF_BOUNDS": {
+        "error": 44,
+        "message": "price width is too large for one or more initial fair prices"
+    },
     "DB_DELETE_FAILED": {
         "error": 97,
         "message": "database delete failed"
@@ -35123,6 +35127,7 @@ module.exports = {
 
     // Post JSON-RPC command to all Ethereum nodes
     broadcast: function (command, callback) {
+        // console.log("command:", JSON.stringify(command, null, 2));
         var nodes, numCommands, returns, result, completed, self = this;
         if (!command || (command.constructor === Object && !command.method) ||
             (command.constructor === Array && !command.length)) {
