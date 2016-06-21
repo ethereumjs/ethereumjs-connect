@@ -4544,9 +4544,27 @@ module.exports = function (network, contracts) {
         },
 
         // markets.se
+        getFees: {
+            to: contracts.markets,
+            method: "getFees",
+            signature: "i",
+            returns: "unfix"
+        },
         getMakerFees: {
             to: contracts.markets,
             method: "getMakerFees",
+            signature: "i",
+            returns: "unfix"
+        },
+        getgasSubsidy: {
+            to: contracts.markets,
+            method: "getgasSubsidy",
+            signature: "i",
+            returns: "int"
+        },
+        getSharesValue: {
+            to: contracts.markets,
+            method: "getSharesValue",
             signature: "i",
             returns: "unfix"
         },
@@ -34856,6 +34874,8 @@ module.exports = {
                 res = abi.raw_decode_hex(res);
             } else if (returns === "number") {
                 res = abi.string(res);
+            } else if (returns === "int") {
+                res = parseInt(res, 16);
             } else if (returns === "bignumber") {
                 res = abi.bignum(res);
             } else if (returns === "unfix") {
@@ -35127,7 +35147,6 @@ module.exports = {
 
     // Post JSON-RPC command to all Ethereum nodes
     broadcast: function (command, callback) {
-        // console.log("command:", JSON.stringify(command, null, 2));
         var nodes, numCommands, returns, result, completed, self = this;
         if (!command || (command.constructor === Object && !command.method) ||
             (command.constructor === Array && !command.length)) {
