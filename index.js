@@ -10,6 +10,8 @@ var rpc = require("ethrpc");
 var contracts = require("augur-contracts");
 var network_id = "2";
 
+function noop() {}
+
 function is_function(f) {
     return Object.prototype.toString.call(f) === "[object Function]";
 }
@@ -208,10 +210,11 @@ module.exports = {
         // if this is the first attempt to connect, connect using the
         // parameters provided by the user exactly
         if ((options.http || options.ipc || options.ws) && !options.attempts) {
-            this.rpc.ipcpath = options.ipc;
+            this.rpc.ipcpath = options.ipc || null;
             this.rpc.nodes.local = options.http;
             this.rpc.nodes.hosted = [];
             this.rpc.wsUrl = options.ws;
+            this.rpc.wsStatus = 0;
 
         // if this is the second attempt to connect, fall back to the
         // default hosted nodes
@@ -222,39 +225,15 @@ module.exports = {
             this.rpc.ipcpath = null;
             this.rpc.reset();
             this.rpc.useHostedNode();
+            this.rpc.wsStatus = 0;
             if (this.debug) {
                 console.debug("HTTP RPC:", JSON.stringify(this.rpc.nodes.hosted, null, 2));
                 console.debug("WebSocket:", this.rpc.wsUrl);
             }
         }
 
-        if (is_function(callback)) {
-            async.series([
-                this.detect_network.bind(this),
-                this.get_coinbase.bind(this)
-            ], function (err) {
-                if (err) {
-                    console.warn("[async] Couldn't connect to Ethereum", err, JSON.stringify(options, null, 2));
-                    self.connection = false;
-                    if (!options.attempts) {
-                        options.attempts = 1;
-                        return self.connect(options, callback);
-                    }
-                    return callback(false);
-                }
-                if (options.contracts) {
-
-                } else {
-                    self.update_contracts();
-                }
-                self.connection = true;
-                callback({
-                    http: self.rpc.nodes.local || self.rpc.nodes.hosted,
-                    ws: self.rpc.wsUrl,
-                    ipc: self.rpc.ipcpath
-                });
-            });
-        } else {
+        // synchronous connect sequence
+        if (!is_function(callback)) {
             try {
                 this.detect_network();
                 this.get_coinbase();
@@ -266,7 +245,9 @@ module.exports = {
                     ipc: this.rpc.ipcpath
                 };
             } catch (exc) {
-                console.warn("[sync] Couldn't connect to Ethereum", exc, JSON.stringify(options, null, 2));
+                if (this.debug) {
+                    console.warn("[sync] Couldn't connect to Ethereum", exc, JSON.stringify(options, null, 2));
+                }
                 this.connection = false;
                 if (!options.attempts) {
                     options.attempts = 1;
@@ -275,6 +256,48 @@ module.exports = {
                 return false;
             }
         }
+
+        // asynchronous connect sequence
+        callback = callback || noop;
+        async.series([
+            function (next) {
+                if (!options.http || !options.ws) return next();
+                var wsUrl = self.rpc.wsUrl;
+                var wsStatus = self.rpc.wsStatus;
+                self.rpc.wsUrl = null;
+                self.rpc.wsStatus = 0;
+                self.detect_network(function (err) {
+                    self.rpc.wsUrl = wsUrl;
+                    self.rpc.wsStatus = wsStatus;
+                    next(err);
+                });
+            },
+            this.detect_network.bind(this),
+            this.get_coinbase.bind(this)
+        ], function (err) {
+            if (err) {
+                if (self.debug) {
+                    console.warn("[async] Couldn't connect to Ethereum", err, JSON.stringify(options, null, 2));
+                }
+                self.connection = false;
+                if (!options.attempts) {
+                    options.attempts = 1;
+                    return self.connect(options, callback);
+                }
+                return callback(false);
+            }
+            if (options.contracts) {
+
+            } else {
+                self.update_contracts();
+            }
+            self.connection = true;
+            callback({
+                http: self.rpc.nodes.local || self.rpc.nodes.hosted,
+                ws: self.rpc.wsUrl,
+                ipc: self.rpc.ipcpath
+            });
+        });
     },
 
     connected: function (f) {

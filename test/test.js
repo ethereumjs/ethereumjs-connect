@@ -142,43 +142,154 @@ describe("has_value", function () {
 
 describe("connect", function () {
 
-    // describe("hosted nodes", function () {
-    //     var test = function (t) {
-    //         it("[sync] " + JSON.stringify(t.node), function () {
-    //             this.timeout(TIMEOUT);
-    //             delete require.cache[require.resolve("../")];
-    //             var connector = require("../");
-    //             var conn = connector.connect(t.node);
-    //             assert.isObject(conn);
-    //             assert.strictEqual(conn.http, t.node.http);
-    //             assert.strictEqual(conn.ws, t.node.ws);
-    //             assert.isUndefined(conn.ipc);
-    //             assert.strictEqual(connector.coinbase, t.address);
-    //         });
-    //         it("[async] " + JSON.stringify(t.node), function () {
-    //             this.timeout(TIMEOUT);
-    //             delete require.cache[require.resolve("../")];
-    //             var connector = require("../");
-    //             connector.connect(t.node, function (conn) {
-    //                 assert.isObject(conn);
-    //                 assert.strictEqual(conn.http, t.node.http);
-    //                 assert.strictEqual(conn.ws, t.node.ws);
-    //                 assert.isUndefined(conn.ipc);
-    //                 assert.strictEqual(connector.coinbase, t.address);
-    //             });
-    //         });
-    //     };
-    //     test({
-    //         node: {http: "https://eth3.augur.net"},
-    //         address: "0x00bae5113ee9f252cceb0001205b88fad175461a"
-    //     });
-    //     test({
-    //         node: {http: "https://eth3.augur.net", ws: "wss://ws.augur.net"},
-    //         address: "0x00bae5113ee9f252cceb0001205b88fad175461a"
-    //     });
-    // });
+    describe("hosted node fallback", function () {
+        var test = function (t) {
+            it("[async] " + JSON.stringify(t), function (done) {
+                this.timeout(TIMEOUT);
+                delete require.cache[require.resolve("../")];
+                var connector = require("../");
+                connector.connect(t, function (connection) {
+                    assert.deepEqual(connection, t.expected);
+                    assert.strictEqual(connector.rpc.wsUrl, t.expected.ws);
+                    assert.strictEqual(connector.rpc.ipcpath, t.expected.ipc);
+                    done();
+                });
+            });
+            it("[sync] " + JSON.stringify(t), function () {
+                delete require.cache[require.resolve("../")];
+                var connector = require("../");
+                var connection = connector.connect(t);
+                assert.deepEqual(connection.http, t.expected.http);
+                if (t.expected.ws !== null) {
+                    assert.strictEqual(connector.rpc.wsUrl, t.expected.ws);
+                }
+                if (t.expected.ipc !== null) {
+                    assert.strictEqual(connector.rpc.ipcpath, t.expected.ipc);
+                }
+            });
+        };
+        test({
+            http: "https://eth3.augur.net",
+            ws: "wss://ws.augur.net",
+            expected: {
+                http: "https://eth3.augur.net",
+                ws: "wss://ws.augur.net",
+                ipc: null
+            }
+        });
+        test({
+            http: "https://eth3.augur.net",
+            ws: "wss://lulz.augur.net",
+            expected: {
+                http: "https://eth3.augur.net",
+                ws: null,
+                ipc: null
+            }
+        });
+        test({
+            http: "https://lulz.augur.net",
+            ws: null,
+            expected: {
+                http: ["https://eth3.augur.net"],
+                ws: "wss://ws.augur.net",
+                ipc: null
+            }
+        });
+        test({
+            http: "https://eth3.augur.net",
+            ws: null,
+            expected: {
+                http: "https://eth3.augur.net",
+                ws: null,
+                ipc: null
+            }
+        });
+        test({
+            http: "https://lulz.augur.net",
+            ws: "wss://ws.augur.net",
+            expected: {
+                http: ["https://eth3.augur.net"],
+                ws: "wss://ws.augur.net",
+                ipc: null
+            }
+        });
+        test({
+            http: "https://lulz.augur.net",
+            ws: "wss://lulz.augur.net",
+            expected: {
+                http: ["https://eth3.augur.net"],
+                ws: "wss://ws.augur.net",
+                ipc: null
+            }
+        });
+        test({
+            http: "https://not.a.real.url",
+            ws: "wss://not.a.real.url",
+            expected: {
+                http: ["https://eth3.augur.net"],
+                ws: "wss://ws.augur.net",
+                ipc: null
+            }
+        });
+        test({
+            http: "http://127.0.0.2:2121",
+            ws: "ws://127.0.0.2:1212",
+            expected: {
+                http: ["https://eth3.augur.net"],
+                ws: "wss://ws.augur.net",
+                ipc: null
+            }
+        });
+        if (process.env.INTEGRATION_TESTS) {
+            test({
+                http: "http://127.0.0.1:8545",
+                ws: "ws://127.0.0.1:8546",
+                expected: {
+                    http: "http://127.0.0.1:8545",
+                    ws: "ws://127.0.0.1:8546",
+                    ipc: null
+                }
+            });
+        }
+    });
 
-    if (!process.env.CONTINUOUS_INTEGRATION) {
+    describe("hosted nodes", function () {
+        var test = function (t) {
+            it("[sync] " + JSON.stringify(t.node), function () {
+                this.timeout(TIMEOUT);
+                delete require.cache[require.resolve("../")];
+                var connector = require("../");
+                var conn = connector.connect(t.node);
+                assert.isObject(conn);
+                assert.strictEqual(conn.http, t.node.http);
+                assert.strictEqual(conn.ws, t.node.ws);
+                assert.isNull(conn.ipc);
+                assert.strictEqual(connector.coinbase, t.address);
+            });
+            it("[async] " + JSON.stringify(t.node), function () {
+                this.timeout(TIMEOUT);
+                delete require.cache[require.resolve("../")];
+                var connector = require("../");
+                connector.connect(t.node, function (conn) {
+                    assert.isObject(conn);
+                    assert.strictEqual(conn.http, t.node.http);
+                    assert.strictEqual(conn.ws, t.node.ws);
+                    assert.isNull(conn.ipc);
+                    assert.strictEqual(connector.coinbase, t.address);
+                });
+            });
+        };
+        test({
+            node: {http: "https://eth3.augur.net"},
+            address: "0x00bae5113ee9f252cceb0001205b88fad175461a"
+        });
+        test({
+            node: {http: "https://eth3.augur.net", ws: "wss://ws.augur.net"},
+            address: "0x00bae5113ee9f252cceb0001205b88fad175461a"
+        });
+    });
+
+    if (process.env.ETHEREUMJS_INTEGRATION_TESTS) {
         describe("local node", function () {
             var connectOptions = [
                 {http: "http://localhost:8545"},
