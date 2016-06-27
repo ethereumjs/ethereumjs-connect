@@ -461,7 +461,7 @@ describe("connect", function () {
         var connector = require("../");
         var conn = connector.connect({http: "https://eth3.augur.net"});
         assert.isNotNull(connector.rpc.nodes.local);
-        assert.isTrue(connector.rpc.unlocked(connector.coinbase));
+        assert.isFalse(connector.rpc.unlocked(connector.coinbase));
     });
     it("[async] unlocked", function (done) {
         this.timeout(TIMEOUT);
@@ -470,7 +470,7 @@ describe("connect", function () {
         connector.connect({http: "https://eth3.augur.net"}, function (conn) {
             connector.rpc.unlocked(connector.coinbase, function (unlocked) {
                 assert.isNotNull(connector.rpc.nodes.local);
-                assert.isTrue(unlocked);
+                assert.isFalse(unlocked);
                 done();
             });
         });
