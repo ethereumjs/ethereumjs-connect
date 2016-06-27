@@ -7,14 +7,13 @@
 
 var join = require("path").join;
 var assert = require("chai").assert;
-var contracts = require("augur-contracts");
 var connector = require("../");
 connector.debug = true;
 
 var TIMEOUT = 48000;
 var IPCPATH = process.env.GETH_IPC;
 
-require('it-each')({ testPerIteration: true });
+require('it-each')({testPerIteration: true});
 
 var custom_contracts = {
     "buyAndSellShares": "0x1",

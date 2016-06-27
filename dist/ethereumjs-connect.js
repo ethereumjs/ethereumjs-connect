@@ -577,17 +577,16 @@ module.exports = {
 
     // hex-encode a function's ABI data and return it
     encode: function (tx) {
-        tx.signature = tx.signature || "";
-        var sig = ethabi.fromSerpent(tx.signature);
+        tx.signature = tx.signature || [];
         return this.prefix_hex(Buffer.concat([
-            ethabi.methodID(tx.method, sig),
-            ethabi.rawEncode(sig, tx.params)
+            ethabi.methodID(tx.method, tx.signature),
+            ethabi.rawEncode(tx.signature, tx.params)
         ]).toString("hex"));
     }
 };
 
 }).call(this,require("buffer").Buffer)
-},{"bignumber.js":2,"buffer":67,"ethereumjs-abi":8,"js-sha3":3}],2:[function(require,module,exports){
+},{"bignumber.js":2,"buffer":68,"ethereumjs-abi":3,"js-sha3":55}],2:[function(require,module,exports){
 /*! bignumber.js v2.0.8 https://github.com/MikeMcl/bignumber.js/LICENCE */
 
 ;(function (global) {
@@ -3282,2031 +3281,10 @@ module.exports = {
     }
 })(this);
 
-},{"crypto":71}],3:[function(require,module,exports){
-(function (global){
-/*
- * js-sha3 v0.3.1
- * https://github.com/emn178/js-sha3
- *
- * Copyright 2015, emn178@gmail.com
- *
- * Licensed under the MIT license:
- * http://www.opensource.org/licenses/MIT
- */
-;(function(root, undefined) {
-  'use strict';
-
-  var NODE_JS = typeof(module) != 'undefined';
-  if(NODE_JS) {
-    root = global;
-    if(root.JS_SHA3_TEST) {
-      root.navigator = { userAgent: 'Chrome'};
-    }
-  }
-  var CHROME = (root.JS_SHA3_TEST || !NODE_JS) && navigator.userAgent.indexOf('Chrome') != -1;
-  var HEX_CHARS = '0123456789abcdef'.split('');
-  var KECCAK_PADDING = [1, 256, 65536, 16777216];
-  var PADDING = [6, 1536, 393216, 100663296];
-  var SHIFT = [0, 8, 16, 24];
-  var RC = [1, 0, 32898, 0, 32906, 2147483648, 2147516416, 2147483648, 32907, 0, 2147483649,
-            0, 2147516545, 2147483648, 32777, 2147483648, 138, 0, 136, 0, 2147516425, 0, 
-            2147483658, 0, 2147516555, 0, 139, 2147483648, 32905, 2147483648, 32771, 
-            2147483648, 32770, 2147483648, 128, 2147483648, 32778, 0, 2147483658, 2147483648,
-            2147516545, 2147483648, 32896, 2147483648, 2147483649, 0, 2147516424, 2147483648];
-
-  var blocks = [], s = [];
-
-  var keccak_224 = function(message) {
-    return keccak(message, 224, KECCAK_PADDING);
-  };
-
-  var keccak_256 = function(message) {
-    return keccak(message, 256, KECCAK_PADDING);
-  };
-
-  var keccak_384 = function(message) {
-    return keccak(message, 384, KECCAK_PADDING);
-  };
-
-  var sha3_224 = function(message) {
-    return keccak(message, 224, PADDING);
-  };
-
-  var sha3_256 = function(message) {
-    return keccak(message, 256, PADDING);
-  };
-
-  var sha3_384 = function(message) {
-    return keccak(message, 384, PADDING);
-  };
-
-  var sha3_512 = function(message) {
-    return keccak(message, 512, PADDING);
-  };
-
-  var keccak = function(message, bits, padding) {
-    var notString = typeof(message) != 'string';
-    if(notString && message.constructor == root.ArrayBuffer) {
-      message = new Uint8Array(message);
-    }
-
-    if(bits === undefined) {
-      bits = 512;
-      padding = KECCAK_PADDING;
-    }
-
-    var block, code, end = false, index = 0, start = 0, length = message.length,
-        n, i, h, l, c0, c1, c2, c3, c4, c5, c6, c7, c8, c9, 
-        b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15, b16, b17, 
-        b18, b19, b20, b21, b22, b23, b24, b25, b26, b27, b28, b29, b30, b31, b32, b33, 
-        b34, b35, b36, b37, b38, b39, b40, b41, b42, b43, b44, b45, b46, b47, b48, b49;
-    var blockCount = (1600 - bits * 2) / 32;
-    var byteCount = blockCount * 4;
-
-    for(i = 0;i < 50;++i) {
-      s[i] = 0;
-    }
-
-    block = 0;
-    do {
-      blocks[0] = block;
-      for(i = 1;i < blockCount + 1;++i) {
-        blocks[i] = 0;
-      }
-      if(notString) {
-        for (i = start;index < length && i < byteCount; ++index) {
-          blocks[i >> 2] |= message[index] << SHIFT[i++ & 3];
-        }
-      } else {
-        for (i = start;index < length && i < byteCount; ++index) {
-          code = message.charCodeAt(index);
-          if (code < 0x80) {
-            blocks[i >> 2] |= code << SHIFT[i++ & 3];
-          } else if (code < 0x800) {
-            blocks[i >> 2] |= (0xc0 | (code >> 6)) << SHIFT[i++ & 3];
-            blocks[i >> 2] |= (0x80 | (code & 0x3f)) << SHIFT[i++ & 3];
-          } else if (code < 0xd800 || code >= 0xe000) {
-            blocks[i >> 2] |= (0xe0 | (code >> 12)) << SHIFT[i++ & 3];
-            blocks[i >> 2] |= (0x80 | ((code >> 6) & 0x3f)) << SHIFT[i++ & 3];
-            blocks[i >> 2] |= (0x80 | (code & 0x3f)) << SHIFT[i++ & 3];
-          } else {
-            code = 0x10000 + (((code & 0x3ff) << 10) | (message.charCodeAt(++index) & 0x3ff));
-            blocks[i >> 2] |= (0xf0 | (code >> 18)) << SHIFT[i++ & 3];
-            blocks[i >> 2] |= (0x80 | ((code >> 12) & 0x3f)) << SHIFT[i++ & 3];
-            blocks[i >> 2] |= (0x80 | ((code >> 6) & 0x3f)) << SHIFT[i++ & 3];
-            blocks[i >> 2] |= (0x80 | (code & 0x3f)) << SHIFT[i++ & 3];
-          }
-        }
-      }
-      start = i - byteCount;
-      if(index == length) {
-        blocks[i >> 2] |= padding[i & 3];
-        ++index;
-      }
-      block = blocks[blockCount];
-      if(index > length && i < byteCount) {
-        blocks[blockCount - 1] |= 0x80000000;
-        end = true;
-      }
-
-      for(i = 0;i < blockCount;++i) {
-        s[i] ^= blocks[i];
-      }
-
-      for(n = 0; n < 48; n += 2) {
-        c0 = s[0] ^ s[10] ^ s[20] ^ s[30] ^ s[40];
-        c1 = s[1] ^ s[11] ^ s[21] ^ s[31] ^ s[41];
-        c2 = s[2] ^ s[12] ^ s[22] ^ s[32] ^ s[42];
-        c3 = s[3] ^ s[13] ^ s[23] ^ s[33] ^ s[43];
-        c4 = s[4] ^ s[14] ^ s[24] ^ s[34] ^ s[44];
-        c5 = s[5] ^ s[15] ^ s[25] ^ s[35] ^ s[45];
-        c6 = s[6] ^ s[16] ^ s[26] ^ s[36] ^ s[46];
-        c7 = s[7] ^ s[17] ^ s[27] ^ s[37] ^ s[47];
-        c8 = s[8] ^ s[18] ^ s[28] ^ s[38] ^ s[48];
-        c9 = s[9] ^ s[19] ^ s[29] ^ s[39] ^ s[49];
-
-        h = c8 ^ ((c2 << 1) | (c3 >>> 31));
-        l = c9 ^ ((c3 << 1) | (c2 >>> 31));
-        s[0] ^= h;
-        s[1] ^= l;
-        s[10] ^= h;
-        s[11] ^= l;
-        s[20] ^= h;
-        s[21] ^= l;
-        s[30] ^= h;
-        s[31] ^= l;
-        s[40] ^= h;
-        s[41] ^= l;
-        h = c0 ^ ((c4 << 1) | (c5 >>> 31));
-        l = c1 ^ ((c5 << 1) | (c4 >>> 31));
-        s[2] ^= h;
-        s[3] ^= l;
-        s[12] ^= h;
-        s[13] ^= l;
-        s[22] ^= h;
-        s[23] ^= l;
-        s[32] ^= h;
-        s[33] ^= l;
-        s[42] ^= h;
-        s[43] ^= l;
-        h = c2 ^ ((c6 << 1) | (c7 >>> 31));
-        l = c3 ^ ((c7 << 1) | (c6 >>> 31));
-        s[4] ^= h;
-        s[5] ^= l;
-        s[14] ^= h;
-        s[15] ^= l;
-        s[24] ^= h;
-        s[25] ^= l;
-        s[34] ^= h;
-        s[35] ^= l;
-        s[44] ^= h;
-        s[45] ^= l;
-        h = c4 ^ ((c8 << 1) | (c9 >>> 31));
-        l = c5 ^ ((c9 << 1) | (c8 >>> 31));
-        s[6] ^= h;
-        s[7] ^= l;
-        s[16] ^= h;
-        s[17] ^= l;
-        s[26] ^= h;
-        s[27] ^= l;
-        s[36] ^= h;
-        s[37] ^= l;
-        s[46] ^= h;
-        s[47] ^= l;
-        h = c6 ^ ((c0 << 1) | (c1 >>> 31));
-        l = c7 ^ ((c1 << 1) | (c0 >>> 31));
-        s[8] ^= h;
-        s[9] ^= l;
-        s[18] ^= h;
-        s[19] ^= l;
-        s[28] ^= h;
-        s[29] ^= l;
-        s[38] ^= h;
-        s[39] ^= l;
-        s[48] ^= h;
-        s[49] ^= l;
-
-        b0 = s[0];
-        b1 = s[1];
-        b32 = (s[11] << 4) | (s[10] >>> 28);
-        b33 = (s[10] << 4) | (s[11] >>> 28);
-        b14 = (s[20] << 3) | (s[21] >>> 29);
-        b15 = (s[21] << 3) | (s[20] >>> 29);
-        b46 = (s[31] << 9) | (s[30] >>> 23);
-        b47 = (s[30] << 9) | (s[31] >>> 23);
-        b28 = (s[40] << 18) | (s[41] >>> 14);
-        b29 = (s[41] << 18) | (s[40] >>> 14);
-        b20 = (s[2] << 1) | (s[3] >>> 31);
-        b21 = (s[3] << 1) | (s[2] >>> 31);
-        b2 = (s[13] << 12) | (s[12] >>> 20);
-        b3 = (s[12] << 12) | (s[13] >>> 20);
-        b34 = (s[22] << 10) | (s[23] >>> 22);
-        b35 = (s[23] << 10) | (s[22] >>> 22);
-        b16 = (s[33] << 13) | (s[32] >>> 19);
-        b17 = (s[32] << 13) | (s[33] >>> 19);
-        b48 = (s[42] << 2) | (s[43] >>> 30);
-        b49 = (s[43] << 2) | (s[42] >>> 30);
-        b40 = (s[5] << 30) | (s[4] >>> 2);
-        b41 = (s[4] << 30) | (s[5] >>> 2);
-        b22 = (s[14] << 6) | (s[15] >>> 26);
-        b23 = (s[15] << 6) | (s[14] >>> 26);
-        b4 = (s[25] << 11) | (s[24] >>> 21);
-        b5 = (s[24] << 11) | (s[25] >>> 21);
-        b36 = (s[34] << 15) | (s[35] >>> 17);
-        b37 = (s[35] << 15) | (s[34] >>> 17);
-        b18 = (s[45] << 29) | (s[44] >>> 3);
-        b19 = (s[44] << 29) | (s[45] >>> 3);
-        b10 = (s[6] << 28) | (s[7] >>> 4);
-        b11 = (s[7] << 28) | (s[6] >>> 4);
-        b42 = (s[17] << 23) | (s[16] >>> 9);
-        b43 = (s[16] << 23) | (s[17] >>> 9);
-        b24 = (s[26] << 25) | (s[27] >>> 7);
-        b25 = (s[27] << 25) | (s[26] >>> 7);
-        b6 = (s[36] << 21) | (s[37] >>> 11);
-        b7 = (s[37] << 21) | (s[36] >>> 11);
-        b38 = (s[47] << 24) | (s[46] >>> 8);
-        b39 = (s[46] << 24) | (s[47] >>> 8);
-        b30 = (s[8] << 27) | (s[9] >>> 5);
-        b31 = (s[9] << 27) | (s[8] >>> 5);
-        b12 = (s[18] << 20) | (s[19] >>> 12);
-        b13 = (s[19] << 20) | (s[18] >>> 12);
-        b44 = (s[29] << 7) | (s[28] >>> 25);
-        b45 = (s[28] << 7) | (s[29] >>> 25);
-        b26 = (s[38] << 8) | (s[39] >>> 24);
-        b27 = (s[39] << 8) | (s[38] >>> 24);
-        b8 = (s[48] << 14) | (s[49] >>> 18);
-        b9 = (s[49] << 14) | (s[48] >>> 18);
-
-        s[0] = b0 ^ (~b2 & b4);
-        s[1] = b1 ^ (~b3 & b5);
-        s[10] = b10 ^ (~b12 & b14);
-        s[11] = b11 ^ (~b13 & b15);
-        s[20] = b20 ^ (~b22 & b24);
-        s[21] = b21 ^ (~b23 & b25);
-        s[30] = b30 ^ (~b32 & b34);
-        s[31] = b31 ^ (~b33 & b35);
-        s[40] = b40 ^ (~b42 & b44);
-        s[41] = b41 ^ (~b43 & b45);
-        s[2] = b2 ^ (~b4 & b6);
-        s[3] = b3 ^ (~b5 & b7);
-        s[12] = b12 ^ (~b14 & b16);
-        s[13] = b13 ^ (~b15 & b17);
-        s[22] = b22 ^ (~b24 & b26);
-        s[23] = b23 ^ (~b25 & b27);
-        s[32] = b32 ^ (~b34 & b36);
-        s[33] = b33 ^ (~b35 & b37);
-        s[42] = b42 ^ (~b44 & b46);
-        s[43] = b43 ^ (~b45 & b47);
-        s[4] = b4 ^ (~b6 & b8);
-        s[5] = b5 ^ (~b7 & b9);
-        s[14] = b14 ^ (~b16 & b18);
-        s[15] = b15 ^ (~b17 & b19);
-        s[24] = b24 ^ (~b26 & b28);
-        s[25] = b25 ^ (~b27 & b29);
-        s[34] = b34 ^ (~b36 & b38);
-        s[35] = b35 ^ (~b37 & b39);
-        s[44] = b44 ^ (~b46 & b48);
-        s[45] = b45 ^ (~b47 & b49);
-        s[6] = b6 ^ (~b8 & b0);
-        s[7] = b7 ^ (~b9 & b1);
-        s[16] = b16 ^ (~b18 & b10);
-        s[17] = b17 ^ (~b19 & b11);
-        s[26] = b26 ^ (~b28 & b20);
-        s[27] = b27 ^ (~b29 & b21);
-        s[36] = b36 ^ (~b38 & b30);
-        s[37] = b37 ^ (~b39 & b31);
-        s[46] = b46 ^ (~b48 & b40);
-        s[47] = b47 ^ (~b49 & b41);
-        s[8] = b8 ^ (~b0 & b2);
-        s[9] = b9 ^ (~b1 & b3);
-        s[18] = b18 ^ (~b10 & b12);
-        s[19] = b19 ^ (~b11 & b13);
-        s[28] = b28 ^ (~b20 & b22);
-        s[29] = b29 ^ (~b21 & b23);
-        s[38] = b38 ^ (~b30 & b32);
-        s[39] = b39 ^ (~b31 & b33);
-        s[48] = b48 ^ (~b40 & b42);
-        s[49] = b49 ^ (~b41 & b43);
-
-        s[0] ^= RC[n];
-        s[1] ^= RC[n + 1];
-      }
-    } while(!end);
-
-    var hex = '';
-    if(CHROME) {
-      b0 = s[0];
-      b1 = s[1];
-      b2 = s[2];
-      b3 = s[3];
-      b4 = s[4];
-      b5 = s[5];
-      b6 = s[6];
-      b7 = s[7];
-      b8 = s[8];
-      b9 = s[9];
-      b10 = s[10];
-      b11 = s[11];
-      b12 = s[12];
-      b13 = s[13];
-      b14 = s[14];
-      b15 = s[15];
-      hex += HEX_CHARS[(b0 >> 4) & 0x0F] + HEX_CHARS[b0 & 0x0F] +
-             HEX_CHARS[(b0 >> 12) & 0x0F] + HEX_CHARS[(b0 >> 8) & 0x0F] +
-             HEX_CHARS[(b0 >> 20) & 0x0F] + HEX_CHARS[(b0 >> 16) & 0x0F] +
-             HEX_CHARS[(b0 >> 28) & 0x0F] + HEX_CHARS[(b0 >> 24) & 0x0F] +
-             HEX_CHARS[(b1 >> 4) & 0x0F] + HEX_CHARS[b1 & 0x0F] +
-             HEX_CHARS[(b1 >> 12) & 0x0F] + HEX_CHARS[(b1 >> 8) & 0x0F] +
-             HEX_CHARS[(b1 >> 20) & 0x0F] + HEX_CHARS[(b1 >> 16) & 0x0F] +
-             HEX_CHARS[(b1 >> 28) & 0x0F] + HEX_CHARS[(b1 >> 24) & 0x0F] +
-             HEX_CHARS[(b2 >> 4) & 0x0F] + HEX_CHARS[b2 & 0x0F] +
-             HEX_CHARS[(b2 >> 12) & 0x0F] + HEX_CHARS[(b2 >> 8) & 0x0F] +
-             HEX_CHARS[(b2 >> 20) & 0x0F] + HEX_CHARS[(b2 >> 16) & 0x0F] +
-             HEX_CHARS[(b2 >> 28) & 0x0F] + HEX_CHARS[(b2 >> 24) & 0x0F] +
-             HEX_CHARS[(b3 >> 4) & 0x0F] + HEX_CHARS[b3 & 0x0F] +
-             HEX_CHARS[(b3 >> 12) & 0x0F] + HEX_CHARS[(b3 >> 8) & 0x0F] +
-             HEX_CHARS[(b3 >> 20) & 0x0F] + HEX_CHARS[(b3 >> 16) & 0x0F] +
-             HEX_CHARS[(b3 >> 28) & 0x0F] + HEX_CHARS[(b3 >> 24) & 0x0F] +
-             HEX_CHARS[(b4 >> 4) & 0x0F] + HEX_CHARS[b4 & 0x0F] +
-             HEX_CHARS[(b4 >> 12) & 0x0F] + HEX_CHARS[(b4 >> 8) & 0x0F] +
-             HEX_CHARS[(b4 >> 20) & 0x0F] + HEX_CHARS[(b4 >> 16) & 0x0F] +
-             HEX_CHARS[(b4 >> 28) & 0x0F] + HEX_CHARS[(b4 >> 24) & 0x0F] +
-             HEX_CHARS[(b5 >> 4) & 0x0F] + HEX_CHARS[b5 & 0x0F] +
-             HEX_CHARS[(b5 >> 12) & 0x0F] + HEX_CHARS[(b5 >> 8) & 0x0F] +
-             HEX_CHARS[(b5 >> 20) & 0x0F] + HEX_CHARS[(b5 >> 16) & 0x0F] +
-             HEX_CHARS[(b5 >> 28) & 0x0F] + HEX_CHARS[(b5 >> 24) & 0x0F] +
-             HEX_CHARS[(b6 >> 4) & 0x0F] + HEX_CHARS[b6 & 0x0F] +
-             HEX_CHARS[(b6 >> 12) & 0x0F] + HEX_CHARS[(b6 >> 8) & 0x0F] +
-             HEX_CHARS[(b6 >> 20) & 0x0F] + HEX_CHARS[(b6 >> 16) & 0x0F] +
-             HEX_CHARS[(b6 >> 28) & 0x0F] + HEX_CHARS[(b6 >> 24) & 0x0F];
-
-      if(bits >= 256) {
-        hex += HEX_CHARS[(b7 >> 4) & 0x0F] + HEX_CHARS[b7 & 0x0F] +
-               HEX_CHARS[(b7 >> 12) & 0x0F] + HEX_CHARS[(b7 >> 8) & 0x0F] +
-               HEX_CHARS[(b7 >> 20) & 0x0F] + HEX_CHARS[(b7 >> 16) & 0x0F] +
-               HEX_CHARS[(b7 >> 28) & 0x0F] + HEX_CHARS[(b7 >> 24) & 0x0F];
-      }
-      if(bits >= 384) {
-        hex += HEX_CHARS[(b8 >> 4) & 0x0F] + HEX_CHARS[b8 & 0x0F] +
-               HEX_CHARS[(b8 >> 12) & 0x0F] + HEX_CHARS[(b8 >> 8) & 0x0F] +
-               HEX_CHARS[(b8 >> 20) & 0x0F] + HEX_CHARS[(b8 >> 16) & 0x0F] +
-               HEX_CHARS[(b8 >> 28) & 0x0F] + HEX_CHARS[(b8 >> 24) & 0x0F] +
-               HEX_CHARS[(b9 >> 4) & 0x0F] + HEX_CHARS[b9 & 0x0F] +
-               HEX_CHARS[(b9 >> 12) & 0x0F] + HEX_CHARS[(b9 >> 8) & 0x0F] +
-               HEX_CHARS[(b9 >> 20) & 0x0F] + HEX_CHARS[(b9 >> 16) & 0x0F] +
-               HEX_CHARS[(b9 >> 28) & 0x0F] + HEX_CHARS[(b9 >> 24) & 0x0F] +
-               HEX_CHARS[(b10 >> 4) & 0x0F] + HEX_CHARS[b10 & 0x0F] +
-               HEX_CHARS[(b10 >> 12) & 0x0F] + HEX_CHARS[(b10 >> 8) & 0x0F] +
-               HEX_CHARS[(b10 >> 20) & 0x0F] + HEX_CHARS[(b10 >> 16) & 0x0F] +
-               HEX_CHARS[(b10 >> 28) & 0x0F] + HEX_CHARS[(b10 >> 24) & 0x0F] +
-               HEX_CHARS[(b11 >> 4) & 0x0F] + HEX_CHARS[b11 & 0x0F] +
-               HEX_CHARS[(b11 >> 12) & 0x0F] + HEX_CHARS[(b11 >> 8) & 0x0F] +
-               HEX_CHARS[(b11 >> 20) & 0x0F] + HEX_CHARS[(b11 >> 16) & 0x0F] +
-               HEX_CHARS[(b11 >> 28) & 0x0F] + HEX_CHARS[(b11 >> 24) & 0x0F];
-      }
-      if(bits == 512) {
-        hex += HEX_CHARS[(b12 >> 4) & 0x0F] + HEX_CHARS[b12 & 0x0F] +
-               HEX_CHARS[(b12 >> 12) & 0x0F] + HEX_CHARS[(b12 >> 8) & 0x0F] +
-               HEX_CHARS[(b12 >> 20) & 0x0F] + HEX_CHARS[(b12 >> 16) & 0x0F] +
-               HEX_CHARS[(b12 >> 28) & 0x0F] + HEX_CHARS[(b12 >> 24) & 0x0F] +
-               HEX_CHARS[(b13 >> 4) & 0x0F] + HEX_CHARS[b13 & 0x0F] +
-               HEX_CHARS[(b13 >> 12) & 0x0F] + HEX_CHARS[(b13 >> 8) & 0x0F] +
-               HEX_CHARS[(b13 >> 20) & 0x0F] + HEX_CHARS[(b13 >> 16) & 0x0F] +
-               HEX_CHARS[(b13 >> 28) & 0x0F] + HEX_CHARS[(b13 >> 24) & 0x0F] +
-               HEX_CHARS[(b14 >> 4) & 0x0F] + HEX_CHARS[b14 & 0x0F] +
-               HEX_CHARS[(b14 >> 12) & 0x0F] + HEX_CHARS[(b14 >> 8) & 0x0F] +
-               HEX_CHARS[(b14 >> 20) & 0x0F] + HEX_CHARS[(b14 >> 16) & 0x0F] +
-               HEX_CHARS[(b14 >> 28) & 0x0F] + HEX_CHARS[(b14 >> 24) & 0x0F] +
-               HEX_CHARS[(b15 >> 4) & 0x0F] + HEX_CHARS[b15 & 0x0F] +
-               HEX_CHARS[(b15 >> 12) & 0x0F] + HEX_CHARS[(b15 >> 8) & 0x0F] +
-               HEX_CHARS[(b15 >> 20) & 0x0F] + HEX_CHARS[(b15 >> 16) & 0x0F] +
-               HEX_CHARS[(b15 >> 28) & 0x0F] + HEX_CHARS[(b15 >> 24) & 0x0F];
-      }
-    } else {
-      for(i = 0, n = bits / 32;i < n;++i) {
-        h = s[i];
-        hex += HEX_CHARS[(h >> 4) & 0x0F] + HEX_CHARS[h & 0x0F] +
-               HEX_CHARS[(h >> 12) & 0x0F] + HEX_CHARS[(h >> 8) & 0x0F] +
-               HEX_CHARS[(h >> 20) & 0x0F] + HEX_CHARS[(h >> 16) & 0x0F] +
-               HEX_CHARS[(h >> 28) & 0x0F] + HEX_CHARS[(h >> 24) & 0x0F];
-      }
-    }
-    return hex;
-  };
-  
-  if(!root.JS_SHA3_TEST && NODE_JS) {
-    module.exports = {
-      sha3_512: sha3_512,
-      sha3_384: sha3_384,
-      sha3_256: sha3_256,
-      sha3_224: sha3_224,
-      keccak_512: keccak,
-      keccak_384: keccak_384,
-      keccak_256: keccak_256,
-      keccak_224: keccak_224
-    };
-  } else if(root) {
-    root.sha3_512 = sha3_512;
-    root.sha3_384 = sha3_384;
-    root.sha3_256 = sha3_256;
-    root.sha3_224 = sha3_224;
-    root.keccak_512 = keccak;
-    root.keccak_384 = keccak_384;
-    root.keccak_256 = keccak_256;
-    root.keccak_224 = keccak_224;
-  }
-}(this));
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],4:[function(require,module,exports){
-module.exports={
-    "2": {
-        "buyAndSellShares": "0x8d28df956673fa4a8bc30cd0b3cb657445bc820e",
-        "closeMarket": "0xab966a7e5ed3b0b86e230f6b6dbe3833556240ad",
-        "closeMarketEight": "0x54b68f75acc41e20af31d97ac3c9ccd92f243765",
-        "closeMarketFour": "0x0ef40b3861caa8c3695a067f3c19ecefccab6b51",
-        "closeMarketOne": "0x075ddd0bf4c0aeaa35ed62c071e3e11cbf720715",
-        "closeMarketTwo": "0x486b370b1ba29711b683e1e71cc9a7c2a1614e4c",
-        "collectFees": "0x0e5816830d327c7272c115348a2dda92e4706b25",
-        "completeSets": "0x4f0d1af7d72d72a2e95e1fb9d187e958c07a1084",
-        "compositeGetters": "0x0d9995e01fd62263a5b52255dc069d70d4edc1a7",
-        "consensus": "0xfcd9b63e2a8a2b869db64f8dd25f599b0b172ffd",
-        "createBranch": "0xf2fc3c829ad9a271a64e6f437fb6f9e8ed0f9770",
-        "createMarket": "0x660cdfdf3d0e7443e7935343a1131b961575ccc7",
-        "eventResolution": "0xfa01e10196e9575835e08d0af12383119b43ea5e",
-        "faucets": "0x59997e2d0d9fb15cb4bb3ff41a79e8e3041e817f",
-        "forkPenalize": "0x3ffd684dc0ff3c49eb137b8ceb3a6a825bd62a84",
-        "forking": "0x970097986e20bb0b833cc3a3df922036ef41d49d",
-        "makeReports": "0x89a6a4b5d5ac8b9685421de03d56ebee5e795e00",
-        "penalizationCatchup": "0x7381595c6d2a7ffdab11079bcac553476666e4f4",
-        "penalizeNotEnoughReports": "0xd76c3939c31d7ae0fde787d52a870135096b6adf",
-        "roundTwo": "0x8ebe739b7554567b74e3ee8080ad8a6adf4f2a45",
-        "roundTwoPenalize": "0x9c8e25a96e079f3a049c2f3bb4f6dbb9f86d5b99",
-        "sendReputation": "0xa2233c69d37367fa3b79db7c41cdb80aae3d84dc",
-        "slashRep": "0x63eb2b9bfc9dde48674fa0c7f324d886b3aab4cc",
-        "trade": "0x13cef2d86d4024f102e480627239359b5cb7bf52",
-        "backstops": "0x20fd8e58b490b499e06033064794544fb1ee5380",
-        "branches": "0xf89cf3475034a7d0ad374b1e178a457d3a26b348",
-        "cash": "0x9070d08463f94e46b398f76b986107aed42f12e5",
-        "consensusData": "0xc97f3ee6aa8a117d9e0126a9e938104ebad02d60",
-        "events": "0x284d02f3db4e77466b0a01ca5c639b1505def700",
-        "expiringEvents": "0x07cf0d353c50a84e38f96034016fa62bac21f045",
-        "fxpFunctions": "0x3e771529be89b856c7427f5c4200facb13f8d72b",
-        "info": "0xf994781e3a978e7ff18e465539f5f63b33c66cba",
-        "markets": "0xe73f7eaf789ffabe79b5532f303bcf9fdc425515",
-        "reporting": "0xb4ce632ae9c2870a4070b31e2adc82db730417a8",
-        "trades": "0x07096a7a9584373d79a67c23e6c903075b1385fc"
-    },
-    "10101": {
-        "buyAndSellShares": "0x7a670374ae3008ac564c97215a5d25edb49a7972",
-        "closeMarket": "0x5ed4279c70b8a88bf2bf711ef8c2ae36e0e33229",
-        "closeMarketEight": "0x21282038a5597e409cef655ff910d02848ecf929",
-        "closeMarketFour": "0x49110d1834d8572285b6fc4a428ffdd7ca71ec96",
-        "closeMarketOne": "0x696e342719e31943048c89f6335d9a93239d051d",
-        "closeMarketTwo": "0x4213cad92482c84af2eaf1321ba784762da6c189",
-        "collectFees": "0x7d24bb33a29df4136181e67edae2bb06a9715cbb",
-        "completeSets": "0x1cfdf31a6279ff38c9c3409eca951f31f34e7594",
-        "compositeGetters": "0x7084640d57dd088a1ccf82c5106bb0087e93e654",
-        "consensus": "0x787deb1acee09cc5159494aa4a940a3752017d77",
-        "createBranch": "0xea7420bc20dfe272850cfe26bbbbbef4fa32152a",
-        "createMarket": "0x13da6616a4e1901354a8b252b4a24550568fcfaf",
-        "eventResolution": "0xa727de27cea1006dc88c6512f66dbf2a93bd18d9",
-        "faucets": "0xd39874ec9c3f062d18e9b0b1e667aef8c99aa3c2",
-        "forkPenalize": "0x41f9bf1daa579d8e1d9c0f05f06fc084a01c01b8",
-        "forking": "0x1cf519f8ed0a84d30b1c36046b32bb7b571a8be2",
-        "makeReports": "0x2ec590db1f0a1de11a82c505613fb85b05210944",
-        "penalizationCatchup": "0x00680935bb1ccdd4199e6e98e0d7f59a01fbbc83",
-        "penalizeNotEnoughReports": "0x9ead3356e0cbd27d3fad822eb3fb42bbd606c5e9",
-        "roundTwo": "0xd3dc70b2fc8342b36594977ff90428c65122315a",
-        "roundTwoPenalize": "0x96db9c0b955464e86780b859d10c0f316eb6bf85",
-        "sendReputation": "0x05c697446ea00d05b982b2a30cb6456f38de448e",
-        "slashRep": "0xc8c3d87292715a97ee9bc626301666eef29a5247",
-        "trade": "0x69a073ce7c1066a8556176aec748e86ebba2aba5",
-        "backstops": "0x7c8c360e897ecf0fc377a1eace3ce5ebcc12fa70",
-        "branches": "0xc61f3237957251ff62ea8fd759c18e5de8a5c29f",
-        "cash": "0xa4c4cb44d4c9329966c2e3a74ed11f1fe7e9fa6c",
-        "consensusData": "0xbd0b5ae2a48e61e420ebed88333fe73c47896471",
-        "events": "0xf128b2ae7d643ca1f202cb5e80aa42306923f8b9",
-        "expiringEvents": "0x36a04d99040c8d7eb51888e1255f8acf529ac58d",
-        "fxpFunctions": "0xcb55f548fc6dc7dc558980890a13edd319f41263",
-        "info": "0xd3c7de30d9970ecbae67c52336d2959a19dd9360",
-        "markets": "0xb529b11be3d4dff10703eb1e561d96caca5f644a",
-        "reporting": "0xa7601ca0d8aba3700879badb767e462f17cb0155",
-        "trades": "0x803c0262f1bc596c3016dad7f51ab26e768e565e"
-    }
-}
-
-},{}],5:[function(require,module,exports){
-module.exports={
-    "0x": "no response or bad input",
-    "buy": {
-        "-1": "amount/price bad or no market",
-        "-2": "oracle-only branch",
-        "-4": "not enough money or shares"
-    },
-    "buyCompleteSets": {
-        "0": "market not found",
-        "-1": "oracle-only branch",
-        "-3": "not enough cash"
-    },
-    "cashFaucet": {
-        "-1": "Hey, you're not broke!"
-    },
-    "claimProceeds": {
-        "0": "reporting not done",
-        "-1": "trader doesn't exist"
-    },
-    "closeMarket": {
-        "0": "fail/trading not over yet/event not expired or closed already",
-        "-1": "Market has no cash anyway / already closed",
-        "-2": "0 outcome / not reported on yet",
-        "-3": "not final round 2 event",
-        "-5": "Event forked and not final yet",
-        "-6": "bonded pushed forward market not ready to be resolved",
-        "-7": "event not reportable >.99",
-        "-8": "market isn't in branch"
-    },
-    "collectFees": {
-        "-2": "needs to be second half of reporting period to claim rep (1st half is when redistribution is done)"
-    },
-    "createEvent": {
-        "-1": "we're either already past that date, branch doesn't exist, or description is bad",
-        "0": "not enough money to pay fees or event already exists",
-        "-2": "max value < min value",
-        "-9": "would expire during non-reporting fork period"
-    },
-    "createSingleEventMarket": {
-        "0": "not enough money to pay fees or event already exists",
-        "-1": "we're either already past that date, branch doesn't exist, or description is bad, or bad input or parent doesn't exist",
-        "-2": "max value < min value",
-        "-3": "too many outcomes",
-        "-4": "not enough money",
-        "-5": "fee too low",
-        "-6": "duplicate events",
-        "-7": "event already expired",
-        "-8": "market already exists",
-        "-9": "would expire during non-reporting fork period"
-    },
-    "createMarket": {
-        "-1": "bad input or parent doesn't exist",
-        "-2": "too many events",
-        "-3": "too many outcomes",
-        "-4": "not enough money",
-        "-5": "fee too low",
-        "-6": "duplicate events",
-        "-7": "event already expired",
-        "-8": "market already exists",
-        "-9": "would expire during non-reporting fork period"
-    },
-    "createSubbranch": {
-        "-1": "bad input or parent doesn't exist",
-        "-2": "no money for creation fee or branch already exists"
-    },
-    "penalizationCatchup": {
-        "-2": "can only be called during the first half of the reporting period"
-    },
-    "penalizeOnForkedEvent": {
-        "-2": "already past first half of new period and needed to penalize before then",
-        "-4": "fork event isn't resolved yet",
-        "-5": "already done for all events in this period"
-    },
-    "penalizeRoundTwoWrong": {
-        "0": "event is a fork event",
-        "-1": "need to penalize in round 2 penalize function",
-        "-2": "already past first half of new period and needed to penalize before then",
-        "-4": "in fork period only thing that rbcr is done on is the round 2 event in the original branch via round 2 penalize",
-        "-5": "already done for all events in this period",
-        "-6": "forked events should be penalized using the fork penalization function"
-    },
-    "penalizeWrong": {
-        "0": "event is a fork event",
-        "-1": "need to penalize in round 2 penalize function",
-        "-2": "already past first half of new period and needed to penalize before then",
-        "-4": "in fork period only thing that rbcr is done on is the round 2 event in the original branch via round 2 penalize",
-        "-5": "already done for all events in this period",
-        "-6": "forked events should be penalized using the fork penalization function",
-        "-7": "no outcome"
-    },
-    "proveReporterDidntReportEnough": {
-        "-1": "already done",
-        "-2": "not in right part of period"
-    },
-    "pushMarketForward": {
-        "-1": "fork period cannot be the current or previous period",
-        "-2": "market is already closed or pushed forward",
-        "-3": "not enough cash to post early resolution bond",
-        "-4": "early resolution already attempted or outcome already exists"
-    },
-    "sell": {
-        "-1": "amount/price bad or no market",
-        "-2": "oracle only branch",
-        "-4": "not enough money or shares"
-    },
-    "sellCompleteSets": {
-        "-1": "oracle-only branch",
-        "-2": "not a participant in this market",
-        "-3": "not enough shares"
-    },
-    "sendReputation": {
-        "0": "not enough reputation",
-        "-1": "Your reputation account was just created! Earn some reputation before you can send to others",
-        "-2": "Receiving address doesn't exist"
-    },
-    "short_sell": {
-        "-1": "oracle only branch",
-        "-2": "bad trade hash",
-        "-3": "trader doesn't exist / own shares in this market",
-        "-4": "must buy at least .00000001 in value",
-        "10": "insufficient balance"
-    },
-    "slashRep": {
-        "0": "not a valid claim",
-        "-2": "reporter doesn't exist"
-    },
-    "submitReportHash": {
-        "0": "not caught up on rep redistributions",
-        "-1": "invalid event",
-        "-2": "not in first half of period (commit phase)"
-    },
-    "submitReport": {
-        "0": "reporter doesn't exist or has <1 rep",
-        "-1": "has already reported",
-        "-2": "not in second half of period [reveal part]",
-        "-3": "hash doesn't match",
-        "-4": "bad report",
-        "-5": "invalid event",
-        "-6": "already resolved",
-        "-7": "<48 hr left in period, too late to report, able to put up readj. bonds though",
-        "-8": "fees couldn't be collected",
-        "-9": "need to pay not reporting bond"
-    },
-    "trade": {
-        "-1": "oracle only branch",
-        "-2": "bad trade hash",
-        "-3": "trader doesn't exist / own shares in this market",
-        "-4": "must buy at least .00000001 in value",
-        "10": "insufficient balance"
-    },
-    "updateTradingFee": {
-        "-1": "invalid trading fee: either fee is below the minimum trading fee or you are trying to raise the trading fee (trading fees can be lowered, but not raised)",
-        "-4": "sender's address does not match the market creator's address"
-    },
-    "WRONG_NUMBER_OF_OUTCOMES": {
-        "error": 41,
-        "message": "the number of initial fair prices does not match this market's number of outcomes"
-    },
-    "INSUFFICIENT_LIQUIDITY": {
-        "error": 42,
-        "message": "insufficient liquidity to generate order book"
-    },
-    "INITIAL_PRICE_OUT_OF_BOUNDS": {
-        "error": 43,
-        "message": "one or more initial fair prices are out-of-bounds"
-    },
-    "PRICE_WIDTH_OUT_OF_BOUNDS": {
-        "error": 44,
-        "message": "price width is too large for one or more initial fair prices"
-    },
-    "DB_DELETE_FAILED": {
-        "error": 97,
-        "message": "database delete failed"
-    },
-    "DB_WRITE_FAILED": {
-        "error": 98,
-        "message": "database write failed"
-    },
-    "DB_READ_FAILED": {
-        "error": 99,
-        "message": "database read failed"
-    },
-    "INVALID_CONTRACT_PARAMETER": {
-        "error": 400,
-        "message": "cannot send object parameter to contract"
-    },
-    "NOT_LOGGED_IN": {
-        "error": 401,
-        "message": "not logged in"
-    },
-    "PARAMETER_NUMBER_ERROR": {
-        "error": 402,
-        "message": "wrong number of parameters"
-    },
-    "BAD_CREDENTIALS": {
-        "error": 403,
-        "message": "incorrect handle or password"
-    },
-    "TRANSACTION_NOT_FOUND": {
-        "error": 404,
-        "message": "transaction not found"
-    },
-    "PASSWORD_TOO_SHORT": {
-        "error": 405,
-        "message": "password must be at least 6 characters long"
-    },
-    "NULL_CALL_RETURN": {
-        "error": 406,
-        "message": "expected contract call to return value, received null"
-    },
-    "NULL_RESPONSE": {
-        "error": 407,
-        "message": "expected transaction hash from Ethereum node, received null"
-    },
-    "NO_RESPONSE": {
-        "error": 408,
-        "message": "no response"
-    },
-    "INVALID_RESPONSE": {
-        "error": 409,
-        "message": "could not parse response from Ethereum node"
-    },
-    "LOCAL_NODE_FAILURE": {
-        "error": 410,
-        "message": "RPC request to local Ethereum node failed"
-    },
-    "HOSTED_NODE_FAILURE": {
-        "error": 411,
-        "message": "RPC request to hosted nodes failed"
-    },
-    "TRANSACTION_INVALID": {
-        "error": 412,
-        "message": "transaction validation failed"
-    },
-    "HANDLE_TAKEN": {
-        "error": 422,
-        "message": "handle already taken"
-    },
-    "FILTER_NOT_CREATED": {
-        "error": 450,
-        "message": "filter could not be created"
-    },
-    "TRANSACTION_FAILED": {
-        "error": 500,
-        "message": "transaction failed"
-    },
-    "TRANSACTION_NOT_CONFIRMED": {
-        "error": 501,
-        "message": "polled network but could not confirm transaction"
-    },
-    "DUPLICATE_TRANSACTION": {
-        "error": 502,
-        "message": "duplicate transaction"
-    },
-    "RAW_TRANSACTION_ERROR": {
-        "error": 503,
-        "message": "error sending client-side transaction"
-    },
-    "RLP_ENCODING_ERROR": {
-        "error": 504,
-        "message": "RLP encoding error"
-    },
-    "NO_MARKET_INFO": {
-        "error": 505,
-        "message": "could not retrieve market data"
-    },
-    "RPC_TIMEOUT": {
-        "error": 599,
-        "message": "timed out while waiting for Ethereum network response"
-    },
-    "LOOPBACK_NOT_FOUND": {
-        "error": 650,
-        "message": "loopback interface required for synchronous local commands"
-    },
-    "ETHEREUM_NOT_FOUND": {
-        "error": 651,
-        "message": "no active ethereum node(s) found"
-    },
-    "CHECK_ORDER_BOOK_FAILED": {
-        "error": 710,
-        "message": "could not check order book using current prices"
-    }
-}
-
-},{}],6:[function(require,module,exports){
-var contracts = require("./contracts");
-contracts.errors = require("./errors");
-contracts.Tx = require("./tx");
-
-module.exports = contracts;
-
-},{"./contracts":4,"./errors":5,"./tx":7}],7:[function(require,module,exports){
-/**
- * Augur transactions
- */
-
-"use strict";
-
-module.exports = function (network, contracts) {
-
-    contracts = contracts || require("./contracts")[network || "2"];
-
-    return {
-
-        // faucets.se
-        reputationFaucet: {
-            to: contracts.faucets,
-            method: "reputationFaucet",
-            signature: "i",
-            returns: "number",
-            send: true
-        },
-        cashFaucet: {
-            to: contracts.faucets,
-            method: "cashFaucet",
-            returns: "number",
-            send: true
-        },
-        fundNewAccount: {
-            to: contracts.faucets,
-            method: "fundNewAccount",
-            signature: "i",
-            returns: "number",
-            send: true
-        },
-
-        // cash.se
-        addCash: {
-            to: contracts.cash,
-            method: "addCash",
-            signature: "ii",
-            send: true,
-            returns: "number"
-        },
-        setCash: {
-            to: contracts.cash,
-            method: "setCash",
-            signature: "ii",
-            send: true,
-            returns: "number"
-        },
-        initiateOwner: {
-            to: contracts.cash,
-            method: "initiateOwner",
-            signature: "i",
-            send: true,
-            returns: "number"
-        },
-        getCashBalance: {
-            to: contracts.cash,
-            method: "balance",
-            signature: "i",
-            returns: "unfix"
-        },
-        balance: {
-            to: contracts.cash,
-            method: "balance",
-            signature: "i",
-            returns: "unfix"
-        },
-        sendCash: {
-            to: contracts.cash,
-            method: "send",
-            send: true,
-            signature: "ii",
-            returns: "unfix"
-        },
-        sendCashFrom: {
-            to: contracts.cash,
-            method: "sendFrom",
-            send: true,
-            signature: "iii",
-            returns: "unfix"
-        },
-        depositEther: {
-            to: contracts.cash,
-            method: "depositEther",
-            send: true,
-            returns: "number"
-        },
-        withdrawEther: {
-            to: contracts.cash,
-            method: "withdrawEther",
-            signature: "ii",
-            send: true,
-            returns: "number"
-        },
-
-        // info.se
-        getCreator: {
-            to: contracts.info,
-            method: "getCreator",
-            signature: "i",
-            returns: "address"
-        },
-        getCreationFee: {
-            to: contracts.info,
-            method: "getCreationFee",
-            signature: "i",
-            returns: "unfix"
-        },
-        getDescription: {
-            to: contracts.info,
-            method: "getDescription",
-            signature: "i",
-            returns: "string"
-        },
-        setInfo: {
-            to: contracts.info,
-            method: "setInfo",
-            signature: "isii",
-            returns: "number",
-            send: true
-        },
-
-        // branches.se
-        initDefaultBranch: {
-            to: contracts.branches,
-            method: "initDefaultBranch",
-            returns: "number",
-            send: true
-        },
-        getBranches: {
-            to: contracts.branches,
-            method: "getBranches",
-            returns: "hash[]"
-        },
-        getMarketsInBranch: {
-            to: contracts.branches,
-            method: "getMarketsInBranch",
-            signature: "i",
-            returns: "hash[]"
-        },
-        getPeriodLength: {
-            to: contracts.branches,
-            method: "getPeriodLength",
-            signature: "i",
-            returns: "number"
-        },
-        getVotePeriod: {
-            to: contracts.branches,
-            method: "getVotePeriod",
-            signature: "i",
-            returns: "number"
-        },
-        getReportPeriod: {
-            to: contracts.branches,
-            method: "getVotePeriod",
-            signature: "i",
-            returns: "number"
-        },
-        getNumMarkets: {
-            to: contracts.branches,
-            method: "getNumMarketsBranch",
-            signature: "i",
-            returns: "number"
-        },
-        getNumMarketsBranch: {
-            to: contracts.branches,
-            method: "getNumMarketsBranch",
-            signature: "i",
-            returns: "number"
-        },
-        getMinTradingFee: {
-            to: contracts.branches,
-            method: "getMinTradingFee",
-            signature: "i",
-            returns: "unfix"
-        },
-        getNumBranches: {
-            to: contracts.branches,
-            method: "getNumBranches",
-            returns: "number"
-        },
-        getBranchByNum: {
-            to: contracts.branches,
-            method: "getBranchByNum",
-            signature: "i",
-            returns: "hash"
-        },
-        incrementPeriod: {
-            to: contracts.branches,
-            method: "incrementPeriod",
-            signature: "i",
-            send: true,
-            returns: "number"
-        },
-        addMarket: {
-            to: contracts.branches,
-            method: "addMarket",
-            signature: "ii",
-            returns: "number",
-            send: true
-        },
-
-        // consensus.se
-        // def getFeesCollected(branch, address, period):
-        getFeesCollected: {
-            to: contracts.consensus,
-            method: "getFeesCollected",
-            signature: "iii",
-            returns: "number"
-        },
-        // def setFeesCollected(branch, address, period):
-        setFeesCollected: {
-            to: contracts.consensus,
-            method: "setFeesCollected",
-            signature: "iii",
-            returns: "number",
-            send: true
-        },
-        // def setNotEnoughPenalized(branch, address, period):
-        setNotEnoughPenalized: {
-            to: contracts.consensus,
-            method: "setNotEnoughPenalized",
-            signature: "iii",
-            returns: "number",
-            send: true
-        },            
-        // def getNotEnoughPenalized(branch, address, period):
-        getNotEnoughPenalized: {
-            to: contracts.consensus,
-            method: "getNotEnoughPenalized",
-            signature: "iii",
-            returns: "number"
-        },
-        // def getBaseReportersLastPeriod(branch):
-        getBaseReportersLastPeriod: {
-            to: contracts.consensus,
-            method: "getBaseReportersLastPeriod",
-            signature: "i",
-            returns: "number"
-        },
-        // def initialPenalizedSetting(branch, reporter, upto):
-        initialPenalizedSetting: {
-            to: contracts.consensus,
-            method: "initialPenalizedSetting",
-            signature: "iii",
-            returns: "number",
-            send: true
-        },
-        proportionCorrect: {
-            to: contracts.consensus,
-            method: "proportionCorrect",
-            signature: "iii",
-            returns: "unfix"
-        },
-        incrementPeriodAfterReporting: {
-            to: contracts.consensus,
-            method: "incrementPeriodAfterReporting",
-            signature: "i",
-            returns: "number",
-            send: true
-        },
-        penalizationCatchup: {
-            to: contracts.consensus,
-            method: "penalizationCatchup",
-            signature: "i",
-            returns: "number",
-            send: true
-        },
-        penalizeWrong: {
-            to: contracts.consensus,
-            method: "penalizeWrong",
-            signature: "ii",
-            returns: "number",
-            send: true
-        },
-
-        // penalizeNotEnoughReports.se
-        penalizeNotEnoughReports: {
-            to: contracts.penalizeNotEnoughReports,
-            method: "penalizeNotEnoughReports",
-            signature: "i",
-            returns: "number",
-            send: true
-        },
-
-        // collectFees.se
-        collectFees: {
-            to: contracts.collectFees,
-            method: "collectFees",
-            signature: "i",
-            returns: "number",
-            send: true
-        },
-
-        // slashRep.se
-        // def slashRep(branch, salt, report, reporter, eventID):
-        slashRep: {
-            to: contracts.slashRep,
-            method: "slashRep",
-            signature: "iiiii",
-            returns: "number",
-            send: true
-        },
-
-        // events.se
-        getmode: {
-            to: contracts.events,
-            method: "getmode",
-            signature: "i",
-            returns: "unfix"
-        },
-        getUncaughtOutcome: {
-            to: contracts.events,
-            method: "getUncaughtOutcome",
-            signature: "i",
-            returns: "unfix"
-        },
-        getMarkets: {
-            to: contracts.events,
-            method: "getMarkets",
-            signature: "i",
-            returns: "hash[]"
-        },
-        getReportingThreshold: {
-            to: contracts.events,
-            method: "getReportingThreshold",
-            signature: "i",
-            returns: "unfix"
-        },
-        getEventInfo: {
-            to: contracts.events,
-            method: "getEventInfo",
-            signature: "i",
-            returns: "hash[]"
-        },
-        getEventBranch: {
-            to: contracts.events,
-            method: "getEventBranch",
-            signature: "i",
-            returns: "hash"
-        },
-        getExpiration: {
-            to: contracts.events,
-            method: "getExpiration",
-            signature: "i",
-            returns: "number"
-        },
-        getOutcome: {
-            to: contracts.events,
-            method: "getOutcome",
-            signature: "i",
-            returns: "unfix"
-        },
-        getMinValue: {
-            to: contracts.events,
-            method: "getMinValue",
-            signature: "i",
-            returns: "number"
-        },
-        getMaxValue: {
-            to: contracts.events,
-            method: "getMaxValue",
-            signature: "i",
-            returns: "number"
-        },
-        getNumOutcomes: {
-            to: contracts.events,
-            method: "getNumOutcomes",
-            signature: "i",
-            returns: "number"
-        },
-        setOutcome: {
-            to: contracts.events,
-            method: "setOutcome",
-            signature: "ii",
-            returns: "number",
-            send: true
-        },
-
-        // expiringEvents.se
-        getEventIndex: {
-            to: contracts.expiringEvents,
-            method: "getEventIndex",
-            signature: "ii",
-            returns: "number"
-        },
-        getEvents: {
-            to: contracts.expiringEvents,
-            method: "getEvents",
-            signature: "ii",
-            returns: "hash[]"
-        },
-        getNumberEvents: {
-            to: contracts.expiringEvents,
-            method: "getNumberEvents",
-            signature: "ii",
-            returns: "number"
-        },
-        getEvent: {
-            to: contracts.expiringEvents,
-            method: "getEvent",
-            signature: "iii",
-            returns: "hash"
-        },
-        getTotalRepReported: {
-            to: contracts.expiringEvents,
-            method: "getTotalRepReported",
-            signature: "ii",
-            returns: "number"
-        },
-        getReportHash: {
-            to: contracts.expiringEvents,
-            method: "getReportHash",
-            signature: "iiii",
-            returns: "hash"
-        },
-        moveEventsToCurrentPeriod: {
-            to: contracts.expiringEvents,
-            method: "moveEventsToCurrentPeriod",
-            signature: "iii",
-            send: true
-        },
-        addEvent: {
-            to: contracts.expiringEvents,
-            method: "addEvent",
-            signature: "iii",
-            send: true
-        },
-        setTotalRepReported: {
-            to: contracts.expiringEvents,
-            method: "setTotalRepReported",
-            signature: "iii",
-            send: true
-        },
-
-        // compositeGetters.se
-        getOrderBook: {
-            to: contracts.compositeGetters,
-            method: "getOrderBook",
-            signature: "i",
-            returns: "hash[]",
-            gas: "0x9184e729fff"
-        },
-        getMarketInfo: {
-            to: contracts.compositeGetters,
-            method: "getMarketInfo",
-            signature: "i",
-            returns: "hash[]",
-            gas: "0x9184e729fff"
-        },
-        batchGetMarketInfo: {
-            to: contracts.compositeGetters,
-            method: "batchGetMarketInfo",
-            signature: "a",
-            returns: "hash[]",
-            gas: "0x9184e729fff"
-        },
-        getMarketsInfo: {
-            to: contracts.compositeGetters,
-            method: "getMarketsInfo",
-            signature: "iii",
-            returns: "hash[]",
-            gas: "0x9184e729fff"
-        },
-
-        // markets.se
-        getFees: {
-            to: contracts.markets,
-            method: "getFees",
-            signature: "i",
-            returns: "unfix"
-        },
-        getMakerFees: {
-            to: contracts.markets,
-            method: "getMakerFees",
-            signature: "i",
-            returns: "unfix"
-        },
-        getgasSubsidy: {
-            to: contracts.markets,
-            method: "getgasSubsidy",
-            signature: "i",
-            returns: "int"
-        },
-        getSharesValue: {
-            to: contracts.markets,
-            method: "getSharesValue",
-            signature: "i",
-            returns: "unfix"
-        },
-        get_total_trades: {
-            to: contracts.markets,
-            method: "get_total_trades",
-            signature: "i",
-            returns: "number"
-        },
-        get_trade_ids: {
-            to: contracts.markets,
-            method: "get_trade_ids",
-            signature: "i",
-            returns: "hash[]",
-            gas: "0x9184e729fff"
-        },
-        getMarketEvents: {
-            to: contracts.markets,
-            method: "getMarketEvents",
-            signature: "i",
-            returns: "hash[]"
-        },
-        getNumEvents: {
-            to: contracts.markets,
-            method: "getNumEvents",
-            signature: "i",
-            returns: "number"
-        },
-        getBranchID: {
-            to: contracts.markets,
-            method: "getBranchID",
-            signature: "i",
-            returns: "hash"
-        },
-        getCurrentParticipantNumber: {
-            to: contracts.markets,
-            method: "getCurrentParticipantNumber",
-            signature: "i",
-            returns: "number"
-        },
-        getMarketNumOutcomes: {
-            to: contracts.markets,
-            method: "getMarketNumOutcomes",
-            signature: "i",
-            returns: "number"
-        },
-        getParticipantSharesPurchased: {
-            to: contracts.markets,
-            method: "getParticipantSharesPurchased",
-            signature: "iii",
-            returns: "unfix"
-        },
-        getSharesPurchased: {
-            to: contracts.markets,
-            method: "getSharesPurchased",
-            signature: "ii",
-            returns: "unfix"
-        },
-        getForkSelection: {
-            to: contracts.markets,
-            method: "getForkSelection",
-            signature: "i",
-            returns: "hash"
-        },
-        getLastExpDate: {
-            to: contracts.markets,
-            method: "getLastExpDate",
-            signature: "i",
-            returns: "number"
-        },
-        returnTags: {
-            to: contracts.markets,
-            method: "returnTags",
-            signature: "i",
-            returns: "hash[]"
-        },
-        getCreationTime: {
-            to: contracts.markets,
-            method: "getCreationTime",
-            signature: "i",
-            returns: "number"
-        },
-        getVolume: {
-            to: contracts.markets,
-            method: "getVolume",
-            signature: "i",
-            returns: "unfix"
-        },
-        getWinningOutcomes: {
-            to: contracts.markets,
-            method: "getWinningOutcomes",
-            signature: "i",
-            returns: "number[]"
-        },
-        getParticipantNumber: {
-            to: contracts.markets,
-            method: "getParticipantNumber",
-            signature: "ii",
-            returns: "number"
-        },
-        getParticipantID: {
-            to: contracts.markets,
-            method: "getParticipantID",
-            signature: "ii",
-            returns: "address"
-        },
-        getCumScale: {
-            to: contracts.markets,
-            method: "getCumScale",
-            signature: "i",
-            returns: "unfix"
-        },
-        getTradingPeriod: {
-            to: contracts.markets,
-            method: "getTradingPeriod",
-            signature: "i",
-            returns: "number"
-        },
-        getTradingFee: {
-            to: contracts.markets,
-            method: "getTradingFee",
-            signature: "i",
-            returns: "unfix"
-        },
-        initialLiquidityAmount: {
-            to: contracts.markets,
-            method: "initialLiquidityAmount",
-            signature: "ii",
-            returns: "unfix"
-        },
-        modifyShares: {
-            to: contracts.markets,
-            method: "modifyShares",
-            signature: "iii",
-            returns: "number",
-            send: true
-        },
-
-        // reporting.se
-        checkWhitelist: {
-            to: contracts.reporting,
-            method: "checkWhitelist",
-            signature: "i"
-        },
-        getActiveRep: {
-            to: contracts.reporting,
-            method: "getActiveRep",
-            signature: "i",
-            returns: "unfix"
-        },
-        adjustActiveRep: {
-            to: contracts.reporting,
-            method: "adjustActiveRep",
-            signature: "ii",
-            returns: "number",
-            send: true
-        },
-        setFork: {
-            to: contracts.reporting,
-            method: "setFork",
-            signature: "i",
-            returns: "number",
-            send: true
-        },
-        getFork: {
-            to: contracts.reporting,
-            method: "getFork",
-            signature: "i",
-            returns: "number"
-        },
-        checkContractWhitelist: {
-            to: contracts.reporting,
-            method: "checkContractWhitelist",
-            signature: "ii"
-        },
-        setWhitelist: {
-            to: contracts.reporting,
-            method: "setWhitelist",
-            signature: "ia",
-            returns: "string",
-            send: true
-        },
-        getRepByIndex: {
-            to: contracts.reporting,
-            method: "getRepByIndex",
-            signature: "ii",
-            returns: "unfix"
-        },
-        getRepBalance: {
-            to: contracts.reporting,
-            method: "getRepBalance",
-            signature: "ii",
-            returns: "unfix"
-        },
-        getDormantRepByIndex: {
-            to: contracts.reporting,
-            method: "getDormantRepByIndex",
-            signature: "ii",
-            returns: "unfix"
-        },
-        balanceOf: {
-            to: contracts.reporting,
-            method: "balanceOf",
-            signature: "ii",
-            returns: "unfix"
-        },
-        totalSupply: {
-            to: contracts.reporting,
-            method: "totalSupply",
-            signature: "i",
-            returns: "unfix"
-        },
-        getReporterID: {
-            to: contracts.reporting,
-            method: "getReporterID",
-            signature: "ii",
-            returns: "hash"
-        },
-        getTotalRep: {
-            to: contracts.reporting,
-            method: "getTotalRep",
-            signature: "i",
-            returns: "unfix"
-        },
-        getReputation: {
-            to: contracts.reporting,
-            method: "getReputation",
-            signature: "i",
-            returns: "hash[]"
-        },
-        getNumberReporters: {
-            to: contracts.reporting,
-            method: "getNumberReporters",
-            signature: "i",
-            returns: "number"
-        },
-        repIDToIndex: {
-            to: contracts.reporting,
-            method: "repIDToIndex",
-            signature: "ii",
-            returns: "number"
-        },
-        hashReport: {
-            to: contracts.reporting,
-            method: "hashReport",
-            signature: "ai"
-        },
-        setInitialReporters: {
-            to: contracts.reporting,
-            method: "setInitialReporters",
-            signature: "ii",
-            returns: "number",
-            send: true
-        },
-        addReporter: {
-            to: contracts.reporting,
-            method: "addReporter",
-            signature: "ii",
-            returns: "number",
-            send: true
-        },
-        addRep: {
-            to: contracts.reporting,
-            method: "addRep",
-            signature: "iii",
-            returns: "number",
-            send: true
-        },
-        subtractRep: {
-            to: contracts.reporting,
-            method: "subtractRep",
-            signature: "iii",
-            returns: "number",
-            send: true
-        },
-        setRep: {
-            to: contracts.reporting,
-            method: "setRep",
-            signature: "iii",
-            returns: "number",
-            send: true
-        },
-        addDormantRep: {
-            to: contracts.reporting,
-            method: "addDormantRep",
-            signature: "iii",
-            returns: "number",
-            send: true
-        },
-        subtractDormantRep: {
-            to: contracts.reporting,
-            method: "subtractDormantRep",
-            signature: "iii",
-            returns: "number",
-            send: true
-        },
-        setSaleDistribution: {
-            to: contracts.reporting,
-            method: "setSaleDistribution",
-            signature: "aai",
-            returns: "number",
-            send: true
-        },
-
-        // trades.se
-        makeTradeHash: {
-            to: contracts.trades,
-            method: "makeTradeHash",
-            signature: "iia",
-            returns: "hash"
-        },
-        commitTrade: {
-            to: contracts.trades,
-            method: "commitTrade",
-            signature: "i",
-            returns: "number",
-            send: true
-        },
-        setInitialTrade: {
-            to: contracts.trades,
-            method: "setInitialTrade",
-            signature: "i",
-            returns: "number",
-            send: true
-        },  
-        getInitialTrade: {
-            to: contracts.trades,
-            method: "getInitialTrade",
-            signature: "i",
-            returns: "hash"
-        },            
-        zeroHash: {
-            to: contracts.trades,
-            method: "zeroHash",
-            returns: "number",
-            send: true
-        },
-        checkHash: {
-            to: contracts.trades,
-            method: "checkHash",
-            signature: "ii",
-            returns: "number"
-        },
-        getID: {
-            to: contracts.trades,
-            method: "getID",
-            signature: "i",
-            returns: "hash"
-        },            
-        saveTrade: {
-            to: contracts.trades,
-            method: "saveTrade",
-            signature: "iiiiiii",
-            returns: "number",
-            send: true
-        },
-        get_trade: {
-            to: contracts.trades,
-            method: "get_trade",
-            signature: "i",
-            returns: "hash[]"
-        },
-        get_amount: {
-            to: contracts.trades,
-            method: "get_amount",
-            signature: "i",
-            returns: "unfix"
-        },
-        get_price: {
-            to: contracts.trades,
-            method: "get_price",
-            signature: "i",
-            returns: "unfix"
-        },
-        update_trade: {
-            to: contracts.trades,
-            method: "update_trade",
-            signature: "ii",
-            send: true
-        },
-        remove_trade: {
-            to: contracts.trades,
-            method: "remove_trade",
-            signature: "i",
-            returns: "number",
-            send: true
-        },
-        fill_trade: {
-            to: contracts.trades,
-            method: "fill_trade",
-            signature: "ii",
-            returns: "number",
-            send: true
-        },
-
-        // buy&sellShares.se
-        cancel: {
-            to: contracts.buyAndSellShares,
-            method: "cancel",
-            signature: "i",
-            returns: "number",
-            send: true
-        },
-        buy: {
-            to: contracts.buyAndSellShares,
-            method: "buy",
-            signature: "iiii",
-            returns: "hash",
-            send: true
-        },
-        sell: {
-            to: contracts.buyAndSellShares,
-            method: "sell",
-            signature: "iiii",
-            returns: "hash",
-            send: true
-        },
-
-        // trade.se
-        trade: {
-            to: contracts.trade,
-            method: "trade",
-            signature: "iia",
-            returns: "hash[]",
-            send: true
-        },
-        short_sell: {
-            to: contracts.trade,
-            method: "short_sell",
-            signature: "ii",
-            returns: "hash[]",
-            send: true
-        },
-
-        // completeSets.se
-        buyCompleteSets: {
-            to: contracts.completeSets,
-            method: "buyCompleteSets",
-            signature: "ii",
-            returns: "number",
-            send: true
-        },
-        sellCompleteSets: {
-            to: contracts.completeSets,
-            method: "sellCompleteSets",
-            signature: "ii",
-            returns: "number",
-            send: true
-        },
-
-        // createBranch.se
-        createSubbranch: {
-            to: contracts.createBranch,
-            method: "createSubbranch",
-            signature: "siiii",
-            returns: "hash",
-            send: true
-        },
-
-        // sendReputation.se
-        sendReputation: {
-            to: contracts.sendReputation,
-            method: "sendReputation",
-            signature: "iii",
-            send: true,
-            returns: "unfix"
-        },
-
-        // makeReports.se
-        getNumEventsToReport: {
-            to: contracts.makeReports,
-            method: "getNumEventsToReport",
-            signature: "ii",
-            returns: "number"
-        },
-        getNumReportsActual: {
-            to: contracts.makeReports,
-            method: "getNumReportsActual",
-            signature: "ii",
-            returns: "number"
-        },
-        getSubmittedHash: {
-            to: contracts.makeReports,
-            method: "getSubmittedHash",
-            signature: "iii",
-            returns: "hash"
-        },
-        getBeforeRep: {
-            to: contracts.makeReports,
-            method: "getBeforeRep",
-            signature: "ii",
-            returns: "unfix"
-        },
-        getAfterRep: {
-            to: contracts.makeReports,
-            method: "getAfterRep",
-            signature: "ii",
-            returns: "unfix"
-        },
-        getReport: {
-            to: contracts.makeReports,
-            method: "getReport",
-            signature: "iii",
-            returns: "unfix"
-        },
-        getRRUpToDate: {
-            to: contracts.makeReports,
-            method: "getRRUpToDate",
-            returns: "number"
-        },
-        getNumReportsExpectedEvent: {
-            to: contracts.makeReports,
-            method: "getNumReportsExpectedEvent",
-            signature: "iii",
-            returns: "hash"
-        },
-        getNumReportsEvent: {
-            to: contracts.makeReports,
-            method: "getNumReportsEvent",
-            signature: "iii",
-            returns: "hash"
-        },
-        makeHash: {
-            to: contracts.makeReports,
-            method: "makeHash",
-            signature: "iiii",
-            returns: "hash"
-        },
-        calculateReportingThreshold: {
-            to: contracts.makeReports,
-            method: "calculateReportingThreshold",
-            signature: "iii",
-            returns: "hash"
-        },
-        submitReportHash: {
-            to: contracts.makeReports,
-            method: "submitReportHash",
-            signature: "iiiii",
-            returns: "number",
-            send: true
-        },
-        submitReport: {
-            to: contracts.makeReports,
-            method: "submitReport",
-            signature: "iiiiiii",
-            returns: "number",
-            send: true
-        },
-        checkReportValidity: {
-            to: contracts.makeReports,
-            method: "checkReportValidity",
-            signature: "iii",
-            returns: "number"
-        },
-
-        // createMarket.se
-        createEvent: {
-            to: contracts.createMarket,
-            method: "createEvent",
-            signature: "isiiiis",
-            send: true
-        },
-        createMarket: {
-            to: contracts.createMarket,
-            method: "createMarket",
-            signature: "isiaiiiis",
-            send: true
-        },
-        updateTradingFee: {
-            to: contracts.createMarket,
-            method: "updateTradingFee",
-            signature: "iii",
-            send: true,
-            returns: "number"
-        },
-        pushMarketForward: {
-            to: contracts.createMarket,
-            method: "pushMarketForward",
-            signature: "ii",
-            send: true,
-            returns: "number"
-        },
-
-        // createSingleEventMarket.se
-        // createSingleEventMarket: {
-        //     to: contracts.createMarket,
-        //     method: "createSingleEventMarket",
-        //     signature: "isiiiisiiiiis",
-        //     returns: "hash",
-        //     send: true
-        // },
-
-        // closeMarket.se
-        closeMarket: {
-            to: contracts.closeMarket,
-            method: "closeMarket",
-            signature: "ii",
-            returns: "number",
-            send: true
-        },
-        claimProceeds: {
-            to: contracts.closeMarket,
-            method: "claimProceeds",
-            signature: "ii",
-            returns: "number",
-            send: true
-        },
-
-        // roundTwo.se
-        // def roundTwoPostBond(branch, event, eventIndex, votePeriod):
-        roundTwoPostBond: {
-            to: contracts.roundTwo,
-            method: "roundTwoPostBond",
-            signature: "iiii",
-            returns: "number",
-            send: true
-        },
-        // def roundTwoResolve(branch, event, eventIndex, votePeriod):
-        roundTwoResolve: {
-            to: contracts.roundTwo,
-            method: "roundTwoResolve",
-            signature: "iiii",
-            returns: "number",
-            send: true
-        },
-        // def resolve(branch, event, sender):
-        resolve: {
-            to: contracts.roundTwo,
-            method: "resolve",
-            signature: "iii",
-            returns: "number",
-            send: true
-        },
-
-        // backstops.se
-        // def getRoundTwo(event):
-        getRoundTwo: {
-            to: contracts.backstops,
-            method: "getRoundTwo",
-            signature: "i"
-        },
-        // def setRoundTwo(event, roundTwo):
-        setRoundTwo: {
-            to: contracts.backstops,
-            method: "setRoundTwo",
-            signature: "ii",
-            returns: "number",
-            send: true
-        },
-        // def getBondPoster(event):
-        getBondPoster: {
-            to: contracts.backstops,
-            method: "getBondPoster",
-            signature: "i",
-            returns: "address"
-        },  
-        // def setBondPoster(event, bondPoster):
-        setBondPoster: {
-            to: contracts.backstops,
-            method: "setBondPoster",
-            signature: "ii",
-            returns: "number",
-            send: true
-        },
-        // def getFinal(event):
-        getFinal: {
-            to: contracts.backstops,
-            method: "getFinal",
-            signature: "i"
-        },
-        // def setFinal(event):
-        setFinal: {
-            to: contracts.backstops,
-            method: "setFinal",
-            signature: "i",
-            returns: "number",
-            send: true
-        },
-        // def getOriginalOutcome(event):
-        getOriginalOutcome: {
-            to: contracts.backstops,
-            method: "getOriginalOutcome",
-            signature: "i"
-        },
-        // def setOriginalOutcome(event, originalOutcome):
-        setOriginalOutcome: {
-            to: contracts.backstops,
-            method: "setOriginalOutcome",
-            signature: "ii",
-            returns: "number",
-            send: true
-        },
-        // def getOriginalEthicality(event):
-        getOriginalEthicality: {
-            to: contracts.backstops,
-            method: "getOriginalEthicality",
-            signature: "i"
-        },
-        // def setOriginalEthicality(event, ethicality):
-        setOriginalEthicality: {
-            to: contracts.backstops,
-            method: "setOriginalEthicality",
-            signature: "ii",
-            returns: "number",
-            send: true
-        },
-        // def getOriginalVotePeriod(event):
-        getOriginalVotePeriod: {
-            to: contracts.backstops,
-            method: "getOriginalVotePeriod",
-            signature: "i",
-            returns: "number"
-        },
-        // def setOriginalVotePeriod(event, period):
-        setOriginalVotePeriod: {
-            to: contracts.backstops,
-            method: "setOriginalVotePeriod",
-            signature: "ii",
-            returns: "number",
-            send: true
-        }
-
-    };
-
-};
-
-},{"./contracts":4}],8:[function(require,module,exports){
+},{"crypto":72}],3:[function(require,module,exports){
 module.exports = require('./lib/index.js')
 
-},{"./lib/index.js":9}],9:[function(require,module,exports){
+},{"./lib/index.js":4}],4:[function(require,module,exports){
 (function (Buffer){
 const utils = require('ethereumjs-util')
 const BN = require('bn.js')
@@ -5779,9 +3757,7 @@ ABI.fromSerpent = function (sig) {
   var ret = []
   for (var i = 0; i < sig.length; i++) {
     var type = sig[i]
-    if (type === 's') {
-      ret.push('bytes')
-    } else if (type === 'b') {
+    if (type === 's' || type === 'b') {
       var tmp = 'bytes'
       var j = i + 1
       while ((j < sig.length) && isNumeric(sig[j])) {
@@ -5805,7 +3781,7 @@ ABI.toSerpent = function (types) {
   var ret = []
   for (var i = 0; i < types.length; i++) {
     var type = types[i]
-    if (type === 'bytes') {
+    if (type === 'bytes' || type === 'string') {
       ret.push('s')
     } else if (type.startsWith('bytes')) {
       ret.push('b' + parseTypeN(type))
@@ -5823,7 +3799,7 @@ ABI.toSerpent = function (types) {
 module.exports = ABI
 
 }).call(this,require("buffer").Buffer)
-},{"bn.js":10,"buffer":67,"ethereumjs-util":11}],10:[function(require,module,exports){
+},{"bn.js":5,"buffer":68,"ethereumjs-util":6}],5:[function(require,module,exports){
 (function (module, exports) {
   'use strict';
 
@@ -6929,478 +4905,478 @@ module.exports = ABI
     /* k = 0 */
     lo = Math.imul(al0, bl0);
     mid = Math.imul(al0, bh0);
-    mid += Math.imul(ah0, bl0);
+    mid = (mid + Math.imul(ah0, bl0)) | 0;
     hi = Math.imul(ah0, bh0);
-    var w0 = c + lo + ((mid & 0x1fff) << 13);
-    c = hi + (mid >>> 13) + (w0 >>> 26);
+    var w0 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w0 >>> 26)) | 0;
     w0 &= 0x3ffffff;
     /* k = 1 */
     lo = Math.imul(al1, bl0);
     mid = Math.imul(al1, bh0);
-    mid += Math.imul(ah1, bl0);
+    mid = (mid + Math.imul(ah1, bl0)) | 0;
     hi = Math.imul(ah1, bh0);
-    lo += Math.imul(al0, bl1);
-    mid += Math.imul(al0, bh1);
-    mid += Math.imul(ah0, bl1);
-    hi += Math.imul(ah0, bh1);
-    var w1 = c + lo + ((mid & 0x1fff) << 13);
-    c = hi + (mid >>> 13) + (w1 >>> 26);
+    lo = (lo + Math.imul(al0, bl1)) | 0;
+    mid = (mid + Math.imul(al0, bh1)) | 0;
+    mid = (mid + Math.imul(ah0, bl1)) | 0;
+    hi = (hi + Math.imul(ah0, bh1)) | 0;
+    var w1 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w1 >>> 26)) | 0;
     w1 &= 0x3ffffff;
     /* k = 2 */
     lo = Math.imul(al2, bl0);
     mid = Math.imul(al2, bh0);
-    mid += Math.imul(ah2, bl0);
+    mid = (mid + Math.imul(ah2, bl0)) | 0;
     hi = Math.imul(ah2, bh0);
-    lo += Math.imul(al1, bl1);
-    mid += Math.imul(al1, bh1);
-    mid += Math.imul(ah1, bl1);
-    hi += Math.imul(ah1, bh1);
-    lo += Math.imul(al0, bl2);
-    mid += Math.imul(al0, bh2);
-    mid += Math.imul(ah0, bl2);
-    hi += Math.imul(ah0, bh2);
-    var w2 = c + lo + ((mid & 0x1fff) << 13);
-    c = hi + (mid >>> 13) + (w2 >>> 26);
+    lo = (lo + Math.imul(al1, bl1)) | 0;
+    mid = (mid + Math.imul(al1, bh1)) | 0;
+    mid = (mid + Math.imul(ah1, bl1)) | 0;
+    hi = (hi + Math.imul(ah1, bh1)) | 0;
+    lo = (lo + Math.imul(al0, bl2)) | 0;
+    mid = (mid + Math.imul(al0, bh2)) | 0;
+    mid = (mid + Math.imul(ah0, bl2)) | 0;
+    hi = (hi + Math.imul(ah0, bh2)) | 0;
+    var w2 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w2 >>> 26)) | 0;
     w2 &= 0x3ffffff;
     /* k = 3 */
     lo = Math.imul(al3, bl0);
     mid = Math.imul(al3, bh0);
-    mid += Math.imul(ah3, bl0);
+    mid = (mid + Math.imul(ah3, bl0)) | 0;
     hi = Math.imul(ah3, bh0);
-    lo += Math.imul(al2, bl1);
-    mid += Math.imul(al2, bh1);
-    mid += Math.imul(ah2, bl1);
-    hi += Math.imul(ah2, bh1);
-    lo += Math.imul(al1, bl2);
-    mid += Math.imul(al1, bh2);
-    mid += Math.imul(ah1, bl2);
-    hi += Math.imul(ah1, bh2);
-    lo += Math.imul(al0, bl3);
-    mid += Math.imul(al0, bh3);
-    mid += Math.imul(ah0, bl3);
-    hi += Math.imul(ah0, bh3);
-    var w3 = c + lo + ((mid & 0x1fff) << 13);
-    c = hi + (mid >>> 13) + (w3 >>> 26);
+    lo = (lo + Math.imul(al2, bl1)) | 0;
+    mid = (mid + Math.imul(al2, bh1)) | 0;
+    mid = (mid + Math.imul(ah2, bl1)) | 0;
+    hi = (hi + Math.imul(ah2, bh1)) | 0;
+    lo = (lo + Math.imul(al1, bl2)) | 0;
+    mid = (mid + Math.imul(al1, bh2)) | 0;
+    mid = (mid + Math.imul(ah1, bl2)) | 0;
+    hi = (hi + Math.imul(ah1, bh2)) | 0;
+    lo = (lo + Math.imul(al0, bl3)) | 0;
+    mid = (mid + Math.imul(al0, bh3)) | 0;
+    mid = (mid + Math.imul(ah0, bl3)) | 0;
+    hi = (hi + Math.imul(ah0, bh3)) | 0;
+    var w3 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w3 >>> 26)) | 0;
     w3 &= 0x3ffffff;
     /* k = 4 */
     lo = Math.imul(al4, bl0);
     mid = Math.imul(al4, bh0);
-    mid += Math.imul(ah4, bl0);
+    mid = (mid + Math.imul(ah4, bl0)) | 0;
     hi = Math.imul(ah4, bh0);
-    lo += Math.imul(al3, bl1);
-    mid += Math.imul(al3, bh1);
-    mid += Math.imul(ah3, bl1);
-    hi += Math.imul(ah3, bh1);
-    lo += Math.imul(al2, bl2);
-    mid += Math.imul(al2, bh2);
-    mid += Math.imul(ah2, bl2);
-    hi += Math.imul(ah2, bh2);
-    lo += Math.imul(al1, bl3);
-    mid += Math.imul(al1, bh3);
-    mid += Math.imul(ah1, bl3);
-    hi += Math.imul(ah1, bh3);
-    lo += Math.imul(al0, bl4);
-    mid += Math.imul(al0, bh4);
-    mid += Math.imul(ah0, bl4);
-    hi += Math.imul(ah0, bh4);
-    var w4 = c + lo + ((mid & 0x1fff) << 13);
-    c = hi + (mid >>> 13) + (w4 >>> 26);
+    lo = (lo + Math.imul(al3, bl1)) | 0;
+    mid = (mid + Math.imul(al3, bh1)) | 0;
+    mid = (mid + Math.imul(ah3, bl1)) | 0;
+    hi = (hi + Math.imul(ah3, bh1)) | 0;
+    lo = (lo + Math.imul(al2, bl2)) | 0;
+    mid = (mid + Math.imul(al2, bh2)) | 0;
+    mid = (mid + Math.imul(ah2, bl2)) | 0;
+    hi = (hi + Math.imul(ah2, bh2)) | 0;
+    lo = (lo + Math.imul(al1, bl3)) | 0;
+    mid = (mid + Math.imul(al1, bh3)) | 0;
+    mid = (mid + Math.imul(ah1, bl3)) | 0;
+    hi = (hi + Math.imul(ah1, bh3)) | 0;
+    lo = (lo + Math.imul(al0, bl4)) | 0;
+    mid = (mid + Math.imul(al0, bh4)) | 0;
+    mid = (mid + Math.imul(ah0, bl4)) | 0;
+    hi = (hi + Math.imul(ah0, bh4)) | 0;
+    var w4 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w4 >>> 26)) | 0;
     w4 &= 0x3ffffff;
     /* k = 5 */
     lo = Math.imul(al5, bl0);
     mid = Math.imul(al5, bh0);
-    mid += Math.imul(ah5, bl0);
+    mid = (mid + Math.imul(ah5, bl0)) | 0;
     hi = Math.imul(ah5, bh0);
-    lo += Math.imul(al4, bl1);
-    mid += Math.imul(al4, bh1);
-    mid += Math.imul(ah4, bl1);
-    hi += Math.imul(ah4, bh1);
-    lo += Math.imul(al3, bl2);
-    mid += Math.imul(al3, bh2);
-    mid += Math.imul(ah3, bl2);
-    hi += Math.imul(ah3, bh2);
-    lo += Math.imul(al2, bl3);
-    mid += Math.imul(al2, bh3);
-    mid += Math.imul(ah2, bl3);
-    hi += Math.imul(ah2, bh3);
-    lo += Math.imul(al1, bl4);
-    mid += Math.imul(al1, bh4);
-    mid += Math.imul(ah1, bl4);
-    hi += Math.imul(ah1, bh4);
-    lo += Math.imul(al0, bl5);
-    mid += Math.imul(al0, bh5);
-    mid += Math.imul(ah0, bl5);
-    hi += Math.imul(ah0, bh5);
-    var w5 = c + lo + ((mid & 0x1fff) << 13);
-    c = hi + (mid >>> 13) + (w5 >>> 26);
+    lo = (lo + Math.imul(al4, bl1)) | 0;
+    mid = (mid + Math.imul(al4, bh1)) | 0;
+    mid = (mid + Math.imul(ah4, bl1)) | 0;
+    hi = (hi + Math.imul(ah4, bh1)) | 0;
+    lo = (lo + Math.imul(al3, bl2)) | 0;
+    mid = (mid + Math.imul(al3, bh2)) | 0;
+    mid = (mid + Math.imul(ah3, bl2)) | 0;
+    hi = (hi + Math.imul(ah3, bh2)) | 0;
+    lo = (lo + Math.imul(al2, bl3)) | 0;
+    mid = (mid + Math.imul(al2, bh3)) | 0;
+    mid = (mid + Math.imul(ah2, bl3)) | 0;
+    hi = (hi + Math.imul(ah2, bh3)) | 0;
+    lo = (lo + Math.imul(al1, bl4)) | 0;
+    mid = (mid + Math.imul(al1, bh4)) | 0;
+    mid = (mid + Math.imul(ah1, bl4)) | 0;
+    hi = (hi + Math.imul(ah1, bh4)) | 0;
+    lo = (lo + Math.imul(al0, bl5)) | 0;
+    mid = (mid + Math.imul(al0, bh5)) | 0;
+    mid = (mid + Math.imul(ah0, bl5)) | 0;
+    hi = (hi + Math.imul(ah0, bh5)) | 0;
+    var w5 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w5 >>> 26)) | 0;
     w5 &= 0x3ffffff;
     /* k = 6 */
     lo = Math.imul(al6, bl0);
     mid = Math.imul(al6, bh0);
-    mid += Math.imul(ah6, bl0);
+    mid = (mid + Math.imul(ah6, bl0)) | 0;
     hi = Math.imul(ah6, bh0);
-    lo += Math.imul(al5, bl1);
-    mid += Math.imul(al5, bh1);
-    mid += Math.imul(ah5, bl1);
-    hi += Math.imul(ah5, bh1);
-    lo += Math.imul(al4, bl2);
-    mid += Math.imul(al4, bh2);
-    mid += Math.imul(ah4, bl2);
-    hi += Math.imul(ah4, bh2);
-    lo += Math.imul(al3, bl3);
-    mid += Math.imul(al3, bh3);
-    mid += Math.imul(ah3, bl3);
-    hi += Math.imul(ah3, bh3);
-    lo += Math.imul(al2, bl4);
-    mid += Math.imul(al2, bh4);
-    mid += Math.imul(ah2, bl4);
-    hi += Math.imul(ah2, bh4);
-    lo += Math.imul(al1, bl5);
-    mid += Math.imul(al1, bh5);
-    mid += Math.imul(ah1, bl5);
-    hi += Math.imul(ah1, bh5);
-    lo += Math.imul(al0, bl6);
-    mid += Math.imul(al0, bh6);
-    mid += Math.imul(ah0, bl6);
-    hi += Math.imul(ah0, bh6);
-    var w6 = c + lo + ((mid & 0x1fff) << 13);
-    c = hi + (mid >>> 13) + (w6 >>> 26);
+    lo = (lo + Math.imul(al5, bl1)) | 0;
+    mid = (mid + Math.imul(al5, bh1)) | 0;
+    mid = (mid + Math.imul(ah5, bl1)) | 0;
+    hi = (hi + Math.imul(ah5, bh1)) | 0;
+    lo = (lo + Math.imul(al4, bl2)) | 0;
+    mid = (mid + Math.imul(al4, bh2)) | 0;
+    mid = (mid + Math.imul(ah4, bl2)) | 0;
+    hi = (hi + Math.imul(ah4, bh2)) | 0;
+    lo = (lo + Math.imul(al3, bl3)) | 0;
+    mid = (mid + Math.imul(al3, bh3)) | 0;
+    mid = (mid + Math.imul(ah3, bl3)) | 0;
+    hi = (hi + Math.imul(ah3, bh3)) | 0;
+    lo = (lo + Math.imul(al2, bl4)) | 0;
+    mid = (mid + Math.imul(al2, bh4)) | 0;
+    mid = (mid + Math.imul(ah2, bl4)) | 0;
+    hi = (hi + Math.imul(ah2, bh4)) | 0;
+    lo = (lo + Math.imul(al1, bl5)) | 0;
+    mid = (mid + Math.imul(al1, bh5)) | 0;
+    mid = (mid + Math.imul(ah1, bl5)) | 0;
+    hi = (hi + Math.imul(ah1, bh5)) | 0;
+    lo = (lo + Math.imul(al0, bl6)) | 0;
+    mid = (mid + Math.imul(al0, bh6)) | 0;
+    mid = (mid + Math.imul(ah0, bl6)) | 0;
+    hi = (hi + Math.imul(ah0, bh6)) | 0;
+    var w6 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w6 >>> 26)) | 0;
     w6 &= 0x3ffffff;
     /* k = 7 */
     lo = Math.imul(al7, bl0);
     mid = Math.imul(al7, bh0);
-    mid += Math.imul(ah7, bl0);
+    mid = (mid + Math.imul(ah7, bl0)) | 0;
     hi = Math.imul(ah7, bh0);
-    lo += Math.imul(al6, bl1);
-    mid += Math.imul(al6, bh1);
-    mid += Math.imul(ah6, bl1);
-    hi += Math.imul(ah6, bh1);
-    lo += Math.imul(al5, bl2);
-    mid += Math.imul(al5, bh2);
-    mid += Math.imul(ah5, bl2);
-    hi += Math.imul(ah5, bh2);
-    lo += Math.imul(al4, bl3);
-    mid += Math.imul(al4, bh3);
-    mid += Math.imul(ah4, bl3);
-    hi += Math.imul(ah4, bh3);
-    lo += Math.imul(al3, bl4);
-    mid += Math.imul(al3, bh4);
-    mid += Math.imul(ah3, bl4);
-    hi += Math.imul(ah3, bh4);
-    lo += Math.imul(al2, bl5);
-    mid += Math.imul(al2, bh5);
-    mid += Math.imul(ah2, bl5);
-    hi += Math.imul(ah2, bh5);
-    lo += Math.imul(al1, bl6);
-    mid += Math.imul(al1, bh6);
-    mid += Math.imul(ah1, bl6);
-    hi += Math.imul(ah1, bh6);
-    lo += Math.imul(al0, bl7);
-    mid += Math.imul(al0, bh7);
-    mid += Math.imul(ah0, bl7);
-    hi += Math.imul(ah0, bh7);
-    var w7 = c + lo + ((mid & 0x1fff) << 13);
-    c = hi + (mid >>> 13) + (w7 >>> 26);
+    lo = (lo + Math.imul(al6, bl1)) | 0;
+    mid = (mid + Math.imul(al6, bh1)) | 0;
+    mid = (mid + Math.imul(ah6, bl1)) | 0;
+    hi = (hi + Math.imul(ah6, bh1)) | 0;
+    lo = (lo + Math.imul(al5, bl2)) | 0;
+    mid = (mid + Math.imul(al5, bh2)) | 0;
+    mid = (mid + Math.imul(ah5, bl2)) | 0;
+    hi = (hi + Math.imul(ah5, bh2)) | 0;
+    lo = (lo + Math.imul(al4, bl3)) | 0;
+    mid = (mid + Math.imul(al4, bh3)) | 0;
+    mid = (mid + Math.imul(ah4, bl3)) | 0;
+    hi = (hi + Math.imul(ah4, bh3)) | 0;
+    lo = (lo + Math.imul(al3, bl4)) | 0;
+    mid = (mid + Math.imul(al3, bh4)) | 0;
+    mid = (mid + Math.imul(ah3, bl4)) | 0;
+    hi = (hi + Math.imul(ah3, bh4)) | 0;
+    lo = (lo + Math.imul(al2, bl5)) | 0;
+    mid = (mid + Math.imul(al2, bh5)) | 0;
+    mid = (mid + Math.imul(ah2, bl5)) | 0;
+    hi = (hi + Math.imul(ah2, bh5)) | 0;
+    lo = (lo + Math.imul(al1, bl6)) | 0;
+    mid = (mid + Math.imul(al1, bh6)) | 0;
+    mid = (mid + Math.imul(ah1, bl6)) | 0;
+    hi = (hi + Math.imul(ah1, bh6)) | 0;
+    lo = (lo + Math.imul(al0, bl7)) | 0;
+    mid = (mid + Math.imul(al0, bh7)) | 0;
+    mid = (mid + Math.imul(ah0, bl7)) | 0;
+    hi = (hi + Math.imul(ah0, bh7)) | 0;
+    var w7 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w7 >>> 26)) | 0;
     w7 &= 0x3ffffff;
     /* k = 8 */
     lo = Math.imul(al8, bl0);
     mid = Math.imul(al8, bh0);
-    mid += Math.imul(ah8, bl0);
+    mid = (mid + Math.imul(ah8, bl0)) | 0;
     hi = Math.imul(ah8, bh0);
-    lo += Math.imul(al7, bl1);
-    mid += Math.imul(al7, bh1);
-    mid += Math.imul(ah7, bl1);
-    hi += Math.imul(ah7, bh1);
-    lo += Math.imul(al6, bl2);
-    mid += Math.imul(al6, bh2);
-    mid += Math.imul(ah6, bl2);
-    hi += Math.imul(ah6, bh2);
-    lo += Math.imul(al5, bl3);
-    mid += Math.imul(al5, bh3);
-    mid += Math.imul(ah5, bl3);
-    hi += Math.imul(ah5, bh3);
-    lo += Math.imul(al4, bl4);
-    mid += Math.imul(al4, bh4);
-    mid += Math.imul(ah4, bl4);
-    hi += Math.imul(ah4, bh4);
-    lo += Math.imul(al3, bl5);
-    mid += Math.imul(al3, bh5);
-    mid += Math.imul(ah3, bl5);
-    hi += Math.imul(ah3, bh5);
-    lo += Math.imul(al2, bl6);
-    mid += Math.imul(al2, bh6);
-    mid += Math.imul(ah2, bl6);
-    hi += Math.imul(ah2, bh6);
-    lo += Math.imul(al1, bl7);
-    mid += Math.imul(al1, bh7);
-    mid += Math.imul(ah1, bl7);
-    hi += Math.imul(ah1, bh7);
-    lo += Math.imul(al0, bl8);
-    mid += Math.imul(al0, bh8);
-    mid += Math.imul(ah0, bl8);
-    hi += Math.imul(ah0, bh8);
-    var w8 = c + lo + ((mid & 0x1fff) << 13);
-    c = hi + (mid >>> 13) + (w8 >>> 26);
+    lo = (lo + Math.imul(al7, bl1)) | 0;
+    mid = (mid + Math.imul(al7, bh1)) | 0;
+    mid = (mid + Math.imul(ah7, bl1)) | 0;
+    hi = (hi + Math.imul(ah7, bh1)) | 0;
+    lo = (lo + Math.imul(al6, bl2)) | 0;
+    mid = (mid + Math.imul(al6, bh2)) | 0;
+    mid = (mid + Math.imul(ah6, bl2)) | 0;
+    hi = (hi + Math.imul(ah6, bh2)) | 0;
+    lo = (lo + Math.imul(al5, bl3)) | 0;
+    mid = (mid + Math.imul(al5, bh3)) | 0;
+    mid = (mid + Math.imul(ah5, bl3)) | 0;
+    hi = (hi + Math.imul(ah5, bh3)) | 0;
+    lo = (lo + Math.imul(al4, bl4)) | 0;
+    mid = (mid + Math.imul(al4, bh4)) | 0;
+    mid = (mid + Math.imul(ah4, bl4)) | 0;
+    hi = (hi + Math.imul(ah4, bh4)) | 0;
+    lo = (lo + Math.imul(al3, bl5)) | 0;
+    mid = (mid + Math.imul(al3, bh5)) | 0;
+    mid = (mid + Math.imul(ah3, bl5)) | 0;
+    hi = (hi + Math.imul(ah3, bh5)) | 0;
+    lo = (lo + Math.imul(al2, bl6)) | 0;
+    mid = (mid + Math.imul(al2, bh6)) | 0;
+    mid = (mid + Math.imul(ah2, bl6)) | 0;
+    hi = (hi + Math.imul(ah2, bh6)) | 0;
+    lo = (lo + Math.imul(al1, bl7)) | 0;
+    mid = (mid + Math.imul(al1, bh7)) | 0;
+    mid = (mid + Math.imul(ah1, bl7)) | 0;
+    hi = (hi + Math.imul(ah1, bh7)) | 0;
+    lo = (lo + Math.imul(al0, bl8)) | 0;
+    mid = (mid + Math.imul(al0, bh8)) | 0;
+    mid = (mid + Math.imul(ah0, bl8)) | 0;
+    hi = (hi + Math.imul(ah0, bh8)) | 0;
+    var w8 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w8 >>> 26)) | 0;
     w8 &= 0x3ffffff;
     /* k = 9 */
     lo = Math.imul(al9, bl0);
     mid = Math.imul(al9, bh0);
-    mid += Math.imul(ah9, bl0);
+    mid = (mid + Math.imul(ah9, bl0)) | 0;
     hi = Math.imul(ah9, bh0);
-    lo += Math.imul(al8, bl1);
-    mid += Math.imul(al8, bh1);
-    mid += Math.imul(ah8, bl1);
-    hi += Math.imul(ah8, bh1);
-    lo += Math.imul(al7, bl2);
-    mid += Math.imul(al7, bh2);
-    mid += Math.imul(ah7, bl2);
-    hi += Math.imul(ah7, bh2);
-    lo += Math.imul(al6, bl3);
-    mid += Math.imul(al6, bh3);
-    mid += Math.imul(ah6, bl3);
-    hi += Math.imul(ah6, bh3);
-    lo += Math.imul(al5, bl4);
-    mid += Math.imul(al5, bh4);
-    mid += Math.imul(ah5, bl4);
-    hi += Math.imul(ah5, bh4);
-    lo += Math.imul(al4, bl5);
-    mid += Math.imul(al4, bh5);
-    mid += Math.imul(ah4, bl5);
-    hi += Math.imul(ah4, bh5);
-    lo += Math.imul(al3, bl6);
-    mid += Math.imul(al3, bh6);
-    mid += Math.imul(ah3, bl6);
-    hi += Math.imul(ah3, bh6);
-    lo += Math.imul(al2, bl7);
-    mid += Math.imul(al2, bh7);
-    mid += Math.imul(ah2, bl7);
-    hi += Math.imul(ah2, bh7);
-    lo += Math.imul(al1, bl8);
-    mid += Math.imul(al1, bh8);
-    mid += Math.imul(ah1, bl8);
-    hi += Math.imul(ah1, bh8);
-    lo += Math.imul(al0, bl9);
-    mid += Math.imul(al0, bh9);
-    mid += Math.imul(ah0, bl9);
-    hi += Math.imul(ah0, bh9);
-    var w9 = c + lo + ((mid & 0x1fff) << 13);
-    c = hi + (mid >>> 13) + (w9 >>> 26);
+    lo = (lo + Math.imul(al8, bl1)) | 0;
+    mid = (mid + Math.imul(al8, bh1)) | 0;
+    mid = (mid + Math.imul(ah8, bl1)) | 0;
+    hi = (hi + Math.imul(ah8, bh1)) | 0;
+    lo = (lo + Math.imul(al7, bl2)) | 0;
+    mid = (mid + Math.imul(al7, bh2)) | 0;
+    mid = (mid + Math.imul(ah7, bl2)) | 0;
+    hi = (hi + Math.imul(ah7, bh2)) | 0;
+    lo = (lo + Math.imul(al6, bl3)) | 0;
+    mid = (mid + Math.imul(al6, bh3)) | 0;
+    mid = (mid + Math.imul(ah6, bl3)) | 0;
+    hi = (hi + Math.imul(ah6, bh3)) | 0;
+    lo = (lo + Math.imul(al5, bl4)) | 0;
+    mid = (mid + Math.imul(al5, bh4)) | 0;
+    mid = (mid + Math.imul(ah5, bl4)) | 0;
+    hi = (hi + Math.imul(ah5, bh4)) | 0;
+    lo = (lo + Math.imul(al4, bl5)) | 0;
+    mid = (mid + Math.imul(al4, bh5)) | 0;
+    mid = (mid + Math.imul(ah4, bl5)) | 0;
+    hi = (hi + Math.imul(ah4, bh5)) | 0;
+    lo = (lo + Math.imul(al3, bl6)) | 0;
+    mid = (mid + Math.imul(al3, bh6)) | 0;
+    mid = (mid + Math.imul(ah3, bl6)) | 0;
+    hi = (hi + Math.imul(ah3, bh6)) | 0;
+    lo = (lo + Math.imul(al2, bl7)) | 0;
+    mid = (mid + Math.imul(al2, bh7)) | 0;
+    mid = (mid + Math.imul(ah2, bl7)) | 0;
+    hi = (hi + Math.imul(ah2, bh7)) | 0;
+    lo = (lo + Math.imul(al1, bl8)) | 0;
+    mid = (mid + Math.imul(al1, bh8)) | 0;
+    mid = (mid + Math.imul(ah1, bl8)) | 0;
+    hi = (hi + Math.imul(ah1, bh8)) | 0;
+    lo = (lo + Math.imul(al0, bl9)) | 0;
+    mid = (mid + Math.imul(al0, bh9)) | 0;
+    mid = (mid + Math.imul(ah0, bl9)) | 0;
+    hi = (hi + Math.imul(ah0, bh9)) | 0;
+    var w9 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w9 >>> 26)) | 0;
     w9 &= 0x3ffffff;
     /* k = 10 */
     lo = Math.imul(al9, bl1);
     mid = Math.imul(al9, bh1);
-    mid += Math.imul(ah9, bl1);
+    mid = (mid + Math.imul(ah9, bl1)) | 0;
     hi = Math.imul(ah9, bh1);
-    lo += Math.imul(al8, bl2);
-    mid += Math.imul(al8, bh2);
-    mid += Math.imul(ah8, bl2);
-    hi += Math.imul(ah8, bh2);
-    lo += Math.imul(al7, bl3);
-    mid += Math.imul(al7, bh3);
-    mid += Math.imul(ah7, bl3);
-    hi += Math.imul(ah7, bh3);
-    lo += Math.imul(al6, bl4);
-    mid += Math.imul(al6, bh4);
-    mid += Math.imul(ah6, bl4);
-    hi += Math.imul(ah6, bh4);
-    lo += Math.imul(al5, bl5);
-    mid += Math.imul(al5, bh5);
-    mid += Math.imul(ah5, bl5);
-    hi += Math.imul(ah5, bh5);
-    lo += Math.imul(al4, bl6);
-    mid += Math.imul(al4, bh6);
-    mid += Math.imul(ah4, bl6);
-    hi += Math.imul(ah4, bh6);
-    lo += Math.imul(al3, bl7);
-    mid += Math.imul(al3, bh7);
-    mid += Math.imul(ah3, bl7);
-    hi += Math.imul(ah3, bh7);
-    lo += Math.imul(al2, bl8);
-    mid += Math.imul(al2, bh8);
-    mid += Math.imul(ah2, bl8);
-    hi += Math.imul(ah2, bh8);
-    lo += Math.imul(al1, bl9);
-    mid += Math.imul(al1, bh9);
-    mid += Math.imul(ah1, bl9);
-    hi += Math.imul(ah1, bh9);
-    var w10 = c + lo + ((mid & 0x1fff) << 13);
-    c = hi + (mid >>> 13) + (w10 >>> 26);
+    lo = (lo + Math.imul(al8, bl2)) | 0;
+    mid = (mid + Math.imul(al8, bh2)) | 0;
+    mid = (mid + Math.imul(ah8, bl2)) | 0;
+    hi = (hi + Math.imul(ah8, bh2)) | 0;
+    lo = (lo + Math.imul(al7, bl3)) | 0;
+    mid = (mid + Math.imul(al7, bh3)) | 0;
+    mid = (mid + Math.imul(ah7, bl3)) | 0;
+    hi = (hi + Math.imul(ah7, bh3)) | 0;
+    lo = (lo + Math.imul(al6, bl4)) | 0;
+    mid = (mid + Math.imul(al6, bh4)) | 0;
+    mid = (mid + Math.imul(ah6, bl4)) | 0;
+    hi = (hi + Math.imul(ah6, bh4)) | 0;
+    lo = (lo + Math.imul(al5, bl5)) | 0;
+    mid = (mid + Math.imul(al5, bh5)) | 0;
+    mid = (mid + Math.imul(ah5, bl5)) | 0;
+    hi = (hi + Math.imul(ah5, bh5)) | 0;
+    lo = (lo + Math.imul(al4, bl6)) | 0;
+    mid = (mid + Math.imul(al4, bh6)) | 0;
+    mid = (mid + Math.imul(ah4, bl6)) | 0;
+    hi = (hi + Math.imul(ah4, bh6)) | 0;
+    lo = (lo + Math.imul(al3, bl7)) | 0;
+    mid = (mid + Math.imul(al3, bh7)) | 0;
+    mid = (mid + Math.imul(ah3, bl7)) | 0;
+    hi = (hi + Math.imul(ah3, bh7)) | 0;
+    lo = (lo + Math.imul(al2, bl8)) | 0;
+    mid = (mid + Math.imul(al2, bh8)) | 0;
+    mid = (mid + Math.imul(ah2, bl8)) | 0;
+    hi = (hi + Math.imul(ah2, bh8)) | 0;
+    lo = (lo + Math.imul(al1, bl9)) | 0;
+    mid = (mid + Math.imul(al1, bh9)) | 0;
+    mid = (mid + Math.imul(ah1, bl9)) | 0;
+    hi = (hi + Math.imul(ah1, bh9)) | 0;
+    var w10 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w10 >>> 26)) | 0;
     w10 &= 0x3ffffff;
     /* k = 11 */
     lo = Math.imul(al9, bl2);
     mid = Math.imul(al9, bh2);
-    mid += Math.imul(ah9, bl2);
+    mid = (mid + Math.imul(ah9, bl2)) | 0;
     hi = Math.imul(ah9, bh2);
-    lo += Math.imul(al8, bl3);
-    mid += Math.imul(al8, bh3);
-    mid += Math.imul(ah8, bl3);
-    hi += Math.imul(ah8, bh3);
-    lo += Math.imul(al7, bl4);
-    mid += Math.imul(al7, bh4);
-    mid += Math.imul(ah7, bl4);
-    hi += Math.imul(ah7, bh4);
-    lo += Math.imul(al6, bl5);
-    mid += Math.imul(al6, bh5);
-    mid += Math.imul(ah6, bl5);
-    hi += Math.imul(ah6, bh5);
-    lo += Math.imul(al5, bl6);
-    mid += Math.imul(al5, bh6);
-    mid += Math.imul(ah5, bl6);
-    hi += Math.imul(ah5, bh6);
-    lo += Math.imul(al4, bl7);
-    mid += Math.imul(al4, bh7);
-    mid += Math.imul(ah4, bl7);
-    hi += Math.imul(ah4, bh7);
-    lo += Math.imul(al3, bl8);
-    mid += Math.imul(al3, bh8);
-    mid += Math.imul(ah3, bl8);
-    hi += Math.imul(ah3, bh8);
-    lo += Math.imul(al2, bl9);
-    mid += Math.imul(al2, bh9);
-    mid += Math.imul(ah2, bl9);
-    hi += Math.imul(ah2, bh9);
-    var w11 = c + lo + ((mid & 0x1fff) << 13);
-    c = hi + (mid >>> 13) + (w11 >>> 26);
+    lo = (lo + Math.imul(al8, bl3)) | 0;
+    mid = (mid + Math.imul(al8, bh3)) | 0;
+    mid = (mid + Math.imul(ah8, bl3)) | 0;
+    hi = (hi + Math.imul(ah8, bh3)) | 0;
+    lo = (lo + Math.imul(al7, bl4)) | 0;
+    mid = (mid + Math.imul(al7, bh4)) | 0;
+    mid = (mid + Math.imul(ah7, bl4)) | 0;
+    hi = (hi + Math.imul(ah7, bh4)) | 0;
+    lo = (lo + Math.imul(al6, bl5)) | 0;
+    mid = (mid + Math.imul(al6, bh5)) | 0;
+    mid = (mid + Math.imul(ah6, bl5)) | 0;
+    hi = (hi + Math.imul(ah6, bh5)) | 0;
+    lo = (lo + Math.imul(al5, bl6)) | 0;
+    mid = (mid + Math.imul(al5, bh6)) | 0;
+    mid = (mid + Math.imul(ah5, bl6)) | 0;
+    hi = (hi + Math.imul(ah5, bh6)) | 0;
+    lo = (lo + Math.imul(al4, bl7)) | 0;
+    mid = (mid + Math.imul(al4, bh7)) | 0;
+    mid = (mid + Math.imul(ah4, bl7)) | 0;
+    hi = (hi + Math.imul(ah4, bh7)) | 0;
+    lo = (lo + Math.imul(al3, bl8)) | 0;
+    mid = (mid + Math.imul(al3, bh8)) | 0;
+    mid = (mid + Math.imul(ah3, bl8)) | 0;
+    hi = (hi + Math.imul(ah3, bh8)) | 0;
+    lo = (lo + Math.imul(al2, bl9)) | 0;
+    mid = (mid + Math.imul(al2, bh9)) | 0;
+    mid = (mid + Math.imul(ah2, bl9)) | 0;
+    hi = (hi + Math.imul(ah2, bh9)) | 0;
+    var w11 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w11 >>> 26)) | 0;
     w11 &= 0x3ffffff;
     /* k = 12 */
     lo = Math.imul(al9, bl3);
     mid = Math.imul(al9, bh3);
-    mid += Math.imul(ah9, bl3);
+    mid = (mid + Math.imul(ah9, bl3)) | 0;
     hi = Math.imul(ah9, bh3);
-    lo += Math.imul(al8, bl4);
-    mid += Math.imul(al8, bh4);
-    mid += Math.imul(ah8, bl4);
-    hi += Math.imul(ah8, bh4);
-    lo += Math.imul(al7, bl5);
-    mid += Math.imul(al7, bh5);
-    mid += Math.imul(ah7, bl5);
-    hi += Math.imul(ah7, bh5);
-    lo += Math.imul(al6, bl6);
-    mid += Math.imul(al6, bh6);
-    mid += Math.imul(ah6, bl6);
-    hi += Math.imul(ah6, bh6);
-    lo += Math.imul(al5, bl7);
-    mid += Math.imul(al5, bh7);
-    mid += Math.imul(ah5, bl7);
-    hi += Math.imul(ah5, bh7);
-    lo += Math.imul(al4, bl8);
-    mid += Math.imul(al4, bh8);
-    mid += Math.imul(ah4, bl8);
-    hi += Math.imul(ah4, bh8);
-    lo += Math.imul(al3, bl9);
-    mid += Math.imul(al3, bh9);
-    mid += Math.imul(ah3, bl9);
-    hi += Math.imul(ah3, bh9);
-    var w12 = c + lo + ((mid & 0x1fff) << 13);
-    c = hi + (mid >>> 13) + (w12 >>> 26);
+    lo = (lo + Math.imul(al8, bl4)) | 0;
+    mid = (mid + Math.imul(al8, bh4)) | 0;
+    mid = (mid + Math.imul(ah8, bl4)) | 0;
+    hi = (hi + Math.imul(ah8, bh4)) | 0;
+    lo = (lo + Math.imul(al7, bl5)) | 0;
+    mid = (mid + Math.imul(al7, bh5)) | 0;
+    mid = (mid + Math.imul(ah7, bl5)) | 0;
+    hi = (hi + Math.imul(ah7, bh5)) | 0;
+    lo = (lo + Math.imul(al6, bl6)) | 0;
+    mid = (mid + Math.imul(al6, bh6)) | 0;
+    mid = (mid + Math.imul(ah6, bl6)) | 0;
+    hi = (hi + Math.imul(ah6, bh6)) | 0;
+    lo = (lo + Math.imul(al5, bl7)) | 0;
+    mid = (mid + Math.imul(al5, bh7)) | 0;
+    mid = (mid + Math.imul(ah5, bl7)) | 0;
+    hi = (hi + Math.imul(ah5, bh7)) | 0;
+    lo = (lo + Math.imul(al4, bl8)) | 0;
+    mid = (mid + Math.imul(al4, bh8)) | 0;
+    mid = (mid + Math.imul(ah4, bl8)) | 0;
+    hi = (hi + Math.imul(ah4, bh8)) | 0;
+    lo = (lo + Math.imul(al3, bl9)) | 0;
+    mid = (mid + Math.imul(al3, bh9)) | 0;
+    mid = (mid + Math.imul(ah3, bl9)) | 0;
+    hi = (hi + Math.imul(ah3, bh9)) | 0;
+    var w12 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w12 >>> 26)) | 0;
     w12 &= 0x3ffffff;
     /* k = 13 */
     lo = Math.imul(al9, bl4);
     mid = Math.imul(al9, bh4);
-    mid += Math.imul(ah9, bl4);
+    mid = (mid + Math.imul(ah9, bl4)) | 0;
     hi = Math.imul(ah9, bh4);
-    lo += Math.imul(al8, bl5);
-    mid += Math.imul(al8, bh5);
-    mid += Math.imul(ah8, bl5);
-    hi += Math.imul(ah8, bh5);
-    lo += Math.imul(al7, bl6);
-    mid += Math.imul(al7, bh6);
-    mid += Math.imul(ah7, bl6);
-    hi += Math.imul(ah7, bh6);
-    lo += Math.imul(al6, bl7);
-    mid += Math.imul(al6, bh7);
-    mid += Math.imul(ah6, bl7);
-    hi += Math.imul(ah6, bh7);
-    lo += Math.imul(al5, bl8);
-    mid += Math.imul(al5, bh8);
-    mid += Math.imul(ah5, bl8);
-    hi += Math.imul(ah5, bh8);
-    lo += Math.imul(al4, bl9);
-    mid += Math.imul(al4, bh9);
-    mid += Math.imul(ah4, bl9);
-    hi += Math.imul(ah4, bh9);
-    var w13 = c + lo + ((mid & 0x1fff) << 13);
-    c = hi + (mid >>> 13) + (w13 >>> 26);
+    lo = (lo + Math.imul(al8, bl5)) | 0;
+    mid = (mid + Math.imul(al8, bh5)) | 0;
+    mid = (mid + Math.imul(ah8, bl5)) | 0;
+    hi = (hi + Math.imul(ah8, bh5)) | 0;
+    lo = (lo + Math.imul(al7, bl6)) | 0;
+    mid = (mid + Math.imul(al7, bh6)) | 0;
+    mid = (mid + Math.imul(ah7, bl6)) | 0;
+    hi = (hi + Math.imul(ah7, bh6)) | 0;
+    lo = (lo + Math.imul(al6, bl7)) | 0;
+    mid = (mid + Math.imul(al6, bh7)) | 0;
+    mid = (mid + Math.imul(ah6, bl7)) | 0;
+    hi = (hi + Math.imul(ah6, bh7)) | 0;
+    lo = (lo + Math.imul(al5, bl8)) | 0;
+    mid = (mid + Math.imul(al5, bh8)) | 0;
+    mid = (mid + Math.imul(ah5, bl8)) | 0;
+    hi = (hi + Math.imul(ah5, bh8)) | 0;
+    lo = (lo + Math.imul(al4, bl9)) | 0;
+    mid = (mid + Math.imul(al4, bh9)) | 0;
+    mid = (mid + Math.imul(ah4, bl9)) | 0;
+    hi = (hi + Math.imul(ah4, bh9)) | 0;
+    var w13 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w13 >>> 26)) | 0;
     w13 &= 0x3ffffff;
     /* k = 14 */
     lo = Math.imul(al9, bl5);
     mid = Math.imul(al9, bh5);
-    mid += Math.imul(ah9, bl5);
+    mid = (mid + Math.imul(ah9, bl5)) | 0;
     hi = Math.imul(ah9, bh5);
-    lo += Math.imul(al8, bl6);
-    mid += Math.imul(al8, bh6);
-    mid += Math.imul(ah8, bl6);
-    hi += Math.imul(ah8, bh6);
-    lo += Math.imul(al7, bl7);
-    mid += Math.imul(al7, bh7);
-    mid += Math.imul(ah7, bl7);
-    hi += Math.imul(ah7, bh7);
-    lo += Math.imul(al6, bl8);
-    mid += Math.imul(al6, bh8);
-    mid += Math.imul(ah6, bl8);
-    hi += Math.imul(ah6, bh8);
-    lo += Math.imul(al5, bl9);
-    mid += Math.imul(al5, bh9);
-    mid += Math.imul(ah5, bl9);
-    hi += Math.imul(ah5, bh9);
-    var w14 = c + lo + ((mid & 0x1fff) << 13);
-    c = hi + (mid >>> 13) + (w14 >>> 26);
+    lo = (lo + Math.imul(al8, bl6)) | 0;
+    mid = (mid + Math.imul(al8, bh6)) | 0;
+    mid = (mid + Math.imul(ah8, bl6)) | 0;
+    hi = (hi + Math.imul(ah8, bh6)) | 0;
+    lo = (lo + Math.imul(al7, bl7)) | 0;
+    mid = (mid + Math.imul(al7, bh7)) | 0;
+    mid = (mid + Math.imul(ah7, bl7)) | 0;
+    hi = (hi + Math.imul(ah7, bh7)) | 0;
+    lo = (lo + Math.imul(al6, bl8)) | 0;
+    mid = (mid + Math.imul(al6, bh8)) | 0;
+    mid = (mid + Math.imul(ah6, bl8)) | 0;
+    hi = (hi + Math.imul(ah6, bh8)) | 0;
+    lo = (lo + Math.imul(al5, bl9)) | 0;
+    mid = (mid + Math.imul(al5, bh9)) | 0;
+    mid = (mid + Math.imul(ah5, bl9)) | 0;
+    hi = (hi + Math.imul(ah5, bh9)) | 0;
+    var w14 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w14 >>> 26)) | 0;
     w14 &= 0x3ffffff;
     /* k = 15 */
     lo = Math.imul(al9, bl6);
     mid = Math.imul(al9, bh6);
-    mid += Math.imul(ah9, bl6);
+    mid = (mid + Math.imul(ah9, bl6)) | 0;
     hi = Math.imul(ah9, bh6);
-    lo += Math.imul(al8, bl7);
-    mid += Math.imul(al8, bh7);
-    mid += Math.imul(ah8, bl7);
-    hi += Math.imul(ah8, bh7);
-    lo += Math.imul(al7, bl8);
-    mid += Math.imul(al7, bh8);
-    mid += Math.imul(ah7, bl8);
-    hi += Math.imul(ah7, bh8);
-    lo += Math.imul(al6, bl9);
-    mid += Math.imul(al6, bh9);
-    mid += Math.imul(ah6, bl9);
-    hi += Math.imul(ah6, bh9);
-    var w15 = c + lo + ((mid & 0x1fff) << 13);
-    c = hi + (mid >>> 13) + (w15 >>> 26);
+    lo = (lo + Math.imul(al8, bl7)) | 0;
+    mid = (mid + Math.imul(al8, bh7)) | 0;
+    mid = (mid + Math.imul(ah8, bl7)) | 0;
+    hi = (hi + Math.imul(ah8, bh7)) | 0;
+    lo = (lo + Math.imul(al7, bl8)) | 0;
+    mid = (mid + Math.imul(al7, bh8)) | 0;
+    mid = (mid + Math.imul(ah7, bl8)) | 0;
+    hi = (hi + Math.imul(ah7, bh8)) | 0;
+    lo = (lo + Math.imul(al6, bl9)) | 0;
+    mid = (mid + Math.imul(al6, bh9)) | 0;
+    mid = (mid + Math.imul(ah6, bl9)) | 0;
+    hi = (hi + Math.imul(ah6, bh9)) | 0;
+    var w15 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w15 >>> 26)) | 0;
     w15 &= 0x3ffffff;
     /* k = 16 */
     lo = Math.imul(al9, bl7);
     mid = Math.imul(al9, bh7);
-    mid += Math.imul(ah9, bl7);
+    mid = (mid + Math.imul(ah9, bl7)) | 0;
     hi = Math.imul(ah9, bh7);
-    lo += Math.imul(al8, bl8);
-    mid += Math.imul(al8, bh8);
-    mid += Math.imul(ah8, bl8);
-    hi += Math.imul(ah8, bh8);
-    lo += Math.imul(al7, bl9);
-    mid += Math.imul(al7, bh9);
-    mid += Math.imul(ah7, bl9);
-    hi += Math.imul(ah7, bh9);
-    var w16 = c + lo + ((mid & 0x1fff) << 13);
-    c = hi + (mid >>> 13) + (w16 >>> 26);
+    lo = (lo + Math.imul(al8, bl8)) | 0;
+    mid = (mid + Math.imul(al8, bh8)) | 0;
+    mid = (mid + Math.imul(ah8, bl8)) | 0;
+    hi = (hi + Math.imul(ah8, bh8)) | 0;
+    lo = (lo + Math.imul(al7, bl9)) | 0;
+    mid = (mid + Math.imul(al7, bh9)) | 0;
+    mid = (mid + Math.imul(ah7, bl9)) | 0;
+    hi = (hi + Math.imul(ah7, bh9)) | 0;
+    var w16 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w16 >>> 26)) | 0;
     w16 &= 0x3ffffff;
     /* k = 17 */
     lo = Math.imul(al9, bl8);
     mid = Math.imul(al9, bh8);
-    mid += Math.imul(ah9, bl8);
+    mid = (mid + Math.imul(ah9, bl8)) | 0;
     hi = Math.imul(ah9, bh8);
-    lo += Math.imul(al8, bl9);
-    mid += Math.imul(al8, bh9);
-    mid += Math.imul(ah8, bl9);
-    hi += Math.imul(ah8, bh9);
-    var w17 = c + lo + ((mid & 0x1fff) << 13);
-    c = hi + (mid >>> 13) + (w17 >>> 26);
+    lo = (lo + Math.imul(al8, bl9)) | 0;
+    mid = (mid + Math.imul(al8, bh9)) | 0;
+    mid = (mid + Math.imul(ah8, bl9)) | 0;
+    hi = (hi + Math.imul(ah8, bh9)) | 0;
+    var w17 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w17 >>> 26)) | 0;
     w17 &= 0x3ffffff;
     /* k = 18 */
     lo = Math.imul(al9, bl9);
     mid = Math.imul(al9, bh9);
-    mid += Math.imul(ah9, bl9);
+    mid = (mid + Math.imul(ah9, bl9)) | 0;
     hi = Math.imul(ah9, bh9);
-    var w18 = c + lo + ((mid & 0x1fff) << 13);
-    c = hi + (mid >>> 13) + (w18 >>> 26);
+    var w18 = (((c + lo) | 0) + ((mid & 0x1fff) << 13)) | 0;
+    c = (((hi + (mid >>> 13)) | 0) + (w18 >>> 26)) | 0;
     w18 &= 0x3ffffff;
     o[0] = w0;
     o[1] = w1;
@@ -9244,7 +7220,7 @@ module.exports = ABI
   };
 })(typeof module === 'undefined' || module, this);
 
-},{}],11:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 (function (Buffer){
 const SHA3 = require('keccakjs')
 const secp256k1 = require('secp256k1')
@@ -9913,7 +7889,7 @@ exports.defineProperties = function (self, fields, data) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"assert":65,"bn.js":10,"buffer":67,"create-hash":12,"keccakjs":26,"rlp":29,"secp256k1":30}],12:[function(require,module,exports){
+},{"assert":66,"bn.js":5,"buffer":68,"create-hash":7,"keccakjs":21,"rlp":23,"secp256k1":24}],7:[function(require,module,exports){
 (function (Buffer){
 'use strict';
 var inherits = require('inherits')
@@ -9969,7 +7945,7 @@ module.exports = function createHash (alg) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"./md5":14,"buffer":67,"cipher-base":15,"inherits":16,"ripemd160":17,"sha.js":19}],13:[function(require,module,exports){
+},{"./md5":9,"buffer":68,"cipher-base":10,"inherits":11,"ripemd160":12,"sha.js":14}],8:[function(require,module,exports){
 (function (Buffer){
 'use strict';
 var intSize = 4;
@@ -10006,7 +7982,7 @@ function hash(buf, fn, hashSize, bigEndian) {
 }
 exports.hash = hash;
 }).call(this,require("buffer").Buffer)
-},{"buffer":67}],14:[function(require,module,exports){
+},{"buffer":68}],9:[function(require,module,exports){
 'use strict';
 /*
  * A JavaScript implementation of the RSA Data Security, Inc. MD5 Message
@@ -10163,7 +8139,7 @@ function bit_rol(num, cnt)
 module.exports = function md5(buf) {
   return helpers.hash(buf, core_md5, 16);
 };
-},{"./helpers":13}],15:[function(require,module,exports){
+},{"./helpers":8}],10:[function(require,module,exports){
 (function (Buffer){
 var Transform = require('stream').Transform
 var inherits = require('inherits')
@@ -10257,7 +8233,7 @@ CipherBase.prototype._toString = function (value, enc, final) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":67,"inherits":16,"stream":281,"string_decoder":282}],16:[function(require,module,exports){
+},{"buffer":68,"inherits":11,"stream":282,"string_decoder":283}],11:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -10282,7 +8258,7 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],17:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 (function (Buffer){
 /*
 CryptoJS v3.1.2
@@ -10496,7 +8472,7 @@ function ripemd160 (message) {
 module.exports = ripemd160
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":67}],18:[function(require,module,exports){
+},{"buffer":68}],13:[function(require,module,exports){
 (function (Buffer){
 // prototype class for hash functions
 function Hash (blockSize, finalSize) {
@@ -10569,7 +8545,7 @@ Hash.prototype._update = function () {
 module.exports = Hash
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":67}],19:[function(require,module,exports){
+},{"buffer":68}],14:[function(require,module,exports){
 var exports = module.exports = function SHA (algorithm) {
   algorithm = algorithm.toLowerCase()
 
@@ -10586,7 +8562,7 @@ exports.sha256 = require('./sha256')
 exports.sha384 = require('./sha384')
 exports.sha512 = require('./sha512')
 
-},{"./sha":20,"./sha1":21,"./sha224":22,"./sha256":23,"./sha384":24,"./sha512":25}],20:[function(require,module,exports){
+},{"./sha":15,"./sha1":16,"./sha224":17,"./sha256":18,"./sha384":19,"./sha512":20}],15:[function(require,module,exports){
 (function (Buffer){
 /*
  * A JavaScript implementation of the Secure Hash Algorithm, SHA-0, as defined
@@ -10683,7 +8659,7 @@ Sha.prototype._hash = function () {
 module.exports = Sha
 
 }).call(this,require("buffer").Buffer)
-},{"./hash":18,"buffer":67,"inherits":16}],21:[function(require,module,exports){
+},{"./hash":13,"buffer":68,"inherits":11}],16:[function(require,module,exports){
 (function (Buffer){
 /*
  * A JavaScript implementation of the Secure Hash Algorithm, SHA-1, as defined
@@ -10785,7 +8761,7 @@ Sha1.prototype._hash = function () {
 module.exports = Sha1
 
 }).call(this,require("buffer").Buffer)
-},{"./hash":18,"buffer":67,"inherits":16}],22:[function(require,module,exports){
+},{"./hash":13,"buffer":68,"inherits":11}],17:[function(require,module,exports){
 (function (Buffer){
 /**
  * A JavaScript implementation of the Secure Hash Algorithm, SHA-256, as defined
@@ -10841,7 +8817,7 @@ Sha224.prototype._hash = function () {
 module.exports = Sha224
 
 }).call(this,require("buffer").Buffer)
-},{"./hash":18,"./sha256":23,"buffer":67,"inherits":16}],23:[function(require,module,exports){
+},{"./hash":13,"./sha256":18,"buffer":68,"inherits":11}],18:[function(require,module,exports){
 (function (Buffer){
 /**
  * A JavaScript implementation of the Secure Hash Algorithm, SHA-256, as defined
@@ -10979,7 +8955,7 @@ Sha256.prototype._hash = function () {
 module.exports = Sha256
 
 }).call(this,require("buffer").Buffer)
-},{"./hash":18,"buffer":67,"inherits":16}],24:[function(require,module,exports){
+},{"./hash":13,"buffer":68,"inherits":11}],19:[function(require,module,exports){
 (function (Buffer){
 var inherits = require('inherits')
 var SHA512 = require('./sha512')
@@ -11039,7 +9015,7 @@ Sha384.prototype._hash = function () {
 module.exports = Sha384
 
 }).call(this,require("buffer").Buffer)
-},{"./hash":18,"./sha512":25,"buffer":67,"inherits":16}],25:[function(require,module,exports){
+},{"./hash":13,"./sha512":20,"buffer":68,"inherits":11}],20:[function(require,module,exports){
 (function (Buffer){
 var inherits = require('inherits')
 var Hash = require('./hash')
@@ -11302,10 +9278,10 @@ Sha512.prototype._hash = function () {
 module.exports = Sha512
 
 }).call(this,require("buffer").Buffer)
-},{"./hash":18,"buffer":67,"inherits":16}],26:[function(require,module,exports){
+},{"./hash":13,"buffer":68,"inherits":11}],21:[function(require,module,exports){
 module.exports = require('browserify-sha3').SHA3Hash
 
-},{"browserify-sha3":27}],27:[function(require,module,exports){
+},{"browserify-sha3":22}],22:[function(require,module,exports){
 (function (Buffer){
 const Sha3 = require('js-sha3')
 
@@ -11343,9 +9319,7 @@ module.exports = {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":67,"js-sha3":28}],28:[function(require,module,exports){
-arguments[4][3][0].apply(exports,arguments)
-},{"dup":3}],29:[function(require,module,exports){
+},{"buffer":68,"js-sha3":55}],23:[function(require,module,exports){
 (function (Buffer){
 const assert = require('assert')
 /**
@@ -11578,11 +9552,11 @@ function toBuffer (v) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"assert":65,"buffer":67}],30:[function(require,module,exports){
+},{"assert":66,"buffer":68}],24:[function(require,module,exports){
 'use strict'
 module.exports = require('./lib')(require('./lib/elliptic'))
 
-},{"./lib":33,"./lib/elliptic":32}],31:[function(require,module,exports){
+},{"./lib":27,"./lib/elliptic":26}],25:[function(require,module,exports){
 (function (Buffer){
 'use strict'
 var toString = Object.prototype.toString
@@ -11629,8 +9603,8 @@ exports.isNumberInInterval = function (number, x, y, message) {
   if (number <= x || number >= y) throw RangeError(message)
 }
 
-}).call(this,{"isBuffer":require("../../../../../../ethereumjs-connect/node_modules/browserify/node_modules/insert-module-globals/node_modules/is-buffer/index.js")})
-},{"../../../../../../ethereumjs-connect/node_modules/browserify/node_modules/insert-module-globals/node_modules/is-buffer/index.js":265}],32:[function(require,module,exports){
+}).call(this,{"isBuffer":require("../../../../../../../../ethereumjs-connect/node_modules/browserify/node_modules/insert-module-globals/node_modules/is-buffer/index.js")})
+},{"../../../../../../../../ethereumjs-connect/node_modules/browserify/node_modules/insert-module-globals/node_modules/is-buffer/index.js":266}],26:[function(require,module,exports){
 (function (Buffer){
 'use strict'
 var createHash = require('create-hash')
@@ -11881,7 +9855,7 @@ exports.ecdhUnsafe = function (publicKey, privateKey, compressed) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"../messages.json":34,"bn.js":10,"buffer":67,"create-hash":12,"elliptic":36}],33:[function(require,module,exports){
+},{"../messages.json":28,"bn.js":5,"buffer":68,"create-hash":7,"elliptic":30}],27:[function(require,module,exports){
 (function (Buffer){
 'use strict'
 var bip66 = require('bip66')
@@ -12201,7 +10175,7 @@ module.exports = function (secp256k1) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"./assert":31,"./messages.json":34,"bip66":35,"buffer":67}],34:[function(require,module,exports){
+},{"./assert":25,"./messages.json":28,"bip66":29,"buffer":68}],28:[function(require,module,exports){
 module.exports={
   "COMPRESSED_TYPE_INVALID": "compressed should be a boolean",
   "EC_PRIVATE_KEY_TYPE_INVALID": "private key should be a Buffer",
@@ -12239,7 +10213,7 @@ module.exports={
   "TWEAK_LENGTH_INVALID": "tweak length is invalid"
 }
 
-},{}],35:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 (function (Buffer){
 // Reference https://github.com/bitcoin/bips/blob/master/bip-0066.mediawiki
 // Format: 0x30 [total-length] 0x02 [R-length] [R] 0x02 [S-length] [S]
@@ -12354,7 +10328,7 @@ module.exports = {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":67}],36:[function(require,module,exports){
+},{"buffer":68}],30:[function(require,module,exports){
 'use strict';
 
 var elliptic = exports;
@@ -12370,7 +10344,7 @@ elliptic.curves = require('./elliptic/curves');
 elliptic.ec = require('./elliptic/ec');
 elliptic.eddsa = require('./elliptic/eddsa');
 
-},{"../package.json":60,"./elliptic/curve":39,"./elliptic/curves":42,"./elliptic/ec":43,"./elliptic/eddsa":46,"./elliptic/hmac-drbg":49,"./elliptic/utils":51,"brorand":52}],37:[function(require,module,exports){
+},{"../package.json":54,"./elliptic/curve":33,"./elliptic/curves":36,"./elliptic/ec":37,"./elliptic/eddsa":40,"./elliptic/hmac-drbg":43,"./elliptic/utils":45,"brorand":46}],31:[function(require,module,exports){
 'use strict';
 
 var BN = require('bn.js');
@@ -12401,6 +10375,15 @@ function BaseCurve(type, conf) {
   this._wnafT2 = new Array(4);
   this._wnafT3 = new Array(4);
   this._wnafT4 = new Array(4);
+
+  // Generalized Greg Maxwell's trick
+  var adjustCount = this.n && this.p.div(this.n);
+  if (!adjustCount || adjustCount.cmpn(100) > 0) {
+    this.redN = null;
+  } else {
+    this._maxwellTrick = true;
+    this.redN = this.n.toRed(this.red);
+  }
 }
 module.exports = BaseCurve;
 
@@ -12489,7 +10472,8 @@ BaseCurve.prototype._wnafMul = function _wnafMul(p, k) {
 BaseCurve.prototype._wnafMulAdd = function _wnafMulAdd(defW,
                                                        points,
                                                        coeffs,
-                                                       len) {
+                                                       len,
+                                                       jacobianResult) {
   var wndWidth = this._wnafT1;
   var wnd = this._wnafT2;
   var naf = this._wnafT3;
@@ -12602,7 +10586,11 @@ BaseCurve.prototype._wnafMulAdd = function _wnafMulAdd(defW,
   // Zeroify references
   for (var i = 0; i < len; i++)
     wnd[i] = null;
-  return acc.toP();
+
+  if (jacobianResult)
+    return acc;
+  else
+    return acc.toP();
 };
 
 function BasePoint(curve, type) {
@@ -12733,7 +10721,7 @@ BasePoint.prototype.dblp = function dblp(k) {
   return r;
 };
 
-},{"../../elliptic":36,"bn.js":10}],38:[function(require,module,exports){
+},{"../../elliptic":30,"bn.js":5}],32:[function(require,module,exports){
 'use strict';
 
 var curve = require('../curve');
@@ -13100,7 +11088,11 @@ Point.prototype.mul = function mul(k) {
 };
 
 Point.prototype.mulAdd = function mulAdd(k1, p, k2) {
-  return this.curve._wnafMulAdd(1, [ this, p ], [ k1, k2 ], 2);
+  return this.curve._wnafMulAdd(1, [ this, p ], [ k1, k2 ], 2, false);
+};
+
+Point.prototype.jmulAdd = function jmulAdd(k1, p, k2) {
+  return this.curve._wnafMulAdd(1, [ this, p ], [ k1, k2 ], 2, true);
 };
 
 Point.prototype.normalize = function normalize() {
@@ -13141,11 +11133,30 @@ Point.prototype.eq = function eq(other) {
          this.getY().cmp(other.getY()) === 0;
 };
 
+Point.prototype.eqXToP = function eqXToP(x) {
+  var rx = x.toRed(this.curve.red).redMul(this.z);
+  if (this.x.cmp(rx) === 0)
+    return true;
+
+  var xc = x.clone();
+  var t = this.curve.redN.redMul(this.z);
+  for (;;) {
+    xc.iadd(this.curve.n);
+    if (xc.cmp(this.curve.p) >= 0)
+      return false;
+
+    rx.redIAdd(t);
+    if (this.x.cmp(rx) === 0)
+      return true;
+  }
+  return false;
+};
+
 // Compatibility with BaseCurve
 Point.prototype.toP = Point.prototype.normalize;
 Point.prototype.mixedAdd = Point.prototype.add;
 
-},{"../../elliptic":36,"../curve":39,"bn.js":10,"inherits":59}],39:[function(require,module,exports){
+},{"../../elliptic":30,"../curve":33,"bn.js":5,"inherits":53}],33:[function(require,module,exports){
 'use strict';
 
 var curve = exports;
@@ -13155,7 +11166,7 @@ curve.short = require('./short');
 curve.mont = require('./mont');
 curve.edwards = require('./edwards');
 
-},{"./base":37,"./edwards":38,"./mont":40,"./short":41}],40:[function(require,module,exports){
+},{"./base":31,"./edwards":32,"./mont":34,"./short":35}],34:[function(require,module,exports){
 'use strict';
 
 var curve = require('../curve');
@@ -13316,6 +11327,10 @@ Point.prototype.mulAdd = function mulAdd() {
   throw new Error('Not supported on Montgomery curve');
 };
 
+Point.prototype.jumlAdd = function jumlAdd() {
+  throw new Error('Not supported on Montgomery curve');
+};
+
 Point.prototype.eq = function eq(other) {
   return this.getX().cmp(other.getX()) === 0;
 };
@@ -13333,7 +11348,7 @@ Point.prototype.getX = function getX() {
   return this.x.fromRed();
 };
 
-},{"../../elliptic":36,"../curve":39,"bn.js":10,"inherits":59}],41:[function(require,module,exports){
+},{"../../elliptic":30,"../curve":33,"bn.js":5,"inherits":53}],35:[function(require,module,exports){
 'use strict';
 
 var curve = require('../curve');
@@ -13553,7 +11568,7 @@ ShortCurve.prototype.validate = function validate(point) {
 };
 
 ShortCurve.prototype._endoWnafMulAdd =
-    function _endoWnafMulAdd(points, coeffs) {
+    function _endoWnafMulAdd(points, coeffs, jacobianResult) {
   var npoints = this._endoWnafT1;
   var ncoeffs = this._endoWnafT2;
   for (var i = 0; i < points.length; i++) {
@@ -13575,7 +11590,7 @@ ShortCurve.prototype._endoWnafMulAdd =
     ncoeffs[i * 2] = split.k1;
     ncoeffs[i * 2 + 1] = split.k2;
   }
-  var res = this._wnafMulAdd(1, npoints, ncoeffs, i * 2);
+  var res = this._wnafMulAdd(1, npoints, ncoeffs, i * 2, jacobianResult);
 
   // Clean-up references to points and coefficients
   for (var j = 0; j < i * 2; j++) {
@@ -13774,6 +11789,15 @@ Point.prototype.mulAdd = function mulAdd(k1, p2, k2) {
     return this.curve._endoWnafMulAdd(points, coeffs);
   else
     return this.curve._wnafMulAdd(1, points, coeffs, 2);
+};
+
+Point.prototype.jmulAdd = function jmulAdd(k1, p2, k2) {
+  var points = [ this, p2 ];
+  var coeffs = [ k1, k2 ];
+  if (this.curve.endo)
+    return this.curve._endoWnafMulAdd(points, coeffs, true);
+  else
+    return this.curve._wnafMulAdd(1, points, coeffs, 2, true);
 };
 
 Point.prototype.eq = function eq(p) {
@@ -14231,6 +12255,26 @@ JPoint.prototype.eq = function eq(p) {
   return this.y.redMul(pz3).redISub(p.y.redMul(z3)).cmpn(0) === 0;
 };
 
+JPoint.prototype.eqXToP = function eqXToP(x) {
+  var zs = this.z.redSqr();
+  var rx = x.toRed(this.curve.red).redMul(zs);
+  if (this.x.cmp(rx) === 0)
+    return true;
+
+  var xc = x.clone();
+  var t = this.curve.redN.redMul(zs);
+  for (;;) {
+    xc.iadd(this.curve.n);
+    if (xc.cmp(this.curve.p) >= 0)
+      return false;
+
+    rx.redIAdd(t);
+    if (this.x.cmp(rx) === 0)
+      return true;
+  }
+  return false;
+};
+
 JPoint.prototype.inspect = function inspect() {
   if (this.isInfinity())
     return '<EC JPoint Infinity>';
@@ -14244,7 +12288,7 @@ JPoint.prototype.isInfinity = function isInfinity() {
   return this.z.cmpn(0) === 0;
 };
 
-},{"../../elliptic":36,"../curve":39,"bn.js":10,"inherits":59}],42:[function(require,module,exports){
+},{"../../elliptic":30,"../curve":33,"bn.js":5,"inherits":53}],36:[function(require,module,exports){
 'use strict';
 
 var curves = exports;
@@ -14451,7 +12495,7 @@ defineCurve('secp256k1', {
   ]
 });
 
-},{"../elliptic":36,"./precomputed/secp256k1":50,"hash.js":53}],43:[function(require,module,exports){
+},{"../elliptic":30,"./precomputed/secp256k1":44,"hash.js":47}],37:[function(require,module,exports){
 'use strict';
 
 var BN = require('bn.js');
@@ -14620,11 +12664,25 @@ EC.prototype.verify = function verify(msg, signature, key, enc) {
   var u1 = sinv.mul(msg).umod(this.n);
   var u2 = sinv.mul(r).umod(this.n);
 
-  var p = this.g.mulAdd(u1, key.getPublic(), u2);
+  if (!this.curve._maxwellTrick) {
+    var p = this.g.mulAdd(u1, key.getPublic(), u2);
+    if (p.isInfinity())
+      return false;
+
+    return p.getX().umod(this.n).cmp(r) === 0;
+  }
+
+  // NOTE: Greg Maxwell's trick, inspired by:
+  // https://git.io/vad3K
+
+  var p = this.g.jmulAdd(u1, key.getPublic(), u2);
   if (p.isInfinity())
     return false;
 
-  return p.getX().umod(this.n).cmp(r) === 0;
+  // Compare `p.x` of Jacobian point with `r`,
+  // this will do `p.x == r * p.z^2` instead of multiplying `p.x` by the
+  // inverse of `p.z^2`
+  return p.eqXToP(r);
 };
 
 EC.prototype.recoverPubKey = function(msg, signature, j, enc) {
@@ -14675,7 +12733,7 @@ EC.prototype.getKeyRecoveryParam = function(e, signature, Q, enc) {
   throw new Error('Unable to find valid recovery factor');
 };
 
-},{"../../elliptic":36,"./key":44,"./signature":45,"bn.js":10}],44:[function(require,module,exports){
+},{"../../elliptic":30,"./key":38,"./signature":39,"bn.js":5}],38:[function(require,module,exports){
 'use strict';
 
 var BN = require('bn.js');
@@ -14784,7 +12842,7 @@ KeyPair.prototype.inspect = function inspect() {
          ' pub: ' + (this.pub && this.pub.inspect()) + ' >';
 };
 
-},{"bn.js":10}],45:[function(require,module,exports){
+},{"bn.js":5}],39:[function(require,module,exports){
 'use strict';
 
 var BN = require('bn.js');
@@ -14921,7 +12979,7 @@ Signature.prototype.toDER = function toDER(enc) {
   return utils.encode(res, enc);
 };
 
-},{"../../elliptic":36,"bn.js":10}],46:[function(require,module,exports){
+},{"../../elliptic":30,"bn.js":5}],40:[function(require,module,exports){
 'use strict';
 
 var hash = require('hash.js');
@@ -15041,7 +13099,7 @@ EDDSA.prototype.isPoint = function isPoint(val) {
   return val instanceof this.pointClass;
 };
 
-},{"../../elliptic":36,"./key":47,"./signature":48,"hash.js":53}],47:[function(require,module,exports){
+},{"../../elliptic":30,"./key":41,"./signature":42,"hash.js":47}],41:[function(require,module,exports){
 'use strict';
 
 var elliptic = require('../../elliptic');
@@ -15139,7 +13197,7 @@ KeyPair.prototype.getPublic = function getPublic(enc) {
 
 module.exports = KeyPair;
 
-},{"../../elliptic":36}],48:[function(require,module,exports){
+},{"../../elliptic":30}],42:[function(require,module,exports){
 'use strict';
 
 var BN = require('bn.js');
@@ -15207,7 +13265,7 @@ Signature.prototype.toHex = function toHex() {
 
 module.exports = Signature;
 
-},{"../../elliptic":36,"bn.js":10}],49:[function(require,module,exports){
+},{"../../elliptic":30,"bn.js":5}],43:[function(require,module,exports){
 'use strict';
 
 var hash = require('hash.js');
@@ -15323,7 +13381,7 @@ HmacDRBG.prototype.generate = function generate(len, enc, add, addEnc) {
   return utils.encode(res, enc);
 };
 
-},{"../elliptic":36,"hash.js":53}],50:[function(require,module,exports){
+},{"../elliptic":30,"hash.js":47}],44:[function(require,module,exports){
 module.exports = {
   doubles: {
     step: 4,
@@ -16105,7 +14163,7 @@ module.exports = {
   }
 };
 
-},{}],51:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 'use strict';
 
 var utils = exports;
@@ -16279,7 +14337,7 @@ function intFromLE(bytes) {
 utils.intFromLE = intFromLE;
 
 
-},{"bn.js":10}],52:[function(require,module,exports){
+},{"bn.js":5}],46:[function(require,module,exports){
 var r;
 
 module.exports = function rand(len) {
@@ -16338,7 +14396,7 @@ if (typeof window === 'object') {
   }
 }
 
-},{}],53:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 var hash = exports;
 
 hash.utils = require('./hash/utils');
@@ -16355,7 +14413,7 @@ hash.sha384 = hash.sha.sha384;
 hash.sha512 = hash.sha.sha512;
 hash.ripemd160 = hash.ripemd.ripemd160;
 
-},{"./hash/common":54,"./hash/hmac":55,"./hash/ripemd":56,"./hash/sha":57,"./hash/utils":58}],54:[function(require,module,exports){
+},{"./hash/common":48,"./hash/hmac":49,"./hash/ripemd":50,"./hash/sha":51,"./hash/utils":52}],48:[function(require,module,exports){
 var hash = require('../hash');
 var utils = hash.utils;
 var assert = utils.assert;
@@ -16448,7 +14506,7 @@ BlockHash.prototype._pad = function pad() {
   return res;
 };
 
-},{"../hash":53}],55:[function(require,module,exports){
+},{"../hash":47}],49:[function(require,module,exports){
 var hmac = exports;
 
 var hash = require('../hash');
@@ -16498,7 +14556,7 @@ Hmac.prototype.digest = function digest(enc) {
   return this.outer.digest(enc);
 };
 
-},{"../hash":53}],56:[function(require,module,exports){
+},{"../hash":47}],50:[function(require,module,exports){
 var hash = require('../hash');
 var utils = hash.utils;
 
@@ -16644,7 +14702,7 @@ var sh = [
   8, 5, 12, 9, 12, 5, 14, 6, 8, 13, 6, 5, 15, 13, 11, 11
 ];
 
-},{"../hash":53}],57:[function(require,module,exports){
+},{"../hash":47}],51:[function(require,module,exports){
 var hash = require('../hash');
 var utils = hash.utils;
 var assert = utils.assert;
@@ -17210,7 +15268,7 @@ function g1_512_lo(xh, xl) {
   return r;
 }
 
-},{"../hash":53}],58:[function(require,module,exports){
+},{"../hash":47}],52:[function(require,module,exports){
 var utils = exports;
 var inherits = require('inherits');
 
@@ -17469,12 +15527,12 @@ function shr64_lo(ah, al, num) {
 };
 exports.shr64_lo = shr64_lo;
 
-},{"inherits":59}],59:[function(require,module,exports){
-arguments[4][16][0].apply(exports,arguments)
-},{"dup":16}],60:[function(require,module,exports){
+},{"inherits":53}],53:[function(require,module,exports){
+arguments[4][11][0].apply(exports,arguments)
+},{"dup":11}],54:[function(require,module,exports){
 module.exports={
   "name": "elliptic",
-  "version": "6.2.8",
+  "version": "6.3.1",
   "description": "EC cryptography",
   "main": "lib/elliptic.js",
   "files": [
@@ -17523,14 +15581,14 @@ module.exports={
     "mocha": "^2.1.0"
   },
   "dependencies": {
-    "bn.js": "^4.0.0",
+    "bn.js": "^4.4.0",
     "brorand": "^1.0.1",
     "hash.js": "^1.0.0",
     "inherits": "^2.0.1"
   },
-  "gitHead": "236f37395bdf9e4af1dfc8e84f6353bce540b93e",
-  "_id": "elliptic@6.2.8",
-  "_shasum": "44a25b3d1550bebb74d0b6d22d89940206b51739",
+  "gitHead": "c53f5cf3d832c0073eb4a4ed423a464cbce68f3e",
+  "_id": "elliptic@6.3.1",
+  "_shasum": "17781f2109ab0ec686b146bdcff5d2e8c6aeceda",
   "_from": "elliptic@>=6.2.3 <7.0.0",
   "_npmVersion": "3.8.6",
   "_nodeVersion": "6.0.0",
@@ -17539,8 +15597,8 @@ module.exports={
     "email": "fedor@indutny.com"
   },
   "dist": {
-    "shasum": "44a25b3d1550bebb74d0b6d22d89940206b51739",
-    "tarball": "https://registry.npmjs.org/elliptic/-/elliptic-6.2.8.tgz"
+    "shasum": "17781f2109ab0ec686b146bdcff5d2e8c6aeceda",
+    "tarball": "https://registry.npmjs.org/elliptic/-/elliptic-6.3.1.tgz"
   },
   "maintainers": [
     {
@@ -17549,21 +15607,5203 @@ module.exports={
     }
   ],
   "_npmOperationalInternal": {
-    "host": "packages-12-west.internal.npmjs.com",
-    "tmp": "tmp/elliptic-6.2.8.tgz_1464746004719_0.6379144776146859"
+    "host": "packages-16-east.internal.npmjs.com",
+    "tmp": "tmp/elliptic-6.3.1.tgz_1465921413402_0.5202967382501811"
   },
   "directories": {},
-  "_resolved": "https://registry.npmjs.org/elliptic/-/elliptic-6.2.8.tgz",
+  "_resolved": "https://registry.npmjs.org/elliptic/-/elliptic-6.3.1.tgz",
   "readme": "ERROR: No README data found!"
 }
 
-},{}],61:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
+(function (global){
+/*
+ * js-sha3 v0.3.1
+ * https://github.com/emn178/js-sha3
+ *
+ * Copyright 2015, emn178@gmail.com
+ *
+ * Licensed under the MIT license:
+ * http://www.opensource.org/licenses/MIT
+ */
+;(function(root, undefined) {
+  'use strict';
+
+  var NODE_JS = typeof(module) != 'undefined';
+  if(NODE_JS) {
+    root = global;
+    if(root.JS_SHA3_TEST) {
+      root.navigator = { userAgent: 'Chrome'};
+    }
+  }
+  var CHROME = (root.JS_SHA3_TEST || !NODE_JS) && navigator.userAgent.indexOf('Chrome') != -1;
+  var HEX_CHARS = '0123456789abcdef'.split('');
+  var KECCAK_PADDING = [1, 256, 65536, 16777216];
+  var PADDING = [6, 1536, 393216, 100663296];
+  var SHIFT = [0, 8, 16, 24];
+  var RC = [1, 0, 32898, 0, 32906, 2147483648, 2147516416, 2147483648, 32907, 0, 2147483649,
+            0, 2147516545, 2147483648, 32777, 2147483648, 138, 0, 136, 0, 2147516425, 0, 
+            2147483658, 0, 2147516555, 0, 139, 2147483648, 32905, 2147483648, 32771, 
+            2147483648, 32770, 2147483648, 128, 2147483648, 32778, 0, 2147483658, 2147483648,
+            2147516545, 2147483648, 32896, 2147483648, 2147483649, 0, 2147516424, 2147483648];
+
+  var blocks = [], s = [];
+
+  var keccak_224 = function(message) {
+    return keccak(message, 224, KECCAK_PADDING);
+  };
+
+  var keccak_256 = function(message) {
+    return keccak(message, 256, KECCAK_PADDING);
+  };
+
+  var keccak_384 = function(message) {
+    return keccak(message, 384, KECCAK_PADDING);
+  };
+
+  var sha3_224 = function(message) {
+    return keccak(message, 224, PADDING);
+  };
+
+  var sha3_256 = function(message) {
+    return keccak(message, 256, PADDING);
+  };
+
+  var sha3_384 = function(message) {
+    return keccak(message, 384, PADDING);
+  };
+
+  var sha3_512 = function(message) {
+    return keccak(message, 512, PADDING);
+  };
+
+  var keccak = function(message, bits, padding) {
+    var notString = typeof(message) != 'string';
+    if(notString && message.constructor == root.ArrayBuffer) {
+      message = new Uint8Array(message);
+    }
+
+    if(bits === undefined) {
+      bits = 512;
+      padding = KECCAK_PADDING;
+    }
+
+    var block, code, end = false, index = 0, start = 0, length = message.length,
+        n, i, h, l, c0, c1, c2, c3, c4, c5, c6, c7, c8, c9, 
+        b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15, b16, b17, 
+        b18, b19, b20, b21, b22, b23, b24, b25, b26, b27, b28, b29, b30, b31, b32, b33, 
+        b34, b35, b36, b37, b38, b39, b40, b41, b42, b43, b44, b45, b46, b47, b48, b49;
+    var blockCount = (1600 - bits * 2) / 32;
+    var byteCount = blockCount * 4;
+
+    for(i = 0;i < 50;++i) {
+      s[i] = 0;
+    }
+
+    block = 0;
+    do {
+      blocks[0] = block;
+      for(i = 1;i < blockCount + 1;++i) {
+        blocks[i] = 0;
+      }
+      if(notString) {
+        for (i = start;index < length && i < byteCount; ++index) {
+          blocks[i >> 2] |= message[index] << SHIFT[i++ & 3];
+        }
+      } else {
+        for (i = start;index < length && i < byteCount; ++index) {
+          code = message.charCodeAt(index);
+          if (code < 0x80) {
+            blocks[i >> 2] |= code << SHIFT[i++ & 3];
+          } else if (code < 0x800) {
+            blocks[i >> 2] |= (0xc0 | (code >> 6)) << SHIFT[i++ & 3];
+            blocks[i >> 2] |= (0x80 | (code & 0x3f)) << SHIFT[i++ & 3];
+          } else if (code < 0xd800 || code >= 0xe000) {
+            blocks[i >> 2] |= (0xe0 | (code >> 12)) << SHIFT[i++ & 3];
+            blocks[i >> 2] |= (0x80 | ((code >> 6) & 0x3f)) << SHIFT[i++ & 3];
+            blocks[i >> 2] |= (0x80 | (code & 0x3f)) << SHIFT[i++ & 3];
+          } else {
+            code = 0x10000 + (((code & 0x3ff) << 10) | (message.charCodeAt(++index) & 0x3ff));
+            blocks[i >> 2] |= (0xf0 | (code >> 18)) << SHIFT[i++ & 3];
+            blocks[i >> 2] |= (0x80 | ((code >> 12) & 0x3f)) << SHIFT[i++ & 3];
+            blocks[i >> 2] |= (0x80 | ((code >> 6) & 0x3f)) << SHIFT[i++ & 3];
+            blocks[i >> 2] |= (0x80 | (code & 0x3f)) << SHIFT[i++ & 3];
+          }
+        }
+      }
+      start = i - byteCount;
+      if(index == length) {
+        blocks[i >> 2] |= padding[i & 3];
+        ++index;
+      }
+      block = blocks[blockCount];
+      if(index > length && i < byteCount) {
+        blocks[blockCount - 1] |= 0x80000000;
+        end = true;
+      }
+
+      for(i = 0;i < blockCount;++i) {
+        s[i] ^= blocks[i];
+      }
+
+      for(n = 0; n < 48; n += 2) {
+        c0 = s[0] ^ s[10] ^ s[20] ^ s[30] ^ s[40];
+        c1 = s[1] ^ s[11] ^ s[21] ^ s[31] ^ s[41];
+        c2 = s[2] ^ s[12] ^ s[22] ^ s[32] ^ s[42];
+        c3 = s[3] ^ s[13] ^ s[23] ^ s[33] ^ s[43];
+        c4 = s[4] ^ s[14] ^ s[24] ^ s[34] ^ s[44];
+        c5 = s[5] ^ s[15] ^ s[25] ^ s[35] ^ s[45];
+        c6 = s[6] ^ s[16] ^ s[26] ^ s[36] ^ s[46];
+        c7 = s[7] ^ s[17] ^ s[27] ^ s[37] ^ s[47];
+        c8 = s[8] ^ s[18] ^ s[28] ^ s[38] ^ s[48];
+        c9 = s[9] ^ s[19] ^ s[29] ^ s[39] ^ s[49];
+
+        h = c8 ^ ((c2 << 1) | (c3 >>> 31));
+        l = c9 ^ ((c3 << 1) | (c2 >>> 31));
+        s[0] ^= h;
+        s[1] ^= l;
+        s[10] ^= h;
+        s[11] ^= l;
+        s[20] ^= h;
+        s[21] ^= l;
+        s[30] ^= h;
+        s[31] ^= l;
+        s[40] ^= h;
+        s[41] ^= l;
+        h = c0 ^ ((c4 << 1) | (c5 >>> 31));
+        l = c1 ^ ((c5 << 1) | (c4 >>> 31));
+        s[2] ^= h;
+        s[3] ^= l;
+        s[12] ^= h;
+        s[13] ^= l;
+        s[22] ^= h;
+        s[23] ^= l;
+        s[32] ^= h;
+        s[33] ^= l;
+        s[42] ^= h;
+        s[43] ^= l;
+        h = c2 ^ ((c6 << 1) | (c7 >>> 31));
+        l = c3 ^ ((c7 << 1) | (c6 >>> 31));
+        s[4] ^= h;
+        s[5] ^= l;
+        s[14] ^= h;
+        s[15] ^= l;
+        s[24] ^= h;
+        s[25] ^= l;
+        s[34] ^= h;
+        s[35] ^= l;
+        s[44] ^= h;
+        s[45] ^= l;
+        h = c4 ^ ((c8 << 1) | (c9 >>> 31));
+        l = c5 ^ ((c9 << 1) | (c8 >>> 31));
+        s[6] ^= h;
+        s[7] ^= l;
+        s[16] ^= h;
+        s[17] ^= l;
+        s[26] ^= h;
+        s[27] ^= l;
+        s[36] ^= h;
+        s[37] ^= l;
+        s[46] ^= h;
+        s[47] ^= l;
+        h = c6 ^ ((c0 << 1) | (c1 >>> 31));
+        l = c7 ^ ((c1 << 1) | (c0 >>> 31));
+        s[8] ^= h;
+        s[9] ^= l;
+        s[18] ^= h;
+        s[19] ^= l;
+        s[28] ^= h;
+        s[29] ^= l;
+        s[38] ^= h;
+        s[39] ^= l;
+        s[48] ^= h;
+        s[49] ^= l;
+
+        b0 = s[0];
+        b1 = s[1];
+        b32 = (s[11] << 4) | (s[10] >>> 28);
+        b33 = (s[10] << 4) | (s[11] >>> 28);
+        b14 = (s[20] << 3) | (s[21] >>> 29);
+        b15 = (s[21] << 3) | (s[20] >>> 29);
+        b46 = (s[31] << 9) | (s[30] >>> 23);
+        b47 = (s[30] << 9) | (s[31] >>> 23);
+        b28 = (s[40] << 18) | (s[41] >>> 14);
+        b29 = (s[41] << 18) | (s[40] >>> 14);
+        b20 = (s[2] << 1) | (s[3] >>> 31);
+        b21 = (s[3] << 1) | (s[2] >>> 31);
+        b2 = (s[13] << 12) | (s[12] >>> 20);
+        b3 = (s[12] << 12) | (s[13] >>> 20);
+        b34 = (s[22] << 10) | (s[23] >>> 22);
+        b35 = (s[23] << 10) | (s[22] >>> 22);
+        b16 = (s[33] << 13) | (s[32] >>> 19);
+        b17 = (s[32] << 13) | (s[33] >>> 19);
+        b48 = (s[42] << 2) | (s[43] >>> 30);
+        b49 = (s[43] << 2) | (s[42] >>> 30);
+        b40 = (s[5] << 30) | (s[4] >>> 2);
+        b41 = (s[4] << 30) | (s[5] >>> 2);
+        b22 = (s[14] << 6) | (s[15] >>> 26);
+        b23 = (s[15] << 6) | (s[14] >>> 26);
+        b4 = (s[25] << 11) | (s[24] >>> 21);
+        b5 = (s[24] << 11) | (s[25] >>> 21);
+        b36 = (s[34] << 15) | (s[35] >>> 17);
+        b37 = (s[35] << 15) | (s[34] >>> 17);
+        b18 = (s[45] << 29) | (s[44] >>> 3);
+        b19 = (s[44] << 29) | (s[45] >>> 3);
+        b10 = (s[6] << 28) | (s[7] >>> 4);
+        b11 = (s[7] << 28) | (s[6] >>> 4);
+        b42 = (s[17] << 23) | (s[16] >>> 9);
+        b43 = (s[16] << 23) | (s[17] >>> 9);
+        b24 = (s[26] << 25) | (s[27] >>> 7);
+        b25 = (s[27] << 25) | (s[26] >>> 7);
+        b6 = (s[36] << 21) | (s[37] >>> 11);
+        b7 = (s[37] << 21) | (s[36] >>> 11);
+        b38 = (s[47] << 24) | (s[46] >>> 8);
+        b39 = (s[46] << 24) | (s[47] >>> 8);
+        b30 = (s[8] << 27) | (s[9] >>> 5);
+        b31 = (s[9] << 27) | (s[8] >>> 5);
+        b12 = (s[18] << 20) | (s[19] >>> 12);
+        b13 = (s[19] << 20) | (s[18] >>> 12);
+        b44 = (s[29] << 7) | (s[28] >>> 25);
+        b45 = (s[28] << 7) | (s[29] >>> 25);
+        b26 = (s[38] << 8) | (s[39] >>> 24);
+        b27 = (s[39] << 8) | (s[38] >>> 24);
+        b8 = (s[48] << 14) | (s[49] >>> 18);
+        b9 = (s[49] << 14) | (s[48] >>> 18);
+
+        s[0] = b0 ^ (~b2 & b4);
+        s[1] = b1 ^ (~b3 & b5);
+        s[10] = b10 ^ (~b12 & b14);
+        s[11] = b11 ^ (~b13 & b15);
+        s[20] = b20 ^ (~b22 & b24);
+        s[21] = b21 ^ (~b23 & b25);
+        s[30] = b30 ^ (~b32 & b34);
+        s[31] = b31 ^ (~b33 & b35);
+        s[40] = b40 ^ (~b42 & b44);
+        s[41] = b41 ^ (~b43 & b45);
+        s[2] = b2 ^ (~b4 & b6);
+        s[3] = b3 ^ (~b5 & b7);
+        s[12] = b12 ^ (~b14 & b16);
+        s[13] = b13 ^ (~b15 & b17);
+        s[22] = b22 ^ (~b24 & b26);
+        s[23] = b23 ^ (~b25 & b27);
+        s[32] = b32 ^ (~b34 & b36);
+        s[33] = b33 ^ (~b35 & b37);
+        s[42] = b42 ^ (~b44 & b46);
+        s[43] = b43 ^ (~b45 & b47);
+        s[4] = b4 ^ (~b6 & b8);
+        s[5] = b5 ^ (~b7 & b9);
+        s[14] = b14 ^ (~b16 & b18);
+        s[15] = b15 ^ (~b17 & b19);
+        s[24] = b24 ^ (~b26 & b28);
+        s[25] = b25 ^ (~b27 & b29);
+        s[34] = b34 ^ (~b36 & b38);
+        s[35] = b35 ^ (~b37 & b39);
+        s[44] = b44 ^ (~b46 & b48);
+        s[45] = b45 ^ (~b47 & b49);
+        s[6] = b6 ^ (~b8 & b0);
+        s[7] = b7 ^ (~b9 & b1);
+        s[16] = b16 ^ (~b18 & b10);
+        s[17] = b17 ^ (~b19 & b11);
+        s[26] = b26 ^ (~b28 & b20);
+        s[27] = b27 ^ (~b29 & b21);
+        s[36] = b36 ^ (~b38 & b30);
+        s[37] = b37 ^ (~b39 & b31);
+        s[46] = b46 ^ (~b48 & b40);
+        s[47] = b47 ^ (~b49 & b41);
+        s[8] = b8 ^ (~b0 & b2);
+        s[9] = b9 ^ (~b1 & b3);
+        s[18] = b18 ^ (~b10 & b12);
+        s[19] = b19 ^ (~b11 & b13);
+        s[28] = b28 ^ (~b20 & b22);
+        s[29] = b29 ^ (~b21 & b23);
+        s[38] = b38 ^ (~b30 & b32);
+        s[39] = b39 ^ (~b31 & b33);
+        s[48] = b48 ^ (~b40 & b42);
+        s[49] = b49 ^ (~b41 & b43);
+
+        s[0] ^= RC[n];
+        s[1] ^= RC[n + 1];
+      }
+    } while(!end);
+
+    var hex = '';
+    if(CHROME) {
+      b0 = s[0];
+      b1 = s[1];
+      b2 = s[2];
+      b3 = s[3];
+      b4 = s[4];
+      b5 = s[5];
+      b6 = s[6];
+      b7 = s[7];
+      b8 = s[8];
+      b9 = s[9];
+      b10 = s[10];
+      b11 = s[11];
+      b12 = s[12];
+      b13 = s[13];
+      b14 = s[14];
+      b15 = s[15];
+      hex += HEX_CHARS[(b0 >> 4) & 0x0F] + HEX_CHARS[b0 & 0x0F] +
+             HEX_CHARS[(b0 >> 12) & 0x0F] + HEX_CHARS[(b0 >> 8) & 0x0F] +
+             HEX_CHARS[(b0 >> 20) & 0x0F] + HEX_CHARS[(b0 >> 16) & 0x0F] +
+             HEX_CHARS[(b0 >> 28) & 0x0F] + HEX_CHARS[(b0 >> 24) & 0x0F] +
+             HEX_CHARS[(b1 >> 4) & 0x0F] + HEX_CHARS[b1 & 0x0F] +
+             HEX_CHARS[(b1 >> 12) & 0x0F] + HEX_CHARS[(b1 >> 8) & 0x0F] +
+             HEX_CHARS[(b1 >> 20) & 0x0F] + HEX_CHARS[(b1 >> 16) & 0x0F] +
+             HEX_CHARS[(b1 >> 28) & 0x0F] + HEX_CHARS[(b1 >> 24) & 0x0F] +
+             HEX_CHARS[(b2 >> 4) & 0x0F] + HEX_CHARS[b2 & 0x0F] +
+             HEX_CHARS[(b2 >> 12) & 0x0F] + HEX_CHARS[(b2 >> 8) & 0x0F] +
+             HEX_CHARS[(b2 >> 20) & 0x0F] + HEX_CHARS[(b2 >> 16) & 0x0F] +
+             HEX_CHARS[(b2 >> 28) & 0x0F] + HEX_CHARS[(b2 >> 24) & 0x0F] +
+             HEX_CHARS[(b3 >> 4) & 0x0F] + HEX_CHARS[b3 & 0x0F] +
+             HEX_CHARS[(b3 >> 12) & 0x0F] + HEX_CHARS[(b3 >> 8) & 0x0F] +
+             HEX_CHARS[(b3 >> 20) & 0x0F] + HEX_CHARS[(b3 >> 16) & 0x0F] +
+             HEX_CHARS[(b3 >> 28) & 0x0F] + HEX_CHARS[(b3 >> 24) & 0x0F] +
+             HEX_CHARS[(b4 >> 4) & 0x0F] + HEX_CHARS[b4 & 0x0F] +
+             HEX_CHARS[(b4 >> 12) & 0x0F] + HEX_CHARS[(b4 >> 8) & 0x0F] +
+             HEX_CHARS[(b4 >> 20) & 0x0F] + HEX_CHARS[(b4 >> 16) & 0x0F] +
+             HEX_CHARS[(b4 >> 28) & 0x0F] + HEX_CHARS[(b4 >> 24) & 0x0F] +
+             HEX_CHARS[(b5 >> 4) & 0x0F] + HEX_CHARS[b5 & 0x0F] +
+             HEX_CHARS[(b5 >> 12) & 0x0F] + HEX_CHARS[(b5 >> 8) & 0x0F] +
+             HEX_CHARS[(b5 >> 20) & 0x0F] + HEX_CHARS[(b5 >> 16) & 0x0F] +
+             HEX_CHARS[(b5 >> 28) & 0x0F] + HEX_CHARS[(b5 >> 24) & 0x0F] +
+             HEX_CHARS[(b6 >> 4) & 0x0F] + HEX_CHARS[b6 & 0x0F] +
+             HEX_CHARS[(b6 >> 12) & 0x0F] + HEX_CHARS[(b6 >> 8) & 0x0F] +
+             HEX_CHARS[(b6 >> 20) & 0x0F] + HEX_CHARS[(b6 >> 16) & 0x0F] +
+             HEX_CHARS[(b6 >> 28) & 0x0F] + HEX_CHARS[(b6 >> 24) & 0x0F];
+
+      if(bits >= 256) {
+        hex += HEX_CHARS[(b7 >> 4) & 0x0F] + HEX_CHARS[b7 & 0x0F] +
+               HEX_CHARS[(b7 >> 12) & 0x0F] + HEX_CHARS[(b7 >> 8) & 0x0F] +
+               HEX_CHARS[(b7 >> 20) & 0x0F] + HEX_CHARS[(b7 >> 16) & 0x0F] +
+               HEX_CHARS[(b7 >> 28) & 0x0F] + HEX_CHARS[(b7 >> 24) & 0x0F];
+      }
+      if(bits >= 384) {
+        hex += HEX_CHARS[(b8 >> 4) & 0x0F] + HEX_CHARS[b8 & 0x0F] +
+               HEX_CHARS[(b8 >> 12) & 0x0F] + HEX_CHARS[(b8 >> 8) & 0x0F] +
+               HEX_CHARS[(b8 >> 20) & 0x0F] + HEX_CHARS[(b8 >> 16) & 0x0F] +
+               HEX_CHARS[(b8 >> 28) & 0x0F] + HEX_CHARS[(b8 >> 24) & 0x0F] +
+               HEX_CHARS[(b9 >> 4) & 0x0F] + HEX_CHARS[b9 & 0x0F] +
+               HEX_CHARS[(b9 >> 12) & 0x0F] + HEX_CHARS[(b9 >> 8) & 0x0F] +
+               HEX_CHARS[(b9 >> 20) & 0x0F] + HEX_CHARS[(b9 >> 16) & 0x0F] +
+               HEX_CHARS[(b9 >> 28) & 0x0F] + HEX_CHARS[(b9 >> 24) & 0x0F] +
+               HEX_CHARS[(b10 >> 4) & 0x0F] + HEX_CHARS[b10 & 0x0F] +
+               HEX_CHARS[(b10 >> 12) & 0x0F] + HEX_CHARS[(b10 >> 8) & 0x0F] +
+               HEX_CHARS[(b10 >> 20) & 0x0F] + HEX_CHARS[(b10 >> 16) & 0x0F] +
+               HEX_CHARS[(b10 >> 28) & 0x0F] + HEX_CHARS[(b10 >> 24) & 0x0F] +
+               HEX_CHARS[(b11 >> 4) & 0x0F] + HEX_CHARS[b11 & 0x0F] +
+               HEX_CHARS[(b11 >> 12) & 0x0F] + HEX_CHARS[(b11 >> 8) & 0x0F] +
+               HEX_CHARS[(b11 >> 20) & 0x0F] + HEX_CHARS[(b11 >> 16) & 0x0F] +
+               HEX_CHARS[(b11 >> 28) & 0x0F] + HEX_CHARS[(b11 >> 24) & 0x0F];
+      }
+      if(bits == 512) {
+        hex += HEX_CHARS[(b12 >> 4) & 0x0F] + HEX_CHARS[b12 & 0x0F] +
+               HEX_CHARS[(b12 >> 12) & 0x0F] + HEX_CHARS[(b12 >> 8) & 0x0F] +
+               HEX_CHARS[(b12 >> 20) & 0x0F] + HEX_CHARS[(b12 >> 16) & 0x0F] +
+               HEX_CHARS[(b12 >> 28) & 0x0F] + HEX_CHARS[(b12 >> 24) & 0x0F] +
+               HEX_CHARS[(b13 >> 4) & 0x0F] + HEX_CHARS[b13 & 0x0F] +
+               HEX_CHARS[(b13 >> 12) & 0x0F] + HEX_CHARS[(b13 >> 8) & 0x0F] +
+               HEX_CHARS[(b13 >> 20) & 0x0F] + HEX_CHARS[(b13 >> 16) & 0x0F] +
+               HEX_CHARS[(b13 >> 28) & 0x0F] + HEX_CHARS[(b13 >> 24) & 0x0F] +
+               HEX_CHARS[(b14 >> 4) & 0x0F] + HEX_CHARS[b14 & 0x0F] +
+               HEX_CHARS[(b14 >> 12) & 0x0F] + HEX_CHARS[(b14 >> 8) & 0x0F] +
+               HEX_CHARS[(b14 >> 20) & 0x0F] + HEX_CHARS[(b14 >> 16) & 0x0F] +
+               HEX_CHARS[(b14 >> 28) & 0x0F] + HEX_CHARS[(b14 >> 24) & 0x0F] +
+               HEX_CHARS[(b15 >> 4) & 0x0F] + HEX_CHARS[b15 & 0x0F] +
+               HEX_CHARS[(b15 >> 12) & 0x0F] + HEX_CHARS[(b15 >> 8) & 0x0F] +
+               HEX_CHARS[(b15 >> 20) & 0x0F] + HEX_CHARS[(b15 >> 16) & 0x0F] +
+               HEX_CHARS[(b15 >> 28) & 0x0F] + HEX_CHARS[(b15 >> 24) & 0x0F];
+      }
+    } else {
+      for(i = 0, n = bits / 32;i < n;++i) {
+        h = s[i];
+        hex += HEX_CHARS[(h >> 4) & 0x0F] + HEX_CHARS[h & 0x0F] +
+               HEX_CHARS[(h >> 12) & 0x0F] + HEX_CHARS[(h >> 8) & 0x0F] +
+               HEX_CHARS[(h >> 20) & 0x0F] + HEX_CHARS[(h >> 16) & 0x0F] +
+               HEX_CHARS[(h >> 28) & 0x0F] + HEX_CHARS[(h >> 24) & 0x0F];
+      }
+    }
+    return hex;
+  };
+  
+  if(!root.JS_SHA3_TEST && NODE_JS) {
+    module.exports = {
+      sha3_512: sha3_512,
+      sha3_384: sha3_384,
+      sha3_256: sha3_256,
+      sha3_224: sha3_224,
+      keccak_512: keccak,
+      keccak_384: keccak_384,
+      keccak_256: keccak_256,
+      keccak_224: keccak_224
+    };
+  } else if(root) {
+    root.sha3_512 = sha3_512;
+    root.sha3_384 = sha3_384;
+    root.sha3_256 = sha3_256;
+    root.sha3_224 = sha3_224;
+    root.keccak_512 = keccak;
+    root.keccak_384 = keccak_384;
+    root.keccak_256 = keccak_256;
+    root.keccak_224 = keccak_224;
+  }
+}(this));
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],56:[function(require,module,exports){
+module.exports={
+  "Backstops": {
+    "adjForkBondPaid": {
+      "inputs": [
+        "event", 
+        "amount"
+      ], 
+      "method": "adjForkBondPaid", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "doRoundTwoRefund": {
+      "inputs": [
+        "sender", 
+        "event"
+      ], 
+      "method": "doRoundTwoRefund", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getBondAmount": {
+      "inputs": [
+        "event"
+      ], 
+      "method": "getBondAmount", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getBondPaid": {
+      "inputs": [
+        "event"
+      ], 
+      "method": "getBondPaid", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getBondPoster": {
+      "inputs": [
+        "event"
+      ], 
+      "method": "getBondPoster", 
+      "returns": "address", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getBondReturned": {
+      "inputs": [
+        "event"
+      ], 
+      "method": "getBondReturned", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getFinal": {
+      "inputs": [
+        "event"
+      ], 
+      "method": "getFinal", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getForkBondPaid": {
+      "inputs": [
+        "event"
+      ], 
+      "method": "getForkBondPaid", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getForkBondPoster": {
+      "inputs": [
+        "event"
+      ], 
+      "method": "getForkBondPoster", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getForkedOverEthicality": {
+      "inputs": [
+        "event"
+      ], 
+      "method": "getForkedOverEthicality", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getMoved": {
+      "inputs": [
+        "event"
+      ], 
+      "method": "getMoved", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getOriginalBranch": {
+      "inputs": [
+        "event"
+      ], 
+      "method": "getOriginalBranch", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getOriginalEthicality": {
+      "inputs": [
+        "event"
+      ], 
+      "method": "getOriginalEthicality", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getOriginalOutcome": {
+      "inputs": [
+        "event"
+      ], 
+      "method": "getOriginalOutcome", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getOriginalVotePeriod": {
+      "inputs": [
+        "event"
+      ], 
+      "method": "getOriginalVotePeriod", 
+      "returns": "number", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getResolved": {
+      "inputs": [
+        "branch", 
+        "forkPeriod"
+      ], 
+      "method": "getResolved", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getRoundTwo": {
+      "inputs": [
+        "event"
+      ], 
+      "method": "getRoundTwo", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "increaseBondPaid": {
+      "inputs": [
+        "event", 
+        "amount"
+      ], 
+      "method": "increaseBondPaid", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setBondAmount": {
+      "inputs": [
+        "event", 
+        "amount"
+      ], 
+      "method": "setBondAmount", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setBondPoster": {
+      "inputs": [
+        "event", 
+        "bondPoster"
+      ], 
+      "method": "setBondPoster", 
+      "returns": "number", 
+      "send": true, 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setBondReturned": {
+      "inputs": [
+        "event"
+      ], 
+      "method": "setBondReturned", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "setFinal": {
+      "inputs": [
+        "event"
+      ], 
+      "method": "setFinal", 
+      "returns": "number", 
+      "send": true, 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "setForkBondPoster": {
+      "inputs": [
+        "event", 
+        "poster"
+      ], 
+      "method": "setForkBondPoster", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setForkedOverEthicality": {
+      "inputs": [
+        "event"
+      ], 
+      "method": "setForkedOverEthicality", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "setMoved": {
+      "inputs": [
+        "event"
+      ], 
+      "method": "setMoved", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "setOriginalBranch": {
+      "inputs": [
+        "event", 
+        "branch"
+      ], 
+      "method": "setOriginalBranch", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setOriginalEthicality": {
+      "inputs": [
+        "event", 
+        "ethicality"
+      ], 
+      "method": "setOriginalEthicality", 
+      "returns": "number", 
+      "send": true, 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setOriginalOutcome": {
+      "inputs": [
+        "event", 
+        "originalOutcome"
+      ], 
+      "method": "setOriginalOutcome", 
+      "returns": "number", 
+      "send": true, 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setOriginalVotePeriod": {
+      "inputs": [
+        "event", 
+        "period"
+      ], 
+      "method": "setOriginalVotePeriod", 
+      "returns": "number", 
+      "send": true, 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setResolved": {
+      "inputs": [
+        "branch", 
+        "forkPeriod", 
+        "winner"
+      ], 
+      "method": "setResolved", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setRoundTwo": {
+      "inputs": [
+        "event", 
+        "roundTwo"
+      ], 
+      "method": "setRoundTwo", 
+      "returns": "number", 
+      "send": true, 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setRoundTwoRefund": {
+      "inputs": [
+        "event", 
+        "amt"
+      ], 
+      "method": "setRoundTwoRefund", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }
+  }, 
+  "Branches": {
+    "addMarketToBranch": {
+      "inputs": [
+        "branch", 
+        "market"
+      ], 
+      "method": "addMarketToBranch", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getBaseReporters": {
+      "inputs": [
+        "branch"
+      ], 
+      "method": "getBaseReporters", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getBranchByNum": {
+      "inputs": [
+        "branchNumber"
+      ], 
+      "method": "getBranchByNum", 
+      "returns": "hash", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getBranches": {
+      "method": "getBranches", 
+      "returns": "hash[]"
+    }, 
+    "getCreationDate": {
+      "inputs": [
+        "ID"
+      ], 
+      "method": "getCreationDate", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getEventForkedOver": {
+      "inputs": [
+        "branch"
+      ], 
+      "method": "getEventForkedOver", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getForkPeriod": {
+      "inputs": [
+        "branch"
+      ], 
+      "method": "getForkPeriod", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getInitialBalance": {
+      "inputs": [
+        "branch", 
+        "period"
+      ], 
+      "method": "getInitialBalance", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getMarketsInBranch": {
+      "inputs": [
+        "branch"
+      ], 
+      "method": "getMarketsInBranch", 
+      "returns": "hash[]", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getMinTradingFee": {
+      "inputs": [
+        "branch"
+      ], 
+      "method": "getMinTradingFee", 
+      "returns": "unfix", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getNumBranches": {
+      "method": "getNumBranches", 
+      "returns": "number"
+    }, 
+    "getNumMarketsBranch": {
+      "inputs": [
+        "branch"
+      ], 
+      "method": "getNumMarketsBranch", 
+      "returns": "number", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getOracleOnly": {
+      "inputs": [
+        "branch"
+      ], 
+      "method": "getOracleOnly", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getParent": {
+      "inputs": [
+        "branch"
+      ], 
+      "method": "getParent", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getParentPeriod": {
+      "inputs": [
+        "branch"
+      ], 
+      "method": "getParentPeriod", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getPeriodLength": {
+      "inputs": [
+        "branch"
+      ], 
+      "method": "getPeriodLength", 
+      "returns": "number", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getSomeMarketsInBranch": {
+      "inputs": [
+        "branch", 
+        "initial", 
+        "last"
+      ], 
+      "method": "getSomeMarketsInBranch", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getVotePeriod": {
+      "inputs": [
+        "branch"
+      ], 
+      "method": "getVotePeriod", 
+      "returns": "number", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "incrementPeriod": {
+      "inputs": [
+        "branch"
+      ], 
+      "method": "incrementPeriod", 
+      "returns": "number", 
+      "send": true, 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "initDefaultBranch": {
+      "method": "initDefaultBranch", 
+      "returns": "number", 
+      "send": true
+    }, 
+    "initializeBranch": {
+      "inputs": [
+        "ID", 
+        "currentVotePeriod", 
+        "periodLength", 
+        "minTradingFee", 
+        "oracleOnly", 
+        "parentPeriod", 
+        "parent"
+      ], 
+      "method": "initializeBranch", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setBaseReporters": {
+      "inputs": [
+        "branch", 
+        "num"
+      ], 
+      "method": "setBaseReporters", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setEventForkedOver": {
+      "inputs": [
+        "branch", 
+        "event"
+      ], 
+      "method": "setEventForkedOver", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setForkPeriod": {
+      "inputs": [
+        "branch"
+      ], 
+      "method": "setForkPeriod", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "setInitialBalance": {
+      "inputs": [
+        "branch", 
+        "period", 
+        "balance"
+      ], 
+      "method": "setInitialBalance", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }
+  }, 
+  "Buy&sellShares": {
+    "buy": {
+      "inputs": [
+        "amount", 
+        "price", 
+        "market", 
+        "outcome"
+      ], 
+      "method": "buy", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "cancel": {
+      "inputs": [
+        "trade_id"
+      ], 
+      "method": "cancel", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "sell": {
+      "inputs": [
+        "amount", 
+        "price", 
+        "market", 
+        "outcome"
+      ], 
+      "method": "sell", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }
+  }, 
+  "Cash": {
+    "addCash": {
+      "inputs": [
+        "ID", 
+        "amount"
+      ], 
+      "method": "addCash", 
+      "returns": "number", 
+      "send": true, 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "balance": {
+      "inputs": [
+        "address"
+      ], 
+      "method": "balance", 
+      "returns": "unfix", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "depositEther": {
+      "method": "depositEther", 
+      "returns": "number", 
+      "send": true
+    }, 
+    "initiateOwner": {
+      "inputs": [
+        "account"
+      ], 
+      "method": "initiateOwner", 
+      "returns": "number", 
+      "send": true, 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "send": {
+      "inputs": [
+        "recver", 
+        "value"
+      ], 
+      "method": "send", 
+      "returns": "unfix", 
+      "send": true, 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "sendFrom": {
+      "inputs": [
+        "recver", 
+        "value", 
+        "from"
+      ], 
+      "method": "sendFrom", 
+      "returns": "unfix", 
+      "send": true, 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setCash": {
+      "inputs": [
+        "address", 
+        "balance"
+      ], 
+      "method": "setCash", 
+      "returns": "number", 
+      "send": true, 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "subtractCash": {
+      "inputs": [
+        "ID", 
+        "amount"
+      ], 
+      "method": "subtractCash", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "withdrawEther": {
+      "inputs": [
+        "to", 
+        "value"
+      ], 
+      "method": "withdrawEther", 
+      "returns": "number", 
+      "send": true, 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }
+  }, 
+  "CloseMarket": {
+    "claimProceeds": {
+      "inputs": [
+        "branch", 
+        "market"
+      ], 
+      "method": "claimProceeds", 
+      "returns": "number", 
+      "send": true, 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "closeMarket": {
+      "inputs": [
+        "branch", 
+        "market", 
+        "sender"
+      ], 
+      "method": "closeMarket", 
+      "returns": "number", 
+      "send": true, 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }
+  }, 
+  "CloseMarketEight": {
+    "eightOutcomes": {
+      "inputs": [
+        "market", 
+        "winningOutcome", 
+        "events", 
+        "sender"
+      ], 
+      "method": "eightOutcomes", 
+      "signature": [
+        "int256", 
+        "int256[]", 
+        "int256[]", 
+        "int256"
+      ]
+    }
+  }, 
+  "CloseMarketFour": {
+    "fourOutcomes": {
+      "inputs": [
+        "market", 
+        "winningOutcome", 
+        "events", 
+        "sender"
+      ], 
+      "method": "fourOutcomes", 
+      "signature": [
+        "int256", 
+        "int256[]", 
+        "int256[]", 
+        "int256"
+      ]
+    }
+  }, 
+  "CloseMarketOne": {
+    "oneOutcome": {
+      "inputs": [
+        "market", 
+        "winningOutcome", 
+        "sender", 
+        "categoricalPointFive", 
+        "numOutcomes"
+      ], 
+      "method": "oneOutcome", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }
+  }, 
+  "CloseMarketTwo": {
+    "twoOutcomes": {
+      "inputs": [
+        "market", 
+        "winningOutcome", 
+        "events", 
+        "sender"
+      ], 
+      "method": "twoOutcomes", 
+      "signature": [
+        "int256", 
+        "int256[]", 
+        "int256[]", 
+        "int256"
+      ]
+    }
+  }, 
+  "CollectFees": {
+    "collectFees": {
+      "inputs": [
+        "branch", 
+        "sender"
+      ], 
+      "method": "collectFees", 
+      "returns": "number", 
+      "send": true, 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }
+  }, 
+  "CompleteSets": {
+    "buyCompleteSets": {
+      "inputs": [
+        "market", 
+        "amount"
+      ], 
+      "method": "buyCompleteSets", 
+      "returns": "number", 
+      "send": true, 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "sellCompleteSets": {
+      "inputs": [
+        "market", 
+        "amount"
+      ], 
+      "method": "sellCompleteSets", 
+      "returns": "number", 
+      "send": true, 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }
+  }, 
+  "CompositeGetters": {
+    "batchGetMarketInfo": {
+      "inputs": [
+        "marketIDs"
+      ], 
+      "method": "batchGetMarketInfo", 
+      "returns": "hash[]", 
+      "signature": [
+        "int256[]"
+      ]
+    }, 
+    "getMarketInfo": {
+      "inputs": [
+        "marketID"
+      ], 
+      "method": "getMarketInfo", 
+      "returns": "hash[]", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getMarketsInfo": {
+      "inputs": [
+        "branch", 
+        "offset", 
+        "numMarketsToLoad"
+      ], 
+      "method": "getMarketsInfo", 
+      "returns": "hash[]", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getOrderBook": {
+      "inputs": [
+        "marketID"
+      ], 
+      "method": "getOrderBook", 
+      "returns": "hash[]", 
+      "signature": [
+        "int256"
+      ]
+    }
+  }, 
+  "Consensus": {
+    "incrementPeriodAfterReporting": {
+      "inputs": [
+        "branch"
+      ], 
+      "method": "incrementPeriodAfterReporting", 
+      "returns": "number", 
+      "send": true, 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "penalizeWrong": {
+      "inputs": [
+        "branch", 
+        "event"
+      ], 
+      "method": "penalizeWrong", 
+      "returns": "number", 
+      "send": true, 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "proportionCorrect": {
+      "inputs": [
+        "event"
+      ], 
+      "method": "proportionCorrect", 
+      "returns": "unfix", 
+      "signature": [
+        "int256"
+      ]
+    }
+  }, 
+  "ConsensusData": {
+    "doRefund": {
+      "inputs": [
+        "sender", 
+        "refunder"
+      ], 
+      "method": "doRefund", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getBaseReportersLastPeriod": {
+      "inputs": [
+        "branch"
+      ], 
+      "method": "getBaseReportersLastPeriod", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getDenominator": {
+      "inputs": [
+        "branch", 
+        "period"
+      ], 
+      "method": "getDenominator", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getFeeFirst": {
+      "inputs": [
+        "branch", 
+        "period"
+      ], 
+      "method": "getFeeFirst", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getFeesCollected": {
+      "inputs": [
+        "branch", 
+        "address", 
+        "period"
+      ], 
+      "method": "getFeesCollected", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getNotEnoughPenalized": {
+      "inputs": [
+        "branch", 
+        "address", 
+        "period"
+      ], 
+      "method": "getNotEnoughPenalized", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getPenalized": {
+      "inputs": [
+        "branch", 
+        "period", 
+        "sender", 
+        "event"
+      ], 
+      "method": "getPenalized", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getPenalizedNum": {
+      "inputs": [
+        "branch", 
+        "period", 
+        "sender"
+      ], 
+      "method": "getPenalizedNum", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getPenalizedUpTo": {
+      "inputs": [
+        "branch", 
+        "sender"
+      ], 
+      "method": "getPenalizedUpTo", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getPeriodBalance": {
+      "inputs": [
+        "branch", 
+        "period"
+      ], 
+      "method": "getPeriodBalance", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getRRDone": {
+      "inputs": [
+        "branch", 
+        "reporter"
+      ], 
+      "method": "getRRDone", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "increaseDenominator": {
+      "inputs": [
+        "branch", 
+        "period", 
+        "amount"
+      ], 
+      "method": "increaseDenominator", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "increasePenalizedNum": {
+      "inputs": [
+        "branch", 
+        "period", 
+        "sender", 
+        "amount"
+      ], 
+      "method": "increasePenalizedNum", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setBaseReportersLastPeriod": {
+      "inputs": [
+        "branch", 
+        "amount"
+      ], 
+      "method": "setBaseReportersLastPeriod", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setFeeFirst": {
+      "inputs": [
+        "branch", 
+        "period", 
+        "val"
+      ], 
+      "method": "setFeeFirst", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setFeesCollected": {
+      "inputs": [
+        "branch", 
+        "address", 
+        "period"
+      ], 
+      "method": "setFeesCollected", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setNotEnoughPenalized": {
+      "inputs": [
+        "branch", 
+        "address", 
+        "period"
+      ], 
+      "method": "setNotEnoughPenalized", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setPenalized": {
+      "inputs": [
+        "branch", 
+        "period", 
+        "sender", 
+        "event"
+      ], 
+      "method": "setPenalized", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setPenalizedUpTo": {
+      "inputs": [
+        "branch", 
+        "sender", 
+        "period"
+      ], 
+      "method": "setPenalizedUpTo", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setPeriodBalance": {
+      "inputs": [
+        "branch", 
+        "period", 
+        "balance"
+      ], 
+      "method": "setPeriodBalance", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setRefund": {
+      "inputs": [
+        "refunder", 
+        "amt"
+      ], 
+      "method": "setRefund", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }
+  }, 
+  "CreateBranch": {
+    "createSubbranch": {
+      "inputs": [
+        "description", 
+        "periodLength", 
+        "parent", 
+        "tradingFee", 
+        "oracleOnly"
+      ], 
+      "method": "createSubbranch", 
+      "returns": "hash", 
+      "send": true, 
+      "signature": [
+        "bytes", 
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }
+  }, 
+  "CreateMarket": {
+    "createEvent": {
+      "inputs": [
+        "branch", 
+        "description", 
+        "expDate", 
+        "minValue", 
+        "maxValue", 
+        "numOutcomes", 
+        "resolution"
+      ], 
+      "method": "createEvent", 
+      "send": true, 
+      "signature": [
+        "int256", 
+        "bytes", 
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256", 
+        "bytes"
+      ]
+    }, 
+    "createMarket": {
+      "inputs": [
+        "branch", 
+        "description", 
+        "tradingFee", 
+        "events", 
+        "tag1", 
+        "tag2", 
+        "tag3", 
+        "makerFees", 
+        "extraInfo"
+      ], 
+      "method": "createMarket", 
+      "send": true, 
+      "signature": [
+        "int256", 
+        "bytes", 
+        "int256", 
+        "int256[]", 
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256", 
+        "bytes"
+      ]
+    }, 
+    "pushMarketForward": {
+      "inputs": [
+        "branch", 
+        "market"
+      ], 
+      "method": "pushMarketForward", 
+      "returns": "number", 
+      "send": true, 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "updateTradingFee": {
+      "inputs": [
+        "branch", 
+        "market", 
+        "tradingFee"
+      ], 
+      "method": "updateTradingFee", 
+      "returns": "number", 
+      "send": true, 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }
+  }, 
+  "EventResolution": {
+    "catch": {
+      "inputs": [
+        "x"
+      ], 
+      "method": "catch", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "determineWinningOutcomes": {
+      "inputs": [
+        "events", 
+        "numberEvents", 
+        "branch", 
+        "market"
+      ], 
+      "method": "determineWinningOutcomes", 
+      "signature": [
+        "int256[]", 
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "resolveBinary": {
+      "inputs": [
+        "event", 
+        "market", 
+        "branch", 
+        "votingPeriodEvent"
+      ], 
+      "method": "resolveBinary", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "resolveCategoricalOrScalar": {
+      "inputs": [
+        "scaled_min", 
+        "scaled_max", 
+        "event", 
+        "market", 
+        "branch", 
+        "votingPeriodEvent"
+      ], 
+      "method": "resolveCategoricalOrScalar", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }
+  }, 
+  "Events": {
+    "addMarket": {
+      "inputs": [
+        "event", 
+        "marketID"
+      ], 
+      "method": "addMarket", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "addPast24": {
+      "inputs": [
+        "period"
+      ], 
+      "method": "addPast24", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getBond": {
+      "inputs": [
+        "event"
+      ], 
+      "method": "getBond", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getBranch": {
+      "inputs": [
+        "event"
+      ], 
+      "method": "getBranch", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getEthical": {
+      "inputs": [
+        "event"
+      ], 
+      "method": "getEthical", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getEthics": {
+      "inputs": [
+        "event"
+      ], 
+      "method": "getEthics", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getEventBranch": {
+      "inputs": [
+        "event"
+      ], 
+      "method": "getEventBranch", 
+      "returns": "hash", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getEventInfo": {
+      "inputs": [
+        "event"
+      ], 
+      "method": "getEventInfo", 
+      "returns": "hash[]", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getEventPushedUp": {
+      "inputs": [
+        "event"
+      ], 
+      "method": "getEventPushedUp", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getEventResolution": {
+      "inputs": [
+        "event"
+      ], 
+      "method": "getEventResolution", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getExpiration": {
+      "inputs": [
+        "event"
+      ], 
+      "method": "getExpiration", 
+      "returns": "number", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getForkEthicality": {
+      "inputs": [
+        "event"
+      ], 
+      "method": "getForkEthicality", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getForkOutcome": {
+      "inputs": [
+        "event"
+      ], 
+      "method": "getForkOutcome", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getForked": {
+      "inputs": [
+        "event"
+      ], 
+      "method": "getForked", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getForkedDone": {
+      "inputs": [
+        "event"
+      ], 
+      "method": "getForkedDone", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getMarket": {
+      "inputs": [
+        "event", 
+        "marketIndex"
+      ], 
+      "method": "getMarket", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getMarkets": {
+      "inputs": [
+        "event"
+      ], 
+      "method": "getMarkets", 
+      "returns": "hash[]", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getMaxValue": {
+      "inputs": [
+        "event"
+      ], 
+      "method": "getMaxValue", 
+      "returns": "number", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getMinValue": {
+      "inputs": [
+        "event"
+      ], 
+      "method": "getMinValue", 
+      "returns": "number", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getNumMarkets": {
+      "inputs": [
+        "event"
+      ], 
+      "method": "getNumMarkets", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getNumOutcomes": {
+      "inputs": [
+        "event"
+      ], 
+      "method": "getNumOutcomes", 
+      "returns": "number", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getOriginalExpiration": {
+      "inputs": [
+        "event"
+      ], 
+      "method": "getOriginalExpiration", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getOutcome": {
+      "inputs": [
+        "event"
+      ], 
+      "method": "getOutcome", 
+      "returns": "unfix", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getPast24": {
+      "inputs": [
+        "period"
+      ], 
+      "method": "getPast24", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getRejected": {
+      "inputs": [
+        "event"
+      ], 
+      "method": "getRejected", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getRejectedPeriod": {
+      "inputs": [
+        "event"
+      ], 
+      "method": "getRejectedPeriod", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getReportingThreshold": {
+      "inputs": [
+        "event"
+      ], 
+      "method": "getReportingThreshold", 
+      "returns": "unfix", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getResolution": {
+      "inputs": [
+        "event"
+      ], 
+      "method": "getResolution", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getUncaughtOutcome": {
+      "inputs": [
+        "event"
+      ], 
+      "method": "getUncaughtOutcome", 
+      "returns": "unfix", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getmode": {
+      "inputs": [
+        "event"
+      ], 
+      "method": "getmode", 
+      "returns": "unfix", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "initializeEvent": {
+      "inputs": [
+        "ID", 
+        "branch", 
+        "expirationDate", 
+        "minValue", 
+        "maxValue", 
+        "numOutcomes", 
+        "resolution"
+      ], 
+      "method": "initializeEvent", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256", 
+        "bytes"
+      ]
+    }, 
+    "setBond": {
+      "inputs": [
+        "event", 
+        "bond"
+      ], 
+      "method": "setBond", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setBranch": {
+      "inputs": [
+        "event", 
+        "branch"
+      ], 
+      "method": "setBranch", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setEthics": {
+      "inputs": [
+        "event", 
+        "ethicality"
+      ], 
+      "method": "setEthics", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setEventPushedUp": {
+      "inputs": [
+        "event", 
+        "val"
+      ], 
+      "method": "setEventPushedUp", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setExpiration": {
+      "inputs": [
+        "event", 
+        "date"
+      ], 
+      "method": "setExpiration", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setForkDone": {
+      "inputs": [
+        "event"
+      ], 
+      "method": "setForkDone", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "setForkEthicality": {
+      "inputs": [
+        "event", 
+        "value"
+      ], 
+      "method": "setForkEthicality", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setForkOutcome": {
+      "inputs": [
+        "event", 
+        "value"
+      ], 
+      "method": "setForkOutcome", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setForked": {
+      "inputs": [
+        "event"
+      ], 
+      "method": "setForked", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "setOutcome": {
+      "inputs": [
+        "ID", 
+        "outcome"
+      ], 
+      "method": "setOutcome", 
+      "returns": "number", 
+      "send": true, 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setRejected": {
+      "inputs": [
+        "event", 
+        "period"
+      ], 
+      "method": "setRejected", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setThreshold": {
+      "inputs": [
+        "event", 
+        "threshold"
+      ], 
+      "method": "setThreshold", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setUncaughtOutcome": {
+      "inputs": [
+        "event", 
+        "outcome"
+      ], 
+      "method": "setUncaughtOutcome", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setmode": {
+      "inputs": [
+        "event", 
+        "mode"
+      ], 
+      "method": "setmode", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }
+  }, 
+  "ExpiringEvents": {
+    "addEvent": {
+      "inputs": [
+        "branch", 
+        "futurePeriod", 
+        "eventID", 
+        "subsidy"
+      ], 
+      "method": "addEvent", 
+      "send": true, 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "addRepEvent": {
+      "inputs": [
+        "branch", 
+        "votePeriod", 
+        "event", 
+        "amount"
+      ], 
+      "method": "addRepEvent", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "addReportExpected": {
+      "inputs": [
+        "branch", 
+        "votePeriod", 
+        "eventID"
+      ], 
+      "method": "addReportExpected", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "addReportToEvent": {
+      "inputs": [
+        "branch", 
+        "votePeriod", 
+        "eventID", 
+        "sender"
+      ], 
+      "method": "addReportToEvent", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "addReportersPaidSoFar": {
+      "inputs": [
+        "branch", 
+        "event"
+      ], 
+      "method": "addReportersPaidSoFar", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "addRoundTwo": {
+      "inputs": [
+        "branch", 
+        "period"
+      ], 
+      "method": "addRoundTwo", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "addToWeightOfReport": {
+      "inputs": [
+        "period", 
+        "event", 
+        "report", 
+        "amount"
+      ], 
+      "method": "addToWeightOfReport", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "adjustPeriodShareValueOutstanding": {
+      "inputs": [
+        "branch", 
+        "expIndex", 
+        "amount"
+      ], 
+      "method": "adjustPeriodShareValueOutstanding", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "calculateReportingThreshold": {
+      "inputs": [
+        "branch", 
+        "eventID", 
+        "votePeriod", 
+        "sender"
+      ], 
+      "method": "calculateReportingThreshold", 
+      "returns": "hash", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "deleteEvent": {
+      "inputs": [
+        "branch", 
+        "period", 
+        "event"
+      ], 
+      "method": "deleteEvent", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getAfterRep": {
+      "inputs": [
+        "branch", 
+        "period", 
+        "sender"
+      ], 
+      "method": "getAfterRep", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getBeforeRep": {
+      "inputs": [
+        "branch", 
+        "period", 
+        "sender"
+      ], 
+      "method": "getBeforeRep", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getCurrentMode": {
+      "inputs": [
+        "period", 
+        "event"
+      ], 
+      "method": "getCurrentMode", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getCurrentModeItems": {
+      "inputs": [
+        "period", 
+        "event"
+      ], 
+      "method": "getCurrentModeItems", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getEthicReport": {
+      "inputs": [
+        "branch", 
+        "period", 
+        "event", 
+        "sender"
+      ], 
+      "method": "getEthicReport", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getEvent": {
+      "inputs": [
+        "branch", 
+        "expDateIndex", 
+        "eventIndex"
+      ], 
+      "method": "getEvent", 
+      "returns": "hash", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getEventCanReportOn": {
+      "inputs": [
+        "branch", 
+        "expDateIndex", 
+        "reporter", 
+        "event"
+      ], 
+      "method": "getEventCanReportOn", 
+      "returns": "number", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getEventIndex": {
+      "inputs": [
+        "period", 
+        "eventID"
+      ], 
+      "method": "getEventIndex", 
+      "returns": "number", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getEvents": {
+      "inputs": [
+        "branch", 
+        "expDateIndex"
+      ], 
+      "method": "getEvents", 
+      "returns": "hash[]", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getEventsRange": {
+      "inputs": [
+        "branch", 
+        "expDateIndex", 
+        "start", 
+        "end"
+      ], 
+      "method": "getEventsRange", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getEventsToReportOn": {
+      "inputs": [
+        "branch", 
+        "expDateIndex", 
+        "sender"
+      ], 
+      "method": "getEventsToReportOn", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getLesserReportNum": {
+      "inputs": [
+        "branch", 
+        "period", 
+        "event"
+      ], 
+      "method": "getLesserReportNum", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getNumEventsToReportOn": {
+      "inputs": [
+        "branch", 
+        "expDateIndex"
+      ], 
+      "method": "getNumEventsToReportOn", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getNumRemoved": {
+      "inputs": [
+        "branch", 
+        "period"
+      ], 
+      "method": "getNumRemoved", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getNumReportsActual": {
+      "inputs": [
+        "branch", 
+        "votePeriod", 
+        "sender"
+      ], 
+      "method": "getNumReportsActual", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getNumReportsEvent": {
+      "inputs": [
+        "branch", 
+        "votePeriod", 
+        "eventID"
+      ], 
+      "method": "getNumReportsEvent", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getNumReportsExpectedEvent": {
+      "inputs": [
+        "branch", 
+        "votePeriod", 
+        "eventID"
+      ], 
+      "method": "getNumReportsExpectedEvent", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getNumRequired": {
+      "inputs": [
+        "branch", 
+        "period"
+      ], 
+      "method": "getNumRequired", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getNumRoundTwo": {
+      "inputs": [
+        "branch", 
+        "period"
+      ], 
+      "method": "getNumRoundTwo", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getNumberEvents": {
+      "inputs": [
+        "branch", 
+        "expDateIndex"
+      ], 
+      "method": "getNumberEvents", 
+      "returns": "number", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getPeriodDormantRep": {
+      "inputs": [
+        "branch", 
+        "period", 
+        "sender"
+      ], 
+      "method": "getPeriodDormantRep", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getPeriodRepConstant": {
+      "inputs": [
+        "branch", 
+        "votePeriod", 
+        "sender"
+      ], 
+      "method": "getPeriodRepConstant", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getRepEvent": {
+      "inputs": [
+        "branch", 
+        "votePeriod", 
+        "event"
+      ], 
+      "method": "getRepEvent", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getReport": {
+      "inputs": [
+        "branch", 
+        "period", 
+        "event", 
+        "sender"
+      ], 
+      "method": "getReport", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getReportHash": {
+      "inputs": [
+        "branch", 
+        "expDateIndex", 
+        "reporter", 
+        "event"
+      ], 
+      "method": "getReportHash", 
+      "returns": "hash", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getReportersPaidSoFar": {
+      "inputs": [
+        "branch", 
+        "event"
+      ], 
+      "method": "getReportersPaidSoFar", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getRequired": {
+      "inputs": [
+        "event"
+      ], 
+      "method": "getRequired", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getShareValue": {
+      "inputs": [
+        "branch", 
+        "expIndex"
+      ], 
+      "method": "getShareValue", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getSubsidy": {
+      "inputs": [
+        "branch", 
+        "period", 
+        "event"
+      ], 
+      "method": "getSubsidy", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getWeightOfReport": {
+      "inputs": [
+        "period", 
+        "event", 
+        "report"
+      ], 
+      "method": "getWeightOfReport", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "moveEvent": {
+      "inputs": [
+        "branch", 
+        "event"
+      ], 
+      "method": "moveEvent", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "refundCost": {
+      "inputs": [
+        "to", 
+        "value"
+      ], 
+      "method": "refundCost", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "removeEvent": {
+      "inputs": [
+        "branch", 
+        "period"
+      ], 
+      "method": "removeEvent", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setAfterRep": {
+      "inputs": [
+        "branch", 
+        "period", 
+        "rep", 
+        "sender"
+      ], 
+      "method": "setAfterRep", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setBeforeRep": {
+      "inputs": [
+        "branch", 
+        "period", 
+        "rep", 
+        "sender"
+      ], 
+      "method": "setBeforeRep", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setCurrentMode": {
+      "inputs": [
+        "period", 
+        "event", 
+        "mode"
+      ], 
+      "method": "setCurrentMode", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setCurrentModeItems": {
+      "inputs": [
+        "period", 
+        "event", 
+        "modeReport"
+      ], 
+      "method": "setCurrentModeItems", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setEthicReport": {
+      "inputs": [
+        "branch", 
+        "period", 
+        "event", 
+        "ethics", 
+        "sender"
+      ], 
+      "method": "setEthicReport", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setEventRequired": {
+      "inputs": [
+        "branch", 
+        "period", 
+        "event"
+      ], 
+      "method": "setEventRequired", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setLesserReportNum": {
+      "inputs": [
+        "branch", 
+        "period", 
+        "event", 
+        "num"
+      ], 
+      "method": "setLesserReportNum", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setNumEventsToReportOn": {
+      "inputs": [
+        "branch"
+      ], 
+      "method": "setNumEventsToReportOn", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "setNumReportsEvent": {
+      "inputs": [
+        "branch", 
+        "votePeriod", 
+        "eventID", 
+        "num"
+      ], 
+      "method": "setNumReportsEvent", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setNumReportsExpectedEvent": {
+      "inputs": [
+        "branch", 
+        "votePeriod", 
+        "eventID", 
+        "num"
+      ], 
+      "method": "setNumReportsExpectedEvent", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setPeriodDormantRep": {
+      "inputs": [
+        "branch", 
+        "period", 
+        "rep", 
+        "sender"
+      ], 
+      "method": "setPeriodDormantRep", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setPeriodRepConstant": {
+      "inputs": [
+        "branch", 
+        "votePeriod", 
+        "sender", 
+        "value"
+      ], 
+      "method": "setPeriodRepConstant", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setReport": {
+      "inputs": [
+        "branch", 
+        "period", 
+        "event", 
+        "report", 
+        "sender"
+      ], 
+      "method": "setReport", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setReportHash": {
+      "inputs": [
+        "branch", 
+        "expDateIndex", 
+        "reporter", 
+        "reportHash", 
+        "event"
+      ], 
+      "method": "setReportHash", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setReportingThreshold": {
+      "inputs": [
+        "event"
+      ], 
+      "method": "setReportingThreshold", 
+      "signature": [
+        "int256"
+      ]
+    }
+  }, 
+  "Faucets": {
+    "cashFaucet": {
+      "method": "cashFaucet", 
+      "returns": "number", 
+      "send": true
+    }, 
+    "claimInitialRep": {
+      "inputs": [
+        "parent", 
+        "branch"
+      ], 
+      "method": "claimInitialRep", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "fundNewAccount": {
+      "inputs": [
+        "branch"
+      ], 
+      "method": "fundNewAccount", 
+      "returns": "number", 
+      "send": true, 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "reputationFaucet": {
+      "inputs": [
+        "branch"
+      ], 
+      "method": "reputationFaucet", 
+      "returns": "number", 
+      "send": true, 
+      "signature": [
+        "int256"
+      ]
+    }
+  }, 
+  "ForkPenalize": {
+    "penalizeOnForkedEvent": {
+      "inputs": [
+        "branch", 
+        "event"
+      ], 
+      "method": "penalizeOnForkedEvent", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "proportionCorrectForkEvent": {
+      "inputs": [
+        "event"
+      ], 
+      "method": "proportionCorrectForkEvent", 
+      "signature": [
+        "int256"
+      ]
+    }
+  }, 
+  "Forking": {
+    "exchangeRate": {
+      "inputs": [
+        "branch"
+      ], 
+      "method": "exchangeRate", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "fork": {
+      "inputs": [
+        "event", 
+        "branch", 
+        "forkedOverEthicality"
+      ], 
+      "method": "fork", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "move_event": {
+      "inputs": [
+        "event"
+      ], 
+      "method": "move_event", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "resolveForkEvent": {
+      "inputs": [
+        "branch", 
+        "event"
+      ], 
+      "method": "resolveForkEvent", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "resolveForkedEvent": {
+      "inputs": [
+        "branch", 
+        "event"
+      ], 
+      "method": "resolveForkedEvent", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "resolve_fork": {
+      "inputs": [
+        "branch"
+      ], 
+      "method": "resolve_fork", 
+      "signature": [
+        "int256"
+      ]
+    }
+  }, 
+  "FxpFunctions": {
+    "fx_exp": {
+      "inputs": [
+        "x"
+      ], 
+      "method": "fx_exp", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "fx_log": {
+      "inputs": [
+        "x"
+      ], 
+      "method": "fx_log", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "sqrt": {
+      "inputs": [
+        "n"
+      ], 
+      "method": "sqrt", 
+      "signature": [
+        "int256"
+      ]
+    }
+  }, 
+  "Info": {
+    "getCreationFee": {
+      "inputs": [
+        "ID"
+      ], 
+      "method": "getCreationFee", 
+      "returns": "unfix", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getCreator": {
+      "inputs": [
+        "ID"
+      ], 
+      "method": "getCreator", 
+      "returns": "address", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getDescription": {
+      "inputs": [
+        "ID"
+      ], 
+      "method": "getDescription", 
+      "returns": "string", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getDescriptionLength": {
+      "inputs": [
+        "ID"
+      ], 
+      "method": "getDescriptionLength", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "setInfo": {
+      "inputs": [
+        "ID", 
+        "description", 
+        "creator", 
+        "fee"
+      ], 
+      "method": "setInfo", 
+      "returns": "number", 
+      "send": true, 
+      "signature": [
+        "int256", 
+        "bytes", 
+        "int256", 
+        "int256"
+      ]
+    }
+  }, 
+  "MakeReports": {
+    "calculateReportTargetForEvent": {
+      "inputs": [
+        "branch", 
+        "eventID", 
+        "votePeriod", 
+        "sender"
+      ], 
+      "method": "calculateReportTargetForEvent", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "makeHash": {
+      "inputs": [
+        "salt", 
+        "report", 
+        "eventID", 
+        "sender"
+      ], 
+      "method": "makeHash", 
+      "returns": "hash", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "submitReport": {
+      "inputs": [
+        "event", 
+        "salt", 
+        "report", 
+        "ethics"
+      ], 
+      "method": "submitReport", 
+      "returns": "number", 
+      "send": true, 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "submitReportHash": {
+      "inputs": [
+        "event", 
+        "reportHash"
+      ], 
+      "method": "submitReportHash", 
+      "returns": "number", 
+      "send": true, 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "validateReport": {
+      "inputs": [
+        "eventID", 
+        "branch", 
+        "votePeriod", 
+        "report", 
+        "forkedOverEthicality", 
+        "forkedOverThisEvent", 
+        "roundTwo", 
+        "balance"
+      ], 
+      "method": "validateReport", 
+      "returns": "number", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }
+  }, 
+  "Markets": {
+    "addFees": {
+      "inputs": [
+        "market", 
+        "amount"
+      ], 
+      "method": "addFees", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "addParticipant": {
+      "inputs": [
+        "market", 
+        "address"
+      ], 
+      "method": "addParticipant", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "addToMarketsHash": {
+      "inputs": [
+        "branch", 
+        "newHash"
+      ], 
+      "method": "addToMarketsHash", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "addTrade": {
+      "inputs": [
+        "market", 
+        "trade_id", 
+        "last_id"
+      ], 
+      "method": "addTrade", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getBondsMan": {
+      "inputs": [
+        "market"
+      ], 
+      "method": "getBondsMan", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getBranchID": {
+      "inputs": [
+        "market"
+      ], 
+      "method": "getBranchID", 
+      "returns": "hash", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getCreationTime": {
+      "inputs": [
+        "market"
+      ], 
+      "method": "getCreationTime", 
+      "returns": "number", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getCumScale": {
+      "inputs": [
+        "market"
+      ], 
+      "method": "getCumScale", 
+      "returns": "unfix", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getCurrentParticipantNumber": {
+      "inputs": [
+        "market"
+      ], 
+      "method": "getCurrentParticipantNumber", 
+      "returns": "number", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getExtraInfo": {
+      "inputs": [
+        "market"
+      ], 
+      "method": "getExtraInfo", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getFees": {
+      "inputs": [
+        "market"
+      ], 
+      "method": "getFees", 
+      "returns": "unfix", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getLastExpDate": {
+      "inputs": [
+        "market"
+      ], 
+      "method": "getLastExpDate", 
+      "returns": "number", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getLastOutcomePrice": {
+      "inputs": [
+        "market", 
+        "outcome"
+      ], 
+      "method": "getLastOutcomePrice", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getLastTrade": {
+      "inputs": [
+        "market"
+      ], 
+      "method": "getLastTrade", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getMakerFees": {
+      "inputs": [
+        "market"
+      ], 
+      "method": "getMakerFees", 
+      "returns": "unfix", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getMarketEvent": {
+      "inputs": [
+        "market", 
+        "index"
+      ], 
+      "method": "getMarketEvent", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getMarketEvents": {
+      "inputs": [
+        "market"
+      ], 
+      "method": "getMarketEvents", 
+      "returns": "hash[]", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getMarketNumOutcomes": {
+      "inputs": [
+        "market"
+      ], 
+      "method": "getMarketNumOutcomes", 
+      "returns": "number", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getMarketsHash": {
+      "inputs": [
+        "branch"
+      ], 
+      "method": "getMarketsHash", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getNumEvents": {
+      "inputs": [
+        "market"
+      ], 
+      "method": "getNumEvents", 
+      "returns": "number", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getOneWinningOutcome": {
+      "inputs": [
+        "market", 
+        "num"
+      ], 
+      "method": "getOneWinningOutcome", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getOriginalTradingPeriod": {
+      "inputs": [
+        "market"
+      ], 
+      "method": "getOriginalTradingPeriod", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getParticipantID": {
+      "inputs": [
+        "market", 
+        "participantNumber"
+      ], 
+      "method": "getParticipantID", 
+      "returns": "address", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getParticipantNumber": {
+      "inputs": [
+        "market", 
+        "address"
+      ], 
+      "method": "getParticipantNumber", 
+      "returns": "number", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getParticipantSharesPurchased": {
+      "inputs": [
+        "market", 
+        "participantNumber", 
+        "outcome"
+      ], 
+      "method": "getParticipantSharesPurchased", 
+      "returns": "unfix", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getPushedForward": {
+      "inputs": [
+        "market"
+      ], 
+      "method": "getPushedForward", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getSender": {
+      "method": "getSender"
+    }, 
+    "getSharesPurchased": {
+      "inputs": [
+        "market", 
+        "outcome"
+      ], 
+      "method": "getSharesPurchased", 
+      "returns": "unfix", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getSharesValue": {
+      "inputs": [
+        "market"
+      ], 
+      "method": "getSharesValue", 
+      "returns": "unfix", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getTotalSharesPurchased": {
+      "inputs": [
+        "market"
+      ], 
+      "method": "getTotalSharesPurchased", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getTradingFee": {
+      "inputs": [
+        "market"
+      ], 
+      "method": "getTradingFee", 
+      "returns": "unfix", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getTradingPeriod": {
+      "inputs": [
+        "market"
+      ], 
+      "method": "getTradingPeriod", 
+      "returns": "number", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getVolume": {
+      "inputs": [
+        "market"
+      ], 
+      "method": "getVolume", 
+      "returns": "unfix", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getWinningOutcomes": {
+      "inputs": [
+        "market"
+      ], 
+      "method": "getWinningOutcomes", 
+      "returns": "number[]", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "get_total_trades": {
+      "inputs": [
+        "market_id"
+      ], 
+      "method": "get_total_trades", 
+      "returns": "number", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "get_trade_ids": {
+      "inputs": [
+        "market_id"
+      ], 
+      "method": "get_trade_ids", 
+      "returns": "hash[]", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getgasSubsidy": {
+      "inputs": [
+        "market"
+      ], 
+      "method": "getgasSubsidy", 
+      "returns": "int", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "initializeMarket": {
+      "inputs": [
+        "marketID", 
+        "events", 
+        "tradingPeriod", 
+        "tradingFee", 
+        "branch", 
+        "tag1", 
+        "tag2", 
+        "tag3", 
+        "makerFees", 
+        "cumScale", 
+        "numOutcomes", 
+        "extraInfo", 
+        "gasSubsidy", 
+        "creationFee", 
+        "lastExpDate"
+      ], 
+      "method": "initializeMarket", 
+      "signature": [
+        "int256", 
+        "int256[]", 
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256", 
+        "bytes", 
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "modifyParticipantShares": {
+      "inputs": [
+        "marketID", 
+        "participantNumber", 
+        "outcome", 
+        "amount", 
+        "cancel", 
+        "sets"
+      ], 
+      "method": "modifyParticipantShares", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "modifyShares": {
+      "inputs": [
+        "marketID", 
+        "outcome", 
+        "amount"
+      ], 
+      "method": "modifyShares", 
+      "returns": "number", 
+      "send": true, 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "modifySharesValue": {
+      "inputs": [
+        "marketID", 
+        "amount"
+      ], 
+      "method": "modifySharesValue", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "refundClosing": {
+      "inputs": [
+        "amount", 
+        "to"
+      ], 
+      "method": "refundClosing", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "remove_trade_from_market": {
+      "inputs": [
+        "market_id", 
+        "trade_id"
+      ], 
+      "method": "remove_trade_from_market", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "returnTags": {
+      "inputs": [
+        "market"
+      ], 
+      "method": "returnTags", 
+      "returns": "hash[]", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "setPrice": {
+      "inputs": [
+        "market", 
+        "outcome", 
+        "price"
+      ], 
+      "method": "setPrice", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setPushedForward": {
+      "inputs": [
+        "market", 
+        "bool", 
+        "sender"
+      ], 
+      "method": "setPushedForward", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setTradingFee": {
+      "inputs": [
+        "market", 
+        "fee"
+      ], 
+      "method": "setTradingFee", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setTradingPeriod": {
+      "inputs": [
+        "market", 
+        "period"
+      ], 
+      "method": "setTradingPeriod", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setWinningOutcomes": {
+      "inputs": [
+        "market", 
+        "outcomes"
+      ], 
+      "method": "setWinningOutcomes", 
+      "signature": [
+        "int256", 
+        "int256[]"
+      ]
+    }
+  }, 
+  "PenalizationCatchup": {
+    "penalizationCatchup": {
+      "inputs": [
+        "branch", 
+        "sender"
+      ], 
+      "method": "penalizationCatchup", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }
+  }, 
+  "PenalizeNotEnoughReports": {
+    "proveReporterDidntReportEnough": {
+      "inputs": [
+        "branch", 
+        "reporter", 
+        "eventExample"
+      ], 
+      "method": "proveReporterDidntReportEnough", 
+      "returns": "number", 
+      "send": true, 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }
+  }, 
+  "Reporting": {
+    "addDormantRep": {
+      "inputs": [
+        "branch", 
+        "index", 
+        "value"
+      ], 
+      "method": "addDormantRep", 
+      "returns": "number", 
+      "send": true, 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "addRep": {
+      "inputs": [
+        "branch", 
+        "index", 
+        "value"
+      ], 
+      "method": "addRep", 
+      "returns": "number", 
+      "send": true, 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "addReporter": {
+      "inputs": [
+        "branch", 
+        "sender", 
+        "amount", 
+        "dormant", 
+        "repToBonderOrBranch"
+      ], 
+      "method": "addReporter", 
+      "returns": "number", 
+      "send": true, 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "adjustActiveRep": {
+      "inputs": [
+        "branch", 
+        "amount"
+      ], 
+      "method": "adjustActiveRep", 
+      "returns": "number", 
+      "send": true, 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "balanceOf": {
+      "inputs": [
+        "branch", 
+        "address"
+      ], 
+      "method": "balanceOf", 
+      "returns": "unfix", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "checkContractWhitelist": {
+      "inputs": [
+        "contract", 
+        "address"
+      ], 
+      "method": "checkContractWhitelist", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "checkWhitelist": {
+      "inputs": [
+        "address"
+      ], 
+      "method": "checkWhitelist", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getActiveRep": {
+      "inputs": [
+        "branch"
+      ], 
+      "method": "getActiveRep", 
+      "returns": "unfix", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getDormantRepByIndex": {
+      "inputs": [
+        "branch", 
+        "repIndex"
+      ], 
+      "method": "getDormantRepByIndex", 
+      "returns": "unfix", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getFork": {
+      "inputs": [
+        "branch"
+      ], 
+      "method": "getFork", 
+      "returns": "number", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getNumberReporters": {
+      "inputs": [
+        "branch"
+      ], 
+      "method": "getNumberReporters", 
+      "returns": "number", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getRepBalance": {
+      "inputs": [
+        "branch", 
+        "address"
+      ], 
+      "method": "getRepBalance", 
+      "returns": "unfix", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getRepByIndex": {
+      "inputs": [
+        "branch", 
+        "repIndex"
+      ], 
+      "method": "getRepByIndex", 
+      "returns": "unfix", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getReporterID": {
+      "inputs": [
+        "branch", 
+        "index"
+      ], 
+      "method": "getReporterID", 
+      "returns": "hash", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getReputation": {
+      "inputs": [
+        "address"
+      ], 
+      "method": "getReputation", 
+      "returns": "hash[]", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getTotalRep": {
+      "inputs": [
+        "branch"
+      ], 
+      "method": "getTotalRep", 
+      "returns": "unfix", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "hashReport": {
+      "inputs": [
+        "report", 
+        "salt"
+      ], 
+      "method": "hashReport", 
+      "signature": [
+        "int256[]", 
+        "int256"
+      ]
+    }, 
+    "repIDToIndex": {
+      "inputs": [
+        "branch", 
+        "repID"
+      ], 
+      "method": "repIDToIndex", 
+      "returns": "number", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setFork": {
+      "inputs": [
+        "branch"
+      ], 
+      "method": "setFork", 
+      "returns": "number", 
+      "send": true, 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "setInitialReporters": {
+      "inputs": [
+        "parent", 
+        "branchID"
+      ], 
+      "method": "setInitialReporters", 
+      "returns": "number", 
+      "send": true, 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setRep": {
+      "inputs": [
+        "branch", 
+        "index", 
+        "newRep"
+      ], 
+      "method": "setRep", 
+      "returns": "number", 
+      "send": true, 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setSaleDistribution": {
+      "inputs": [
+        "addresses", 
+        "balances", 
+        "branchID"
+      ], 
+      "method": "setSaleDistribution", 
+      "returns": "number", 
+      "send": true, 
+      "signature": [
+        "int256[]", 
+        "int256[]", 
+        "int256"
+      ]
+    }, 
+    "setWhitelist": {
+      "inputs": [
+        "contract", 
+        "addresses"
+      ], 
+      "method": "setWhitelist", 
+      "returns": "string", 
+      "send": true, 
+      "signature": [
+        "int256", 
+        "int256[]"
+      ]
+    }, 
+    "subtractDormantRep": {
+      "inputs": [
+        "branch", 
+        "index", 
+        "value"
+      ], 
+      "method": "subtractDormantRep", 
+      "returns": "number", 
+      "send": true, 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "subtractRep": {
+      "inputs": [
+        "branch", 
+        "index", 
+        "value"
+      ], 
+      "method": "subtractRep", 
+      "returns": "number", 
+      "send": true, 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "totalSupply": {
+      "inputs": [
+        "branch"
+      ], 
+      "method": "totalSupply", 
+      "returns": "unfix", 
+      "signature": [
+        "int256"
+      ]
+    }
+  }, 
+  "RoundTwo": {
+    "resolve": {
+      "inputs": [
+        "branch", 
+        "event"
+      ], 
+      "method": "resolve", 
+      "returns": "number", 
+      "send": true, 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "roundTwoPostBond": {
+      "inputs": [
+        "branch", 
+        "event", 
+        "eventIndex", 
+        "votePeriod"
+      ], 
+      "method": "roundTwoPostBond", 
+      "returns": "number", 
+      "send": true, 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "roundTwoResolve": {
+      "inputs": [
+        "branch", 
+        "event", 
+        "eventIndex", 
+        "sender"
+      ], 
+      "method": "roundTwoResolve", 
+      "returns": "number", 
+      "send": true, 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }
+  }, 
+  "RoundTwoPenalize": {
+    "penalizeRoundTwoWrong": {
+      "inputs": [
+        "branch", 
+        "event"
+      ], 
+      "method": "penalizeRoundTwoWrong", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "proportionCorrect": {
+      "inputs": [
+        "event"
+      ], 
+      "method": "proportionCorrect", 
+      "signature": [
+        "int256"
+      ]
+    }
+  }, 
+  "SendReputation": {
+    "allowance": {
+      "inputs": [
+        "owner", 
+        "spender"
+      ], 
+      "method": "allowance", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "approve": {
+      "inputs": [
+        "branch", 
+        "spender", 
+        "value"
+      ], 
+      "method": "approve", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "convertToActiveRep": {
+      "inputs": [
+        "branch", 
+        "value"
+      ], 
+      "method": "convertToActiveRep", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "convertToDormantRep": {
+      "inputs": [
+        "branch", 
+        "value"
+      ], 
+      "method": "convertToDormantRep", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "sendReputation": {
+      "inputs": [
+        "branch", 
+        "recver", 
+        "value"
+      ], 
+      "method": "sendReputation", 
+      "returns": "unfix", 
+      "send": true, 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "transfer": {
+      "inputs": [
+        "branch", 
+        "recver", 
+        "value"
+      ], 
+      "method": "transfer", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "transferFrom": {
+      "inputs": [
+        "branch", 
+        "from", 
+        "recver", 
+        "value"
+      ], 
+      "method": "transferFrom", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }
+  }, 
+  "SlashRep": {
+    "slashRep": {
+      "inputs": [
+        "branch", 
+        "salt", 
+        "report", 
+        "reporter", 
+        "eventID", 
+        "testing"
+      ], 
+      "method": "slashRep", 
+      "returns": "number", 
+      "send": true, 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }
+  }, 
+  "Trade": {
+    "short_sell": {
+      "inputs": [
+        "buyer_trade_id", 
+        "max_amount"
+      ], 
+      "method": "short_sell", 
+      "returns": "hash[]", 
+      "send": true, 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "trade": {
+      "inputs": [
+        "max_value", 
+        "max_amount", 
+        "trade_ids"
+      ], 
+      "method": "trade", 
+      "returns": "hash[]", 
+      "send": true, 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256[]"
+      ]
+    }
+  }, 
+  "Trades": {
+    "checkHash": {
+      "inputs": [
+        "tradeHash", 
+        "sender"
+      ], 
+      "method": "checkHash", 
+      "returns": "number", 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "commitTrade": {
+      "inputs": [
+        "hash"
+      ], 
+      "method": "commitTrade", 
+      "returns": "number", 
+      "send": true, 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "fill_trade": {
+      "inputs": [
+        "id", 
+        "fill"
+      ], 
+      "method": "fill_trade", 
+      "returns": "number", 
+      "send": true, 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "getID": {
+      "inputs": [
+        "tradeID"
+      ], 
+      "method": "getID", 
+      "returns": "hash", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "getInitialTrade": {
+      "inputs": [
+        "id"
+      ], 
+      "method": "getInitialTrade", 
+      "returns": "hash", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "get_amount": {
+      "inputs": [
+        "id"
+      ], 
+      "method": "get_amount", 
+      "returns": "unfix", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "get_price": {
+      "inputs": [
+        "id"
+      ], 
+      "method": "get_price", 
+      "returns": "unfix", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "get_trade": {
+      "inputs": [
+        "id"
+      ], 
+      "method": "get_trade", 
+      "returns": "hash[]", 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "makeTradeHash": {
+      "inputs": [
+        "max_value", 
+        "max_amount", 
+        "trade_ids"
+      ], 
+      "method": "makeTradeHash", 
+      "returns": "hash", 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256[]"
+      ]
+    }, 
+    "remove_trade": {
+      "inputs": [
+        "id"
+      ], 
+      "method": "remove_trade", 
+      "returns": "number", 
+      "send": true, 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "saveTrade": {
+      "inputs": [
+        "trade_id", 
+        "type", 
+        "market", 
+        "amount", 
+        "price", 
+        "sender", 
+        "outcome"
+      ], 
+      "method": "saveTrade", 
+      "returns": "number", 
+      "send": true, 
+      "signature": [
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "setInitialTrade": {
+      "inputs": [
+        "id"
+      ], 
+      "method": "setInitialTrade", 
+      "returns": "number", 
+      "send": true, 
+      "signature": [
+        "int256"
+      ]
+    }, 
+    "update_trade": {
+      "inputs": [
+        "id", 
+        "price"
+      ], 
+      "method": "update_trade", 
+      "send": true, 
+      "signature": [
+        "int256", 
+        "int256"
+      ]
+    }, 
+    "zeroHash": {
+      "method": "zeroHash", 
+      "returns": "number", 
+      "send": true
+    }
+  }
+}
+},{}],57:[function(require,module,exports){
+module.exports={
+    "2": {
+        "BuyAndSellShares": "0x97df797d9bc6c348208e1564d34e3eca077b36be",
+        "CloseMarket": "0xb246e534415c626fc577f0847d9ac9247dc16d59",
+        "CloseMarketEight": "0x8d1c577a709ccdf1779d5a5848bb2c75f071638f",
+        "CloseMarketFour": "0x2c9723f616e8a766cc2906b1e7e60293aeb3fb47",
+        "CloseMarketOne": "0x8e3539bb61a7493e643a32275770dff7bd6c48aa",
+        "CloseMarketTwo": "0x4b1793071f852a41d69ba53e71f664d64422326c",
+        "CollectFees": "0xe14c3df9a3ee8b805c17fb3ba213a69d36992152",
+        "CompleteSets": "0x79a6bdf2d2a2239e368529b5410a7763fc45f858",
+        "CompositeGetters": "0xcc3c8c452a33ff56248afdc0913499b32b4badc3",
+        "Consensus": "0xdab83c382ea094d94423b5e9672dbd2415c0e839",
+        "CreateBranch": "0xc0d09f5532b2093336ff62f9763d787ea2f3c6d9",
+        "CreateMarket": "0x509419d22c9424f6d5996f35db2d869bc94f68b3",
+        "EventResolution": "0xb92b2304fd3948f1e26bd3005536460ea91b7c45",
+        "Faucets": "0x3dc20d009a93524ca76ba95102281d0947949989",
+        "ForkPenalize": "0x4a6ea4130ad6a4cc3a97e01a59275ff2f8f067e7",
+        "Forking": "0x2e076f33d0608cac340d16046f957ba61b4ce911",
+        "MakeReports": "0x40020e787cbba61848743c27513ab6380396173a",
+        "PenalizationCatchup": "0x377ae708ce0b643aaaf68f1c1b674e0dec399ae0",
+        "PenalizeNotEnoughReports": "0x483bfcc013cf3b308ac626feab90b41a3ed89e11",
+        "RoundTwo": "0x825fceebb8a613f444a9e387e51f284fdb3bdbef",
+        "RoundTwoPenalize": "0xe06885ad61501124af005be3549b2bf3b4726a1d",
+        "SendReputation": "0x25525fa8d3b56201434e7316518c0befe60250a2",
+        "SlashRep": "0xbc6bb79e67a01fa1c88e260cc63c5fd43b342d78",
+        "Trade": "0x20b57a03fccf5c86f21a4fe366bec463cb01c586",
+        "Backstops": "0x2b43f3258e5fe625b2fb667690630100bcbc115f",
+        "Branches": "0x6a6cb111da271671197bcb144956f43d64a1bf80",
+        "Cash": "0x7d75b06cceabc34627be767ebaface401d6ecb32",
+        "ConsensusData": "0x382fecf2780a2eed2ce497fc15b4e431f2ade49c",
+        "Events": "0xdac808d3df6364c23c54460e6ba52b37b1a0be1f",
+        "ExpiringEvents": "0x00959da720fa63788cf23ae99c726d3551278590",
+        "FxpFunctions": "0xfe599d9ac0ba360bc53f519eeee63a18487f2f1d",
+        "Info": "0x91fe6b845ab763c8e50ad23b23a397e9231dde9c",
+        "Markets": "0x29fcb14958850fdbd9ae91063b84dc58ba76f9b1",
+        "Reporting": "0x62bee7452324153e6a406afab165e15d4e004f9b",
+        "Trades": "0x2e1754f2d16ec778adccc35325882771a5bf74a1"
+    },
+    "10101": {
+        "BuyAndSellShares": "0xc1f513a64709200e30d3db0049fbdf73a88e16f6",
+        "CloseMarket": "0xe4f0e3c5c7fce0858f166c896ffdc5e034d0e416",
+        "CloseMarketEight": "0x87a5e6383bfaf81013ffc7e12d5f2bfa50220445",
+        "CloseMarketFour": "0x2168d7c22f01b978ea9396cc443d1c4b73648012",
+        "CloseMarketOne": "0x0920d1513057572be46580b7ef75d1d01a99a3e5",
+        "CloseMarketTwo": "0x3482344d1ddbfd671b7dea7de22fbb1364dcd26e",
+        "CollectFees": "0x4dcd129ecd475b8ba99a4326d39864a9cf50a131",
+        "CompleteSets": "0x3b83b10cb6ae9ecf6f3119e0c92ad229264fe437",
+        "CompositeGetters": "0x20070e3c267d17eb7818ed6f0f1440be1fda6684",
+        "Consensus": "0xcf8ee66789361ea03c819b1b72614789e3c09740",
+        "CreateBranch": "0xc50146cac2a210fffc7d486354880b66bc5991cb",
+        "CreateMarket": "0x242c0bc4d991da7a961c3d03e447188c30d622d5",
+        "EventResolution": "0xb1bf667309b77417b2adab55c21d6c9d4e202033",
+        "Faucets": "0xaba981839e40075b161caf3526a11e724f0aaec2",
+        "ForkPenalize": "0x338ce82ecb10df7267beb55ea95184850580c6a6",
+        "Forking": "0x9fb5fc0b474ff8b00a047e51047aca2fa198dc73",
+        "MakeReports": "0xace477b2af23c950febe2466d253e6260555a010",
+        "PenalizationCatchup": "0x1527eeca77ebf5ea176fef3886c67c886ce2e49d",
+        "PenalizeNotEnoughReports": "0xa09020c4c488cf64fe8f6abf11fd3457e1d19856",
+        "RoundTwo": "0x47b3972405ad844a9eb66e9139fca4e017a0b816",
+        "RoundTwoPenalize": "0xd5c6b9f812fb00b8340808edb8dba8f330b4c75c",
+        "SendReputation": "0x2d54bf7b82ce420fa3fd966262f2e677559f72a3",
+        "SlashRep": "0x6a592facbd32b04c429117c434fdc0b3ed4c45e9",
+        "Trade": "0xe308ec109bac5ca6c4407d12020737b1fa24b9f0",
+        "Backstops": "0xda216a38eaf283a8e8a16d0a1a069e5346f668fd",
+        "Branches": "0x8615d86e88b98f1b2b5fe2c8d0baaf454089c459",
+        "Cash": "0x07414b523bef5d3d11cd195350fddf16ca97c40b",
+        "ConsensusData": "0x8c15701224aff132963efcbc829158f829172369",
+        "Events": "0x68e9b831346211ab54b2d471d25be6d5f343608d",
+        "ExpiringEvents": "0xbc561d76e72c599a695b0fd461fe912716099e6e",
+        "FxpFunctions": "0x26ceb833ebc12a439359da7387d99568b447c8bb",
+        "Info": "0x1b1200650196cacf30cc17a6796a68fbfddd4828",
+        "Markets": "0x71a3b076606e80e8558798eafa4ac6927ab72a38",
+        "Reporting": "0x2e3b98b5c9d1d21df7a4a65dac851fcf763ebded",
+        "Trades": "0xef6abcef46c0871d3db0e602a003b99499e326db"
+    }
+}
+
+},{}],58:[function(require,module,exports){
+module.exports={
+    "0x": "no response or bad input",
+    "buy": {
+        "-1": "amount/price bad or no market",
+        "-2": "oracle-only branch",
+        "-4": "not enough money or shares"
+    },
+    "buyCompleteSets": {
+        "0": "market not found",
+        "-1": "oracle-only branch",
+        "-3": "not enough cash"
+    },
+    "cashFaucet": {
+        "-1": "Hey, you're not broke!"
+    },
+    "claimProceeds": {
+        "0": "reporting not done",
+        "-1": "trader doesn't exist"
+    },
+    "closeMarket": {
+        "0": "fail/trading not over yet/event not expired or closed already",
+        "-1": "Market has no cash anyway / already closed",
+        "-2": "0 outcome / not reported on yet",
+        "-3": "not final round 2 event",
+        "-5": "Event forked and not final yet",
+        "-6": "bonded pushed forward market not ready to be resolved",
+        "-7": "event not reportable >.99",
+        "-8": "market isn't in branch"
+    },
+    "collectFees": {
+        "-2": "needs to be second half of reporting period to claim rep (1st half is when redistribution is done)"
+    },
+    "createEvent": {
+        "-1": "we're either already past that date, branch doesn't exist, or description is bad",
+        "0": "not enough money to pay fees or event already exists",
+        "-2": "max value < min value",
+        "-9": "would expire during non-reporting fork period"
+    },
+    "createSingleEventMarket": {
+        "0": "not enough money to pay fees or event already exists",
+        "-1": "we're either already past that date, branch doesn't exist, or description is bad, or bad input or parent doesn't exist",
+        "-2": "max value < min value",
+        "-3": "too many outcomes",
+        "-4": "not enough money",
+        "-5": "fee too low",
+        "-6": "duplicate events",
+        "-7": "event already expired",
+        "-8": "market already exists",
+        "-9": "would expire during non-reporting fork period"
+    },
+    "createMarket": {
+        "-1": "bad input or parent doesn't exist",
+        "-2": "too many events",
+        "-3": "too many outcomes",
+        "-4": "not enough money",
+        "-5": "fee too low",
+        "-6": "duplicate events",
+        "-7": "event already expired",
+        "-8": "market already exists",
+        "-9": "would expire during non-reporting fork period"
+    },
+    "createSubbranch": {
+        "-1": "bad input or parent doesn't exist",
+        "-2": "no money for creation fee or branch already exists"
+    },
+    "penalizationCatchup": {
+        "-2": "can only be called during the first half of the reporting period"
+    },
+    "penalizeOnForkedEvent": {
+        "-2": "already past first half of new period and needed to penalize before then",
+        "-4": "fork event isn't resolved yet",
+        "-5": "already done for all events in this period"
+    },
+    "penalizeRoundTwoWrong": {
+        "0": "event is a fork event",
+        "-1": "need to penalize in round 2 penalize function",
+        "-2": "already past first half of new period and needed to penalize before then",
+        "-4": "in fork period only thing that rbcr is done on is the round 2 event in the original branch via round 2 penalize",
+        "-5": "already done for all events in this period",
+        "-6": "forked events should be penalized using the fork penalization function"
+    },
+    "penalizeWrong": {
+        "0": "event is a fork event",
+        "-1": "need to penalize in round 2 penalize function",
+        "-2": "already past first half of new period and needed to penalize before then",
+        "-4": "in fork period only thing that rbcr is done on is the round 2 event in the original branch via round 2 penalize",
+        "-5": "already done for all events in this period",
+        "-6": "forked events should be penalized using the fork penalization function",
+        "-7": "no outcome"
+    },
+    "proveReporterDidntReportEnough": {
+        "-1": "already done",
+        "-2": "not in right part of period"
+    },
+    "pushMarketForward": {
+        "-1": "fork period cannot be the current or previous period",
+        "-2": "market is already closed or pushed forward",
+        "-3": "not enough cash to post early resolution bond",
+        "-4": "early resolution already attempted or outcome already exists"
+    },
+    "sell": {
+        "-1": "amount/price bad or no market",
+        "-2": "oracle only branch",
+        "-4": "not enough money or shares"
+    },
+    "sellCompleteSets": {
+        "-1": "oracle-only branch",
+        "-2": "not a participant in this market",
+        "-3": "not enough shares"
+    },
+    "sendReputation": {
+        "0": "not enough reputation",
+        "-1": "Your reputation account was just created! Earn some reputation before you can send to others",
+        "-2": "Receiving address doesn't exist"
+    },
+    "short_sell": {
+        "-1": "oracle only branch",
+        "-2": "bad trade hash",
+        "-3": "trader doesn't exist / own shares in this market",
+        "-4": "must buy at least .00000001 in value",
+        "10": "insufficient balance"
+    },
+    "slashRep": {
+        "0": "not a valid claim",
+        "-2": "reporter doesn't exist"
+    },
+    "submitReportHash": {
+        "0": "not caught up on rep redistributions",
+        "-1": "invalid event",
+        "-2": "not in first half of period (commit phase)"
+    },
+    "submitReport": {
+        "0": "reporter doesn't exist or has <1 rep",
+        "-1": "has already reported",
+        "-2": "not in second half of period [reveal part]",
+        "-3": "hash doesn't match",
+        "-4": "bad report",
+        "-5": "invalid event",
+        "-6": "already resolved",
+        "-7": "<48 hr left in period, too late to report, able to put up readj. bonds though",
+        "-8": "fees couldn't be collected",
+        "-9": "need to pay not reporting bond"
+    },
+    "trade": {
+        "-1": "oracle only branch",
+        "-2": "bad trade hash",
+        "-3": "trader doesn't exist / own shares in this market",
+        "-4": "must buy at least .00000001 in value",
+        "10": "insufficient balance"
+    },
+    "updateTradingFee": {
+        "-1": "invalid trading fee: either fee is below the minimum trading fee or you are trying to raise the trading fee (trading fees can be lowered, but not raised)",
+        "-4": "sender's address does not match the market creator's address"
+    },
+    "WRONG_NUMBER_OF_OUTCOMES": {
+        "error": 41,
+        "message": "the number of initial fair prices does not match this market's number of outcomes"
+    },
+    "INSUFFICIENT_LIQUIDITY": {
+        "error": 42,
+        "message": "insufficient liquidity to generate order book"
+    },
+    "INITIAL_PRICE_OUT_OF_BOUNDS": {
+        "error": 43,
+        "message": "one or more initial fair prices are out-of-bounds"
+    },
+    "PRICE_WIDTH_OUT_OF_BOUNDS": {
+        "error": 44,
+        "message": "price width is too large for one or more initial fair prices"
+    },
+    "DB_DELETE_FAILED": {
+        "error": 97,
+        "message": "database delete failed"
+    },
+    "DB_WRITE_FAILED": {
+        "error": 98,
+        "message": "database write failed"
+    },
+    "DB_READ_FAILED": {
+        "error": 99,
+        "message": "database read failed"
+    },
+    "INVALID_CONTRACT_PARAMETER": {
+        "error": 400,
+        "message": "cannot send object parameter to contract"
+    },
+    "NOT_LOGGED_IN": {
+        "error": 401,
+        "message": "not logged in"
+    },
+    "PARAMETER_NUMBER_ERROR": {
+        "error": 402,
+        "message": "wrong number of parameters"
+    },
+    "BAD_CREDENTIALS": {
+        "error": 403,
+        "message": "incorrect handle or password"
+    },
+    "TRANSACTION_NOT_FOUND": {
+        "error": 404,
+        "message": "transaction not found"
+    },
+    "PASSWORD_TOO_SHORT": {
+        "error": 405,
+        "message": "password must be at least 6 characters long"
+    },
+    "NULL_CALL_RETURN": {
+        "error": 406,
+        "message": "expected contract call to return value, received null"
+    },
+    "NULL_RESPONSE": {
+        "error": 407,
+        "message": "expected transaction hash from Ethereum node, received null"
+    },
+    "NO_RESPONSE": {
+        "error": 408,
+        "message": "no response"
+    },
+    "INVALID_RESPONSE": {
+        "error": 409,
+        "message": "could not parse response from Ethereum node"
+    },
+    "LOCAL_NODE_FAILURE": {
+        "error": 410,
+        "message": "RPC request to local Ethereum node failed"
+    },
+    "HOSTED_NODE_FAILURE": {
+        "error": 411,
+        "message": "RPC request to hosted nodes failed"
+    },
+    "TRANSACTION_INVALID": {
+        "error": 412,
+        "message": "transaction validation failed"
+    },
+    "HANDLE_TAKEN": {
+        "error": 422,
+        "message": "handle already taken"
+    },
+    "FILTER_NOT_CREATED": {
+        "error": 450,
+        "message": "filter could not be created"
+    },
+    "TRANSACTION_FAILED": {
+        "error": 500,
+        "message": "transaction failed"
+    },
+    "TRANSACTION_NOT_CONFIRMED": {
+        "error": 501,
+        "message": "polled network but could not confirm transaction"
+    },
+    "DUPLICATE_TRANSACTION": {
+        "error": 502,
+        "message": "duplicate transaction"
+    },
+    "RAW_TRANSACTION_ERROR": {
+        "error": 503,
+        "message": "error sending client-side transaction"
+    },
+    "RLP_ENCODING_ERROR": {
+        "error": 504,
+        "message": "RLP encoding error"
+    },
+    "NO_MARKET_INFO": {
+        "error": 505,
+        "message": "could not retrieve market data"
+    },
+    "RPC_TIMEOUT": {
+        "error": 599,
+        "message": "timed out while waiting for Ethereum network response"
+    },
+    "LOOPBACK_NOT_FOUND": {
+        "error": 650,
+        "message": "loopback interface required for synchronous local commands"
+    },
+    "ETHEREUM_NOT_FOUND": {
+        "error": 651,
+        "message": "no active ethereum node(s) found"
+    },
+    "CHECK_ORDER_BOOK_FAILED": {
+        "error": 710,
+        "message": "could not check order book using current prices"
+    }
+}
+
+},{}],59:[function(require,module,exports){
+var contracts = require("./contracts");
+contracts.errors = require("./errors");
+contracts.Tx = require("./tx");
+
+module.exports = contracts;
+
+},{"./contracts":57,"./errors":58,"./tx":61}],60:[function(require,module,exports){
+(function (Buffer){
+var clone = (function() {
+'use strict';
+
+/**
+ * Clones (copies) an Object using deep copying.
+ *
+ * This function supports circular references by default, but if you are certain
+ * there are no circular references in your object, you can save some CPU time
+ * by calling clone(obj, false).
+ *
+ * Caution: if `circular` is false and `parent` contains circular references,
+ * your program may enter an infinite loop and crash.
+ *
+ * @param `parent` - the object to be cloned
+ * @param `circular` - set to true if the object to be cloned may contain
+ *    circular references. (optional - true by default)
+ * @param `depth` - set to a number if the object is only to be cloned to
+ *    a particular depth. (optional - defaults to Infinity)
+ * @param `prototype` - sets the prototype to be used when cloning an object.
+ *    (optional - defaults to parent prototype).
+*/
+function clone(parent, circular, depth, prototype) {
+  var filter;
+  if (typeof circular === 'object') {
+    depth = circular.depth;
+    prototype = circular.prototype;
+    filter = circular.filter;
+    circular = circular.circular
+  }
+  // maintain two arrays for circular references, where corresponding parents
+  // and children have the same index
+  var allParents = [];
+  var allChildren = [];
+
+  var useBuffer = typeof Buffer != 'undefined';
+
+  if (typeof circular == 'undefined')
+    circular = true;
+
+  if (typeof depth == 'undefined')
+    depth = Infinity;
+
+  // recurse this function so we don't reset allParents and allChildren
+  function _clone(parent, depth) {
+    // cloning null always returns null
+    if (parent === null)
+      return null;
+
+    if (depth == 0)
+      return parent;
+
+    var child;
+    var proto;
+    if (typeof parent != 'object') {
+      return parent;
+    }
+
+    if (clone.__isArray(parent)) {
+      child = [];
+    } else if (clone.__isRegExp(parent)) {
+      child = new RegExp(parent.source, __getRegExpFlags(parent));
+      if (parent.lastIndex) child.lastIndex = parent.lastIndex;
+    } else if (clone.__isDate(parent)) {
+      child = new Date(parent.getTime());
+    } else if (useBuffer && Buffer.isBuffer(parent)) {
+      child = new Buffer(parent.length);
+      parent.copy(child);
+      return child;
+    } else {
+      if (typeof prototype == 'undefined') {
+        proto = Object.getPrototypeOf(parent);
+        child = Object.create(proto);
+      }
+      else {
+        child = Object.create(prototype);
+        proto = prototype;
+      }
+    }
+
+    if (circular) {
+      var index = allParents.indexOf(parent);
+
+      if (index != -1) {
+        return allChildren[index];
+      }
+      allParents.push(parent);
+      allChildren.push(child);
+    }
+
+    for (var i in parent) {
+      var attrs;
+      if (proto) {
+        attrs = Object.getOwnPropertyDescriptor(proto, i);
+      }
+
+      if (attrs && attrs.set == null) {
+        continue;
+      }
+      child[i] = _clone(parent[i], depth - 1);
+    }
+
+    return child;
+  }
+
+  return _clone(parent, depth);
+}
+
+/**
+ * Simple flat clone using prototype, accepts only objects, usefull for property
+ * override on FLAT configuration object (no nested props).
+ *
+ * USE WITH CAUTION! This may not behave as you wish if you do not know how this
+ * works.
+ */
+clone.clonePrototype = function clonePrototype(parent) {
+  if (parent === null)
+    return null;
+
+  var c = function () {};
+  c.prototype = parent;
+  return new c();
+};
+
+// private utility functions
+
+function __objToStr(o) {
+  return Object.prototype.toString.call(o);
+};
+clone.__objToStr = __objToStr;
+
+function __isDate(o) {
+  return typeof o === 'object' && __objToStr(o) === '[object Date]';
+};
+clone.__isDate = __isDate;
+
+function __isArray(o) {
+  return typeof o === 'object' && __objToStr(o) === '[object Array]';
+};
+clone.__isArray = __isArray;
+
+function __isRegExp(o) {
+  return typeof o === 'object' && __objToStr(o) === '[object RegExp]';
+};
+clone.__isRegExp = __isRegExp;
+
+function __getRegExpFlags(re) {
+  var flags = '';
+  if (re.global) flags += 'g';
+  if (re.ignoreCase) flags += 'i';
+  if (re.multiline) flags += 'm';
+  return flags;
+};
+clone.__getRegExpFlags = __getRegExpFlags;
+
+return clone;
+})();
+
+if (typeof module === 'object' && module.exports) {
+  module.exports = clone;
+}
+
+}).call(this,require("buffer").Buffer)
+},{"buffer":68}],61:[function(require,module,exports){
+/**
+ * Augur contract method info.
+ */
+
+"use strict";
+
+var clone = require("clone");
+
+module.exports = function (network, contracts) {
+
+    contracts = contracts || require("./contracts")[network || "2"];
+    var api = clone(require("./api"));
+
+    for (var contract in api) {
+        if (!api.hasOwnProperty(contract)) continue;
+        for (var method in api[contract]) {
+            if (!api[contract].hasOwnProperty(method)) continue;
+            api[contract][method].to = contracts[contract];
+        }
+    }
+
+    return api;
+};
+
+},{"./api":56,"./contracts":57,"clone":60}],62:[function(require,module,exports){
 (function (global){
 var connector = global.connector || require("./");
 global.connector = connector;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./":62}],62:[function(require,module,exports){
+},{"./":63}],63:[function(require,module,exports){
 /**
  * Basic Ethereum connection tasks.
  * @author Jack Peterson (jack@tinybike.net)
@@ -17882,7 +21122,7 @@ module.exports = {
 
 };
 
-},{"async":63,"augur-contracts":6,"ethrpc":287}],63:[function(require,module,exports){
+},{"async":64,"augur-contracts":59,"ethrpc":288}],64:[function(require,module,exports){
 (function (process,global){
 /*!
  * async
@@ -19151,9 +22391,9 @@ module.exports = {
 }());
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":266}],64:[function(require,module,exports){
+},{"_process":267}],65:[function(require,module,exports){
 
-},{}],65:[function(require,module,exports){
+},{}],66:[function(require,module,exports){
 // http://wiki.commonjs.org/wiki/Unit_Testing/1.0
 //
 // THIS IS NOT TESTED NOR LIKELY TO WORK OUTSIDE V8!
@@ -19514,9 +22754,9 @@ var objectKeys = Object.keys || function (obj) {
   return keys;
 };
 
-},{"util/":284}],66:[function(require,module,exports){
-arguments[4][64][0].apply(exports,arguments)
-},{"dup":64}],67:[function(require,module,exports){
+},{"util/":285}],67:[function(require,module,exports){
+arguments[4][65][0].apply(exports,arguments)
+},{"dup":65}],68:[function(require,module,exports){
 (function (global){
 /*!
  * The buffer module from node.js, for the browser.
@@ -21068,7 +24308,7 @@ function blitBuffer (src, dst, offset, length) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"base64-js":68,"ieee754":69,"isarray":70}],68:[function(require,module,exports){
+},{"base64-js":69,"ieee754":70,"isarray":71}],69:[function(require,module,exports){
 var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
 ;(function (exports) {
@@ -21194,7 +24434,7 @@ var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 	exports.fromByteArray = uint8ToBase64
 }(typeof exports === 'undefined' ? (this.base64js = {}) : exports))
 
-},{}],69:[function(require,module,exports){
+},{}],70:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = nBytes * 8 - mLen - 1
@@ -21280,14 +24520,14 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],70:[function(require,module,exports){
+},{}],71:[function(require,module,exports){
 var toString = {}.toString;
 
 module.exports = Array.isArray || function (arr) {
   return toString.call(arr) == '[object Array]';
 };
 
-},{}],71:[function(require,module,exports){
+},{}],72:[function(require,module,exports){
 'use strict'
 
 exports.randomBytes = exports.rng = exports.pseudoRandomBytes = exports.prng = require('randombytes')
@@ -21366,7 +24606,7 @@ var publicEncrypt = require('public-encrypt')
   }
 })
 
-},{"browserify-cipher":72,"browserify-sign":102,"browserify-sign/algos":101,"create-ecdh":169,"create-hash":195,"create-hmac":208,"diffie-hellman":209,"pbkdf2":216,"public-encrypt":217,"randombytes":262}],72:[function(require,module,exports){
+},{"browserify-cipher":73,"browserify-sign":103,"browserify-sign/algos":102,"create-ecdh":170,"create-hash":196,"create-hmac":209,"diffie-hellman":210,"pbkdf2":217,"public-encrypt":218,"randombytes":263}],73:[function(require,module,exports){
 var ebtk = require('evp_bytestokey')
 var aes = require('browserify-aes/browser')
 var DES = require('browserify-des')
@@ -21441,7 +24681,7 @@ function getCiphers () {
 }
 exports.listCiphers = exports.getCiphers = getCiphers
 
-},{"browserify-aes/browser":75,"browserify-aes/modes":79,"browserify-des":90,"browserify-des/modes":91,"evp_bytestokey":100}],73:[function(require,module,exports){
+},{"browserify-aes/browser":76,"browserify-aes/modes":80,"browserify-des":91,"browserify-des/modes":92,"evp_bytestokey":101}],74:[function(require,module,exports){
 (function (Buffer){
 // based on the aes implimentation in triple sec
 // https://github.com/keybase/triplesec
@@ -21622,7 +24862,7 @@ AES.prototype._doCryptBlock = function (M, keySchedule, SUB_MIX, SBOX) {
 exports.AES = AES
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":67}],74:[function(require,module,exports){
+},{"buffer":68}],75:[function(require,module,exports){
 (function (Buffer){
 var aes = require('./aes')
 var Transform = require('cipher-base')
@@ -21723,7 +24963,7 @@ function xorTest (a, b) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"./aes":73,"./ghash":78,"buffer":67,"buffer-xor":87,"cipher-base":88,"inherits":264}],75:[function(require,module,exports){
+},{"./aes":74,"./ghash":79,"buffer":68,"buffer-xor":88,"cipher-base":89,"inherits":265}],76:[function(require,module,exports){
 var ciphers = require('./encrypter')
 exports.createCipher = exports.Cipher = ciphers.createCipher
 exports.createCipheriv = exports.Cipheriv = ciphers.createCipheriv
@@ -21736,7 +24976,7 @@ function getCiphers () {
 }
 exports.listCiphers = exports.getCiphers = getCiphers
 
-},{"./decrypter":76,"./encrypter":77,"./modes":79}],76:[function(require,module,exports){
+},{"./decrypter":77,"./encrypter":78,"./modes":80}],77:[function(require,module,exports){
 (function (Buffer){
 var aes = require('./aes')
 var Transform = require('cipher-base')
@@ -21877,7 +25117,7 @@ exports.createDecipher = createDecipher
 exports.createDecipheriv = createDecipheriv
 
 }).call(this,require("buffer").Buffer)
-},{"./aes":73,"./authCipher":74,"./modes":79,"./modes/cbc":80,"./modes/cfb":81,"./modes/cfb1":82,"./modes/cfb8":83,"./modes/ctr":84,"./modes/ecb":85,"./modes/ofb":86,"./streamCipher":89,"buffer":67,"cipher-base":88,"evp_bytestokey":100,"inherits":264}],77:[function(require,module,exports){
+},{"./aes":74,"./authCipher":75,"./modes":80,"./modes/cbc":81,"./modes/cfb":82,"./modes/cfb1":83,"./modes/cfb8":84,"./modes/ctr":85,"./modes/ecb":86,"./modes/ofb":87,"./streamCipher":90,"buffer":68,"cipher-base":89,"evp_bytestokey":101,"inherits":265}],78:[function(require,module,exports){
 (function (Buffer){
 var aes = require('./aes')
 var Transform = require('cipher-base')
@@ -22003,7 +25243,7 @@ exports.createCipheriv = createCipheriv
 exports.createCipher = createCipher
 
 }).call(this,require("buffer").Buffer)
-},{"./aes":73,"./authCipher":74,"./modes":79,"./modes/cbc":80,"./modes/cfb":81,"./modes/cfb1":82,"./modes/cfb8":83,"./modes/ctr":84,"./modes/ecb":85,"./modes/ofb":86,"./streamCipher":89,"buffer":67,"cipher-base":88,"evp_bytestokey":100,"inherits":264}],78:[function(require,module,exports){
+},{"./aes":74,"./authCipher":75,"./modes":80,"./modes/cbc":81,"./modes/cfb":82,"./modes/cfb1":83,"./modes/cfb8":84,"./modes/ctr":85,"./modes/ecb":86,"./modes/ofb":87,"./streamCipher":90,"buffer":68,"cipher-base":89,"evp_bytestokey":101,"inherits":265}],79:[function(require,module,exports){
 (function (Buffer){
 var zeros = new Buffer(16)
 zeros.fill(0)
@@ -22105,7 +25345,7 @@ function xor (a, b) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":67}],79:[function(require,module,exports){
+},{"buffer":68}],80:[function(require,module,exports){
 exports['aes-128-ecb'] = {
   cipher: 'AES',
   key: 128,
@@ -22278,7 +25518,7 @@ exports['aes-256-gcm'] = {
   type: 'auth'
 }
 
-},{}],80:[function(require,module,exports){
+},{}],81:[function(require,module,exports){
 var xor = require('buffer-xor')
 
 exports.encrypt = function (self, block) {
@@ -22297,7 +25537,7 @@ exports.decrypt = function (self, block) {
   return xor(out, pad)
 }
 
-},{"buffer-xor":87}],81:[function(require,module,exports){
+},{"buffer-xor":88}],82:[function(require,module,exports){
 (function (Buffer){
 var xor = require('buffer-xor')
 
@@ -22332,7 +25572,7 @@ function encryptStart (self, data, decrypt) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":67,"buffer-xor":87}],82:[function(require,module,exports){
+},{"buffer":68,"buffer-xor":88}],83:[function(require,module,exports){
 (function (Buffer){
 function encryptByte (self, byteParam, decrypt) {
   var pad
@@ -22370,7 +25610,7 @@ function shiftIn (buffer, value) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":67}],83:[function(require,module,exports){
+},{"buffer":68}],84:[function(require,module,exports){
 (function (Buffer){
 function encryptByte (self, byteParam, decrypt) {
   var pad = self._cipher.encryptBlock(self._prev)
@@ -22389,7 +25629,7 @@ exports.encrypt = function (self, chunk, decrypt) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":67}],84:[function(require,module,exports){
+},{"buffer":68}],85:[function(require,module,exports){
 (function (Buffer){
 var xor = require('buffer-xor')
 
@@ -22424,7 +25664,7 @@ exports.encrypt = function (self, chunk) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":67,"buffer-xor":87}],85:[function(require,module,exports){
+},{"buffer":68,"buffer-xor":88}],86:[function(require,module,exports){
 exports.encrypt = function (self, block) {
   return self._cipher.encryptBlock(block)
 }
@@ -22432,7 +25672,7 @@ exports.decrypt = function (self, block) {
   return self._cipher.decryptBlock(block)
 }
 
-},{}],86:[function(require,module,exports){
+},{}],87:[function(require,module,exports){
 (function (Buffer){
 var xor = require('buffer-xor')
 
@@ -22452,7 +25692,7 @@ exports.encrypt = function (self, chunk) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":67,"buffer-xor":87}],87:[function(require,module,exports){
+},{"buffer":68,"buffer-xor":88}],88:[function(require,module,exports){
 (function (Buffer){
 module.exports = function xor (a, b) {
   var length = Math.min(a.length, b.length)
@@ -22466,9 +25706,9 @@ module.exports = function xor (a, b) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":67}],88:[function(require,module,exports){
-arguments[4][15][0].apply(exports,arguments)
-},{"buffer":67,"dup":15,"inherits":264,"stream":281,"string_decoder":282}],89:[function(require,module,exports){
+},{"buffer":68}],89:[function(require,module,exports){
+arguments[4][10][0].apply(exports,arguments)
+},{"buffer":68,"dup":10,"inherits":265,"stream":282,"string_decoder":283}],90:[function(require,module,exports){
 (function (Buffer){
 var aes = require('./aes')
 var Transform = require('cipher-base')
@@ -22497,7 +25737,7 @@ StreamCipher.prototype._final = function () {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"./aes":73,"buffer":67,"cipher-base":88,"inherits":264}],90:[function(require,module,exports){
+},{"./aes":74,"buffer":68,"cipher-base":89,"inherits":265}],91:[function(require,module,exports){
 (function (Buffer){
 var CipherBase = require('cipher-base')
 var des = require('des.js')
@@ -22544,7 +25784,7 @@ DES.prototype._final = function () {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":67,"cipher-base":92,"des.js":93,"inherits":264}],91:[function(require,module,exports){
+},{"buffer":68,"cipher-base":93,"des.js":94,"inherits":265}],92:[function(require,module,exports){
 exports['des-ecb'] = {
   key: 8,
   iv: 0
@@ -22570,9 +25810,9 @@ exports['des-ede'] = {
   iv: 0
 }
 
-},{}],92:[function(require,module,exports){
-arguments[4][15][0].apply(exports,arguments)
-},{"buffer":67,"dup":15,"inherits":264,"stream":281,"string_decoder":282}],93:[function(require,module,exports){
+},{}],93:[function(require,module,exports){
+arguments[4][10][0].apply(exports,arguments)
+},{"buffer":68,"dup":10,"inherits":265,"stream":282,"string_decoder":283}],94:[function(require,module,exports){
 'use strict';
 
 exports.utils = require('./des/utils');
@@ -22581,7 +25821,7 @@ exports.DES = require('./des/des');
 exports.CBC = require('./des/cbc');
 exports.EDE = require('./des/ede');
 
-},{"./des/cbc":94,"./des/cipher":95,"./des/des":96,"./des/ede":97,"./des/utils":98}],94:[function(require,module,exports){
+},{"./des/cbc":95,"./des/cipher":96,"./des/des":97,"./des/ede":98,"./des/utils":99}],95:[function(require,module,exports){
 'use strict';
 
 var assert = require('minimalistic-assert');
@@ -22648,7 +25888,7 @@ proto._update = function _update(inp, inOff, out, outOff) {
   }
 };
 
-},{"inherits":264,"minimalistic-assert":99}],95:[function(require,module,exports){
+},{"inherits":265,"minimalistic-assert":100}],96:[function(require,module,exports){
 'use strict';
 
 var assert = require('minimalistic-assert');
@@ -22791,7 +26031,7 @@ Cipher.prototype._finalDecrypt = function _finalDecrypt() {
   return this._unpad(out);
 };
 
-},{"minimalistic-assert":99}],96:[function(require,module,exports){
+},{"minimalistic-assert":100}],97:[function(require,module,exports){
 'use strict';
 
 var assert = require('minimalistic-assert');
@@ -22936,7 +26176,7 @@ DES.prototype._decrypt = function _decrypt(state, lStart, rStart, out, off) {
   utils.rip(l, r, out, off);
 };
 
-},{"../des":93,"inherits":264,"minimalistic-assert":99}],97:[function(require,module,exports){
+},{"../des":94,"inherits":265,"minimalistic-assert":100}],98:[function(require,module,exports){
 'use strict';
 
 var assert = require('minimalistic-assert');
@@ -22993,7 +26233,7 @@ EDE.prototype._update = function _update(inp, inOff, out, outOff) {
 EDE.prototype._pad = DES.prototype._pad;
 EDE.prototype._unpad = DES.prototype._unpad;
 
-},{"../des":93,"inherits":264,"minimalistic-assert":99}],98:[function(require,module,exports){
+},{"../des":94,"inherits":265,"minimalistic-assert":100}],99:[function(require,module,exports){
 'use strict';
 
 exports.readUInt32BE = function readUInt32BE(bytes, off) {
@@ -23251,7 +26491,7 @@ exports.padSplit = function padSplit(num, size, group) {
   return out.join(' ');
 };
 
-},{}],99:[function(require,module,exports){
+},{}],100:[function(require,module,exports){
 module.exports = assert;
 
 function assert(val, msg) {
@@ -23264,7 +26504,7 @@ assert.equal = function assertEqual(l, r, msg) {
     throw new Error(msg || ('Assertion failed: ' + l + ' != ' + r));
 };
 
-},{}],100:[function(require,module,exports){
+},{}],101:[function(require,module,exports){
 (function (Buffer){
 var md5 = require('create-hash/md5')
 module.exports = EVP_BytesToKey
@@ -23336,7 +26576,7 @@ function EVP_BytesToKey (password, salt, keyLen, ivLen) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":67,"create-hash/md5":197}],101:[function(require,module,exports){
+},{"buffer":68,"create-hash/md5":198}],102:[function(require,module,exports){
 (function (Buffer){
 'use strict'
 exports['RSA-SHA224'] = exports.sha224WithRSAEncryption = {
@@ -23412,7 +26652,7 @@ exports['RSA-MD5'] = exports.md5WithRSAEncryption = {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":67}],102:[function(require,module,exports){
+},{"buffer":68}],103:[function(require,module,exports){
 (function (Buffer){
 var _algos = require('./algos')
 var createHash = require('create-hash')
@@ -23519,7 +26759,7 @@ module.exports = {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"./algos":101,"./sign":167,"./verify":168,"buffer":67,"create-hash":195,"inherits":264,"stream":281}],103:[function(require,module,exports){
+},{"./algos":102,"./sign":168,"./verify":169,"buffer":68,"create-hash":196,"inherits":265,"stream":282}],104:[function(require,module,exports){
 'use strict'
 exports['1.3.132.0.10'] = 'secp256k1'
 
@@ -23533,7 +26773,7 @@ exports['1.3.132.0.34'] = 'p384'
 
 exports['1.3.132.0.35'] = 'p521'
 
-},{}],104:[function(require,module,exports){
+},{}],105:[function(require,module,exports){
 (function (module, exports) {
   'use strict';
 
@@ -26955,7 +30195,7 @@ exports['1.3.132.0.35'] = 'p521'
   };
 })(typeof module === 'undefined' || module, this);
 
-},{}],105:[function(require,module,exports){
+},{}],106:[function(require,module,exports){
 (function (Buffer){
 var bn = require('bn.js');
 var randomBytes = require('randombytes');
@@ -26999,9 +30239,9 @@ function getr(priv) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"bn.js":104,"buffer":67,"randombytes":262}],106:[function(require,module,exports){
-arguments[4][36][0].apply(exports,arguments)
-},{"../package.json":129,"./elliptic/curve":109,"./elliptic/curves":112,"./elliptic/ec":113,"./elliptic/eddsa":116,"./elliptic/hmac-drbg":119,"./elliptic/utils":121,"brorand":122,"dup":36}],107:[function(require,module,exports){
+},{"bn.js":105,"buffer":68,"randombytes":263}],107:[function(require,module,exports){
+arguments[4][30][0].apply(exports,arguments)
+},{"../package.json":130,"./elliptic/curve":110,"./elliptic/curves":113,"./elliptic/ec":114,"./elliptic/eddsa":117,"./elliptic/hmac-drbg":120,"./elliptic/utils":122,"brorand":123,"dup":30}],108:[function(require,module,exports){
 'use strict';
 
 var BN = require('bn.js');
@@ -27354,25 +30594,1742 @@ BasePoint.prototype.dblp = function dblp(k) {
   return r;
 };
 
-},{"../../elliptic":106,"bn.js":104}],108:[function(require,module,exports){
+},{"../../elliptic":107,"bn.js":105}],109:[function(require,module,exports){
+'use strict';
+
+var curve = require('../curve');
+var elliptic = require('../../elliptic');
+var BN = require('bn.js');
+var inherits = require('inherits');
+var Base = curve.base;
+
+var assert = elliptic.utils.assert;
+
+function EdwardsCurve(conf) {
+  // NOTE: Important as we are creating point in Base.call()
+  this.twisted = (conf.a | 0) !== 1;
+  this.mOneA = this.twisted && (conf.a | 0) === -1;
+  this.extended = this.mOneA;
+
+  Base.call(this, 'edwards', conf);
+
+  this.a = new BN(conf.a, 16).umod(this.red.m);
+  this.a = this.a.toRed(this.red);
+  this.c = new BN(conf.c, 16).toRed(this.red);
+  this.c2 = this.c.redSqr();
+  this.d = new BN(conf.d, 16).toRed(this.red);
+  this.dd = this.d.redAdd(this.d);
+
+  assert(!this.twisted || this.c.fromRed().cmpn(1) === 0);
+  this.oneC = (conf.c | 0) === 1;
+}
+inherits(EdwardsCurve, Base);
+module.exports = EdwardsCurve;
+
+EdwardsCurve.prototype._mulA = function _mulA(num) {
+  if (this.mOneA)
+    return num.redNeg();
+  else
+    return this.a.redMul(num);
+};
+
+EdwardsCurve.prototype._mulC = function _mulC(num) {
+  if (this.oneC)
+    return num;
+  else
+    return this.c.redMul(num);
+};
+
+// Just for compatibility with Short curve
+EdwardsCurve.prototype.jpoint = function jpoint(x, y, z, t) {
+  return this.point(x, y, z, t);
+};
+
+EdwardsCurve.prototype.pointFromX = function pointFromX(x, odd) {
+  x = new BN(x, 16);
+  if (!x.red)
+    x = x.toRed(this.red);
+
+  var x2 = x.redSqr();
+  var rhs = this.c2.redSub(this.a.redMul(x2));
+  var lhs = this.one.redSub(this.c2.redMul(this.d).redMul(x2));
+
+  var y2 = rhs.redMul(lhs.redInvm());
+  var y = y2.redSqrt();
+  if (y.redSqr().redSub(y2).cmp(this.zero) !== 0)
+    throw new Error('invalid point');
+
+  var isOdd = y.fromRed().isOdd();
+  if (odd && !isOdd || !odd && isOdd)
+    y = y.redNeg();
+
+  return this.point(x, y);
+};
+
+EdwardsCurve.prototype.pointFromY = function pointFromY(y, odd) {
+  y = new BN(y, 16);
+  if (!y.red)
+    y = y.toRed(this.red);
+
+  // x^2 = (y^2 - 1) / (d y^2 + 1)
+  var y2 = y.redSqr();
+  var lhs = y2.redSub(this.one);
+  var rhs = y2.redMul(this.d).redAdd(this.one);
+  var x2 = lhs.redMul(rhs.redInvm());
+
+  if (x2.cmp(this.zero) === 0) {
+    if (odd)
+      throw new Error('invalid point');
+    else
+      return this.point(this.zero, y);
+  }
+
+  var x = x2.redSqrt();
+  if (x.redSqr().redSub(x2).cmp(this.zero) !== 0)
+    throw new Error('invalid point');
+
+  if (x.isOdd() !== odd)
+    x = x.redNeg();
+
+  return this.point(x, y);
+};
+
+EdwardsCurve.prototype.validate = function validate(point) {
+  if (point.isInfinity())
+    return true;
+
+  // Curve: A * X^2 + Y^2 = C^2 * (1 + D * X^2 * Y^2)
+  point.normalize();
+
+  var x2 = point.x.redSqr();
+  var y2 = point.y.redSqr();
+  var lhs = x2.redMul(this.a).redAdd(y2);
+  var rhs = this.c2.redMul(this.one.redAdd(this.d.redMul(x2).redMul(y2)));
+
+  return lhs.cmp(rhs) === 0;
+};
+
+function Point(curve, x, y, z, t) {
+  Base.BasePoint.call(this, curve, 'projective');
+  if (x === null && y === null && z === null) {
+    this.x = this.curve.zero;
+    this.y = this.curve.one;
+    this.z = this.curve.one;
+    this.t = this.curve.zero;
+    this.zOne = true;
+  } else {
+    this.x = new BN(x, 16);
+    this.y = new BN(y, 16);
+    this.z = z ? new BN(z, 16) : this.curve.one;
+    this.t = t && new BN(t, 16);
+    if (!this.x.red)
+      this.x = this.x.toRed(this.curve.red);
+    if (!this.y.red)
+      this.y = this.y.toRed(this.curve.red);
+    if (!this.z.red)
+      this.z = this.z.toRed(this.curve.red);
+    if (this.t && !this.t.red)
+      this.t = this.t.toRed(this.curve.red);
+    this.zOne = this.z === this.curve.one;
+
+    // Use extended coordinates
+    if (this.curve.extended && !this.t) {
+      this.t = this.x.redMul(this.y);
+      if (!this.zOne)
+        this.t = this.t.redMul(this.z.redInvm());
+    }
+  }
+}
+inherits(Point, Base.BasePoint);
+
+EdwardsCurve.prototype.pointFromJSON = function pointFromJSON(obj) {
+  return Point.fromJSON(this, obj);
+};
+
+EdwardsCurve.prototype.point = function point(x, y, z, t) {
+  return new Point(this, x, y, z, t);
+};
+
+Point.fromJSON = function fromJSON(curve, obj) {
+  return new Point(curve, obj[0], obj[1], obj[2]);
+};
+
+Point.prototype.inspect = function inspect() {
+  if (this.isInfinity())
+    return '<EC Point Infinity>';
+  return '<EC Point x: ' + this.x.fromRed().toString(16, 2) +
+      ' y: ' + this.y.fromRed().toString(16, 2) +
+      ' z: ' + this.z.fromRed().toString(16, 2) + '>';
+};
+
+Point.prototype.isInfinity = function isInfinity() {
+  // XXX This code assumes that zero is always zero in red
+  return this.x.cmpn(0) === 0 &&
+         this.y.cmp(this.z) === 0;
+};
+
+Point.prototype._extDbl = function _extDbl() {
+  // hyperelliptic.org/EFD/g1p/auto-twisted-extended-1.html
+  //     #doubling-dbl-2008-hwcd
+  // 4M + 4S
+
+  // A = X1^2
+  var a = this.x.redSqr();
+  // B = Y1^2
+  var b = this.y.redSqr();
+  // C = 2 * Z1^2
+  var c = this.z.redSqr();
+  c = c.redIAdd(c);
+  // D = a * A
+  var d = this.curve._mulA(a);
+  // E = (X1 + Y1)^2 - A - B
+  var e = this.x.redAdd(this.y).redSqr().redISub(a).redISub(b);
+  // G = D + B
+  var g = d.redAdd(b);
+  // F = G - C
+  var f = g.redSub(c);
+  // H = D - B
+  var h = d.redSub(b);
+  // X3 = E * F
+  var nx = e.redMul(f);
+  // Y3 = G * H
+  var ny = g.redMul(h);
+  // T3 = E * H
+  var nt = e.redMul(h);
+  // Z3 = F * G
+  var nz = f.redMul(g);
+  return this.curve.point(nx, ny, nz, nt);
+};
+
+Point.prototype._projDbl = function _projDbl() {
+  // hyperelliptic.org/EFD/g1p/auto-twisted-projective.html
+  //     #doubling-dbl-2008-bbjlp
+  //     #doubling-dbl-2007-bl
+  // and others
+  // Generally 3M + 4S or 2M + 4S
+
+  // B = (X1 + Y1)^2
+  var b = this.x.redAdd(this.y).redSqr();
+  // C = X1^2
+  var c = this.x.redSqr();
+  // D = Y1^2
+  var d = this.y.redSqr();
+
+  var nx;
+  var ny;
+  var nz;
+  if (this.curve.twisted) {
+    // E = a * C
+    var e = this.curve._mulA(c);
+    // F = E + D
+    var f = e.redAdd(d);
+    if (this.zOne) {
+      // X3 = (B - C - D) * (F - 2)
+      nx = b.redSub(c).redSub(d).redMul(f.redSub(this.curve.two));
+      // Y3 = F * (E - D)
+      ny = f.redMul(e.redSub(d));
+      // Z3 = F^2 - 2 * F
+      nz = f.redSqr().redSub(f).redSub(f);
+    } else {
+      // H = Z1^2
+      var h = this.z.redSqr();
+      // J = F - 2 * H
+      var j = f.redSub(h).redISub(h);
+      // X3 = (B-C-D)*J
+      nx = b.redSub(c).redISub(d).redMul(j);
+      // Y3 = F * (E - D)
+      ny = f.redMul(e.redSub(d));
+      // Z3 = F * J
+      nz = f.redMul(j);
+    }
+  } else {
+    // E = C + D
+    var e = c.redAdd(d);
+    // H = (c * Z1)^2
+    var h = this.curve._mulC(this.c.redMul(this.z)).redSqr();
+    // J = E - 2 * H
+    var j = e.redSub(h).redSub(h);
+    // X3 = c * (B - E) * J
+    nx = this.curve._mulC(b.redISub(e)).redMul(j);
+    // Y3 = c * E * (C - D)
+    ny = this.curve._mulC(e).redMul(c.redISub(d));
+    // Z3 = E * J
+    nz = e.redMul(j);
+  }
+  return this.curve.point(nx, ny, nz);
+};
+
+Point.prototype.dbl = function dbl() {
+  if (this.isInfinity())
+    return this;
+
+  // Double in extended coordinates
+  if (this.curve.extended)
+    return this._extDbl();
+  else
+    return this._projDbl();
+};
+
+Point.prototype._extAdd = function _extAdd(p) {
+  // hyperelliptic.org/EFD/g1p/auto-twisted-extended-1.html
+  //     #addition-add-2008-hwcd-3
+  // 8M
+
+  // A = (Y1 - X1) * (Y2 - X2)
+  var a = this.y.redSub(this.x).redMul(p.y.redSub(p.x));
+  // B = (Y1 + X1) * (Y2 + X2)
+  var b = this.y.redAdd(this.x).redMul(p.y.redAdd(p.x));
+  // C = T1 * k * T2
+  var c = this.t.redMul(this.curve.dd).redMul(p.t);
+  // D = Z1 * 2 * Z2
+  var d = this.z.redMul(p.z.redAdd(p.z));
+  // E = B - A
+  var e = b.redSub(a);
+  // F = D - C
+  var f = d.redSub(c);
+  // G = D + C
+  var g = d.redAdd(c);
+  // H = B + A
+  var h = b.redAdd(a);
+  // X3 = E * F
+  var nx = e.redMul(f);
+  // Y3 = G * H
+  var ny = g.redMul(h);
+  // T3 = E * H
+  var nt = e.redMul(h);
+  // Z3 = F * G
+  var nz = f.redMul(g);
+  return this.curve.point(nx, ny, nz, nt);
+};
+
+Point.prototype._projAdd = function _projAdd(p) {
+  // hyperelliptic.org/EFD/g1p/auto-twisted-projective.html
+  //     #addition-add-2008-bbjlp
+  //     #addition-add-2007-bl
+  // 10M + 1S
+
+  // A = Z1 * Z2
+  var a = this.z.redMul(p.z);
+  // B = A^2
+  var b = a.redSqr();
+  // C = X1 * X2
+  var c = this.x.redMul(p.x);
+  // D = Y1 * Y2
+  var d = this.y.redMul(p.y);
+  // E = d * C * D
+  var e = this.curve.d.redMul(c).redMul(d);
+  // F = B - E
+  var f = b.redSub(e);
+  // G = B + E
+  var g = b.redAdd(e);
+  // X3 = A * F * ((X1 + Y1) * (X2 + Y2) - C - D)
+  var tmp = this.x.redAdd(this.y).redMul(p.x.redAdd(p.y)).redISub(c).redISub(d);
+  var nx = a.redMul(f).redMul(tmp);
+  var ny;
+  var nz;
+  if (this.curve.twisted) {
+    // Y3 = A * G * (D - a * C)
+    ny = a.redMul(g).redMul(d.redSub(this.curve._mulA(c)));
+    // Z3 = F * G
+    nz = f.redMul(g);
+  } else {
+    // Y3 = A * G * (D - C)
+    ny = a.redMul(g).redMul(d.redSub(c));
+    // Z3 = c * F * G
+    nz = this.curve._mulC(f).redMul(g);
+  }
+  return this.curve.point(nx, ny, nz);
+};
+
+Point.prototype.add = function add(p) {
+  if (this.isInfinity())
+    return p;
+  if (p.isInfinity())
+    return this;
+
+  if (this.curve.extended)
+    return this._extAdd(p);
+  else
+    return this._projAdd(p);
+};
+
+Point.prototype.mul = function mul(k) {
+  if (this._hasDoubles(k))
+    return this.curve._fixedNafMul(this, k);
+  else
+    return this.curve._wnafMul(this, k);
+};
+
+Point.prototype.mulAdd = function mulAdd(k1, p, k2) {
+  return this.curve._wnafMulAdd(1, [ this, p ], [ k1, k2 ], 2);
+};
+
+Point.prototype.normalize = function normalize() {
+  if (this.zOne)
+    return this;
+
+  // Normalize coordinates
+  var zi = this.z.redInvm();
+  this.x = this.x.redMul(zi);
+  this.y = this.y.redMul(zi);
+  if (this.t)
+    this.t = this.t.redMul(zi);
+  this.z = this.curve.one;
+  this.zOne = true;
+  return this;
+};
+
+Point.prototype.neg = function neg() {
+  return this.curve.point(this.x.redNeg(),
+                          this.y,
+                          this.z,
+                          this.t && this.t.redNeg());
+};
+
+Point.prototype.getX = function getX() {
+  this.normalize();
+  return this.x.fromRed();
+};
+
+Point.prototype.getY = function getY() {
+  this.normalize();
+  return this.y.fromRed();
+};
+
+Point.prototype.eq = function eq(other) {
+  return this === other ||
+         this.getX().cmp(other.getX()) === 0 &&
+         this.getY().cmp(other.getY()) === 0;
+};
+
+// Compatibility with BaseCurve
+Point.prototype.toP = Point.prototype.normalize;
+Point.prototype.mixedAdd = Point.prototype.add;
+
+},{"../../elliptic":107,"../curve":110,"bn.js":105,"inherits":265}],110:[function(require,module,exports){
+arguments[4][33][0].apply(exports,arguments)
+},{"./base":108,"./edwards":109,"./mont":111,"./short":112,"dup":33}],111:[function(require,module,exports){
+'use strict';
+
+var curve = require('../curve');
+var BN = require('bn.js');
+var inherits = require('inherits');
+var Base = curve.base;
+
+var elliptic = require('../../elliptic');
+var utils = elliptic.utils;
+
+function MontCurve(conf) {
+  Base.call(this, 'mont', conf);
+
+  this.a = new BN(conf.a, 16).toRed(this.red);
+  this.b = new BN(conf.b, 16).toRed(this.red);
+  this.i4 = new BN(4).toRed(this.red).redInvm();
+  this.two = new BN(2).toRed(this.red);
+  this.a24 = this.i4.redMul(this.a.redAdd(this.two));
+}
+inherits(MontCurve, Base);
+module.exports = MontCurve;
+
+MontCurve.prototype.validate = function validate(point) {
+  var x = point.normalize().x;
+  var x2 = x.redSqr();
+  var rhs = x2.redMul(x).redAdd(x2.redMul(this.a)).redAdd(x);
+  var y = rhs.redSqrt();
+
+  return y.redSqr().cmp(rhs) === 0;
+};
+
+function Point(curve, x, z) {
+  Base.BasePoint.call(this, curve, 'projective');
+  if (x === null && z === null) {
+    this.x = this.curve.one;
+    this.z = this.curve.zero;
+  } else {
+    this.x = new BN(x, 16);
+    this.z = new BN(z, 16);
+    if (!this.x.red)
+      this.x = this.x.toRed(this.curve.red);
+    if (!this.z.red)
+      this.z = this.z.toRed(this.curve.red);
+  }
+}
+inherits(Point, Base.BasePoint);
+
+MontCurve.prototype.decodePoint = function decodePoint(bytes, enc) {
+  return this.point(utils.toArray(bytes, enc), 1);
+};
+
+MontCurve.prototype.point = function point(x, z) {
+  return new Point(this, x, z);
+};
+
+MontCurve.prototype.pointFromJSON = function pointFromJSON(obj) {
+  return Point.fromJSON(this, obj);
+};
+
+Point.prototype.precompute = function precompute() {
+  // No-op
+};
+
+Point.prototype._encode = function _encode() {
+  return this.getX().toArray('be', this.curve.p.byteLength());
+};
+
+Point.fromJSON = function fromJSON(curve, obj) {
+  return new Point(curve, obj[0], obj[1] || curve.one);
+};
+
+Point.prototype.inspect = function inspect() {
+  if (this.isInfinity())
+    return '<EC Point Infinity>';
+  return '<EC Point x: ' + this.x.fromRed().toString(16, 2) +
+      ' z: ' + this.z.fromRed().toString(16, 2) + '>';
+};
+
+Point.prototype.isInfinity = function isInfinity() {
+  // XXX This code assumes that zero is always zero in red
+  return this.z.cmpn(0) === 0;
+};
+
+Point.prototype.dbl = function dbl() {
+  // http://hyperelliptic.org/EFD/g1p/auto-montgom-xz.html#doubling-dbl-1987-m-3
+  // 2M + 2S + 4A
+
+  // A = X1 + Z1
+  var a = this.x.redAdd(this.z);
+  // AA = A^2
+  var aa = a.redSqr();
+  // B = X1 - Z1
+  var b = this.x.redSub(this.z);
+  // BB = B^2
+  var bb = b.redSqr();
+  // C = AA - BB
+  var c = aa.redSub(bb);
+  // X3 = AA * BB
+  var nx = aa.redMul(bb);
+  // Z3 = C * (BB + A24 * C)
+  var nz = c.redMul(bb.redAdd(this.curve.a24.redMul(c)));
+  return this.curve.point(nx, nz);
+};
+
+Point.prototype.add = function add() {
+  throw new Error('Not supported on Montgomery curve');
+};
+
+Point.prototype.diffAdd = function diffAdd(p, diff) {
+  // http://hyperelliptic.org/EFD/g1p/auto-montgom-xz.html#diffadd-dadd-1987-m-3
+  // 4M + 2S + 6A
+
+  // A = X2 + Z2
+  var a = this.x.redAdd(this.z);
+  // B = X2 - Z2
+  var b = this.x.redSub(this.z);
+  // C = X3 + Z3
+  var c = p.x.redAdd(p.z);
+  // D = X3 - Z3
+  var d = p.x.redSub(p.z);
+  // DA = D * A
+  var da = d.redMul(a);
+  // CB = C * B
+  var cb = c.redMul(b);
+  // X5 = Z1 * (DA + CB)^2
+  var nx = diff.z.redMul(da.redAdd(cb).redSqr());
+  // Z5 = X1 * (DA - CB)^2
+  var nz = diff.x.redMul(da.redISub(cb).redSqr());
+  return this.curve.point(nx, nz);
+};
+
+Point.prototype.mul = function mul(k) {
+  var t = k.clone();
+  var a = this; // (N / 2) * Q + Q
+  var b = this.curve.point(null, null); // (N / 2) * Q
+  var c = this; // Q
+
+  for (var bits = []; t.cmpn(0) !== 0; t.iushrn(1))
+    bits.push(t.andln(1));
+
+  for (var i = bits.length - 1; i >= 0; i--) {
+    if (bits[i] === 0) {
+      // N * Q + Q = ((N / 2) * Q + Q)) + (N / 2) * Q
+      a = a.diffAdd(b, c);
+      // N * Q = 2 * ((N / 2) * Q + Q))
+      b = b.dbl();
+    } else {
+      // N * Q = ((N / 2) * Q + Q) + ((N / 2) * Q)
+      b = a.diffAdd(b, c);
+      // N * Q + Q = 2 * ((N / 2) * Q + Q)
+      a = a.dbl();
+    }
+  }
+  return b;
+};
+
+Point.prototype.mulAdd = function mulAdd() {
+  throw new Error('Not supported on Montgomery curve');
+};
+
+Point.prototype.eq = function eq(other) {
+  return this.getX().cmp(other.getX()) === 0;
+};
+
+Point.prototype.normalize = function normalize() {
+  this.x = this.x.redMul(this.z.redInvm());
+  this.z = this.curve.one;
+  return this;
+};
+
+Point.prototype.getX = function getX() {
+  // Normalize coordinates
+  this.normalize();
+
+  return this.x.fromRed();
+};
+
+},{"../../elliptic":107,"../curve":110,"bn.js":105,"inherits":265}],112:[function(require,module,exports){
+'use strict';
+
+var curve = require('../curve');
+var elliptic = require('../../elliptic');
+var BN = require('bn.js');
+var inherits = require('inherits');
+var Base = curve.base;
+
+var assert = elliptic.utils.assert;
+
+function ShortCurve(conf) {
+  Base.call(this, 'short', conf);
+
+  this.a = new BN(conf.a, 16).toRed(this.red);
+  this.b = new BN(conf.b, 16).toRed(this.red);
+  this.tinv = this.two.redInvm();
+
+  this.zeroA = this.a.fromRed().cmpn(0) === 0;
+  this.threeA = this.a.fromRed().sub(this.p).cmpn(-3) === 0;
+
+  // If the curve is endomorphic, precalculate beta and lambda
+  this.endo = this._getEndomorphism(conf);
+  this._endoWnafT1 = new Array(4);
+  this._endoWnafT2 = new Array(4);
+}
+inherits(ShortCurve, Base);
+module.exports = ShortCurve;
+
+ShortCurve.prototype._getEndomorphism = function _getEndomorphism(conf) {
+  // No efficient endomorphism
+  if (!this.zeroA || !this.g || !this.n || this.p.modn(3) !== 1)
+    return;
+
+  // Compute beta and lambda, that lambda * P = (beta * Px; Py)
+  var beta;
+  var lambda;
+  if (conf.beta) {
+    beta = new BN(conf.beta, 16).toRed(this.red);
+  } else {
+    var betas = this._getEndoRoots(this.p);
+    // Choose the smallest beta
+    beta = betas[0].cmp(betas[1]) < 0 ? betas[0] : betas[1];
+    beta = beta.toRed(this.red);
+  }
+  if (conf.lambda) {
+    lambda = new BN(conf.lambda, 16);
+  } else {
+    // Choose the lambda that is matching selected beta
+    var lambdas = this._getEndoRoots(this.n);
+    if (this.g.mul(lambdas[0]).x.cmp(this.g.x.redMul(beta)) === 0) {
+      lambda = lambdas[0];
+    } else {
+      lambda = lambdas[1];
+      assert(this.g.mul(lambda).x.cmp(this.g.x.redMul(beta)) === 0);
+    }
+  }
+
+  // Get basis vectors, used for balanced length-two representation
+  var basis;
+  if (conf.basis) {
+    basis = conf.basis.map(function(vec) {
+      return {
+        a: new BN(vec.a, 16),
+        b: new BN(vec.b, 16)
+      };
+    });
+  } else {
+    basis = this._getEndoBasis(lambda);
+  }
+
+  return {
+    beta: beta,
+    lambda: lambda,
+    basis: basis
+  };
+};
+
+ShortCurve.prototype._getEndoRoots = function _getEndoRoots(num) {
+  // Find roots of for x^2 + x + 1 in F
+  // Root = (-1 +- Sqrt(-3)) / 2
+  //
+  var red = num === this.p ? this.red : BN.mont(num);
+  var tinv = new BN(2).toRed(red).redInvm();
+  var ntinv = tinv.redNeg();
+
+  var s = new BN(3).toRed(red).redNeg().redSqrt().redMul(tinv);
+
+  var l1 = ntinv.redAdd(s).fromRed();
+  var l2 = ntinv.redSub(s).fromRed();
+  return [ l1, l2 ];
+};
+
+ShortCurve.prototype._getEndoBasis = function _getEndoBasis(lambda) {
+  // aprxSqrt >= sqrt(this.n)
+  var aprxSqrt = this.n.ushrn(Math.floor(this.n.bitLength() / 2));
+
+  // 3.74
+  // Run EGCD, until r(L + 1) < aprxSqrt
+  var u = lambda;
+  var v = this.n.clone();
+  var x1 = new BN(1);
+  var y1 = new BN(0);
+  var x2 = new BN(0);
+  var y2 = new BN(1);
+
+  // NOTE: all vectors are roots of: a + b * lambda = 0 (mod n)
+  var a0;
+  var b0;
+  // First vector
+  var a1;
+  var b1;
+  // Second vector
+  var a2;
+  var b2;
+
+  var prevR;
+  var i = 0;
+  var r;
+  var x;
+  while (u.cmpn(0) !== 0) {
+    var q = v.div(u);
+    r = v.sub(q.mul(u));
+    x = x2.sub(q.mul(x1));
+    var y = y2.sub(q.mul(y1));
+
+    if (!a1 && r.cmp(aprxSqrt) < 0) {
+      a0 = prevR.neg();
+      b0 = x1;
+      a1 = r.neg();
+      b1 = x;
+    } else if (a1 && ++i === 2) {
+      break;
+    }
+    prevR = r;
+
+    v = u;
+    u = r;
+    x2 = x1;
+    x1 = x;
+    y2 = y1;
+    y1 = y;
+  }
+  a2 = r.neg();
+  b2 = x;
+
+  var len1 = a1.sqr().add(b1.sqr());
+  var len2 = a2.sqr().add(b2.sqr());
+  if (len2.cmp(len1) >= 0) {
+    a2 = a0;
+    b2 = b0;
+  }
+
+  // Normalize signs
+  if (a1.negative) {
+    a1 = a1.neg();
+    b1 = b1.neg();
+  }
+  if (a2.negative) {
+    a2 = a2.neg();
+    b2 = b2.neg();
+  }
+
+  return [
+    { a: a1, b: b1 },
+    { a: a2, b: b2 }
+  ];
+};
+
+ShortCurve.prototype._endoSplit = function _endoSplit(k) {
+  var basis = this.endo.basis;
+  var v1 = basis[0];
+  var v2 = basis[1];
+
+  var c1 = v2.b.mul(k).divRound(this.n);
+  var c2 = v1.b.neg().mul(k).divRound(this.n);
+
+  var p1 = c1.mul(v1.a);
+  var p2 = c2.mul(v2.a);
+  var q1 = c1.mul(v1.b);
+  var q2 = c2.mul(v2.b);
+
+  // Calculate answer
+  var k1 = k.sub(p1).sub(p2);
+  var k2 = q1.add(q2).neg();
+  return { k1: k1, k2: k2 };
+};
+
+ShortCurve.prototype.pointFromX = function pointFromX(x, odd) {
+  x = new BN(x, 16);
+  if (!x.red)
+    x = x.toRed(this.red);
+
+  var y2 = x.redSqr().redMul(x).redIAdd(x.redMul(this.a)).redIAdd(this.b);
+  var y = y2.redSqrt();
+  if (y.redSqr().redSub(y2).cmp(this.zero) !== 0)
+    throw new Error('invalid point');
+
+  // XXX Is there any way to tell if the number is odd without converting it
+  // to non-red form?
+  var isOdd = y.fromRed().isOdd();
+  if (odd && !isOdd || !odd && isOdd)
+    y = y.redNeg();
+
+  return this.point(x, y);
+};
+
+ShortCurve.prototype.validate = function validate(point) {
+  if (point.inf)
+    return true;
+
+  var x = point.x;
+  var y = point.y;
+
+  var ax = this.a.redMul(x);
+  var rhs = x.redSqr().redMul(x).redIAdd(ax).redIAdd(this.b);
+  return y.redSqr().redISub(rhs).cmpn(0) === 0;
+};
+
+ShortCurve.prototype._endoWnafMulAdd =
+    function _endoWnafMulAdd(points, coeffs) {
+  var npoints = this._endoWnafT1;
+  var ncoeffs = this._endoWnafT2;
+  for (var i = 0; i < points.length; i++) {
+    var split = this._endoSplit(coeffs[i]);
+    var p = points[i];
+    var beta = p._getBeta();
+
+    if (split.k1.negative) {
+      split.k1.ineg();
+      p = p.neg(true);
+    }
+    if (split.k2.negative) {
+      split.k2.ineg();
+      beta = beta.neg(true);
+    }
+
+    npoints[i * 2] = p;
+    npoints[i * 2 + 1] = beta;
+    ncoeffs[i * 2] = split.k1;
+    ncoeffs[i * 2 + 1] = split.k2;
+  }
+  var res = this._wnafMulAdd(1, npoints, ncoeffs, i * 2);
+
+  // Clean-up references to points and coefficients
+  for (var j = 0; j < i * 2; j++) {
+    npoints[j] = null;
+    ncoeffs[j] = null;
+  }
+  return res;
+};
+
+function Point(curve, x, y, isRed) {
+  Base.BasePoint.call(this, curve, 'affine');
+  if (x === null && y === null) {
+    this.x = null;
+    this.y = null;
+    this.inf = true;
+  } else {
+    this.x = new BN(x, 16);
+    this.y = new BN(y, 16);
+    // Force redgomery representation when loading from JSON
+    if (isRed) {
+      this.x.forceRed(this.curve.red);
+      this.y.forceRed(this.curve.red);
+    }
+    if (!this.x.red)
+      this.x = this.x.toRed(this.curve.red);
+    if (!this.y.red)
+      this.y = this.y.toRed(this.curve.red);
+    this.inf = false;
+  }
+}
+inherits(Point, Base.BasePoint);
+
+ShortCurve.prototype.point = function point(x, y, isRed) {
+  return new Point(this, x, y, isRed);
+};
+
+ShortCurve.prototype.pointFromJSON = function pointFromJSON(obj, red) {
+  return Point.fromJSON(this, obj, red);
+};
+
+Point.prototype._getBeta = function _getBeta() {
+  if (!this.curve.endo)
+    return;
+
+  var pre = this.precomputed;
+  if (pre && pre.beta)
+    return pre.beta;
+
+  var beta = this.curve.point(this.x.redMul(this.curve.endo.beta), this.y);
+  if (pre) {
+    var curve = this.curve;
+    var endoMul = function(p) {
+      return curve.point(p.x.redMul(curve.endo.beta), p.y);
+    };
+    pre.beta = beta;
+    beta.precomputed = {
+      beta: null,
+      naf: pre.naf && {
+        wnd: pre.naf.wnd,
+        points: pre.naf.points.map(endoMul)
+      },
+      doubles: pre.doubles && {
+        step: pre.doubles.step,
+        points: pre.doubles.points.map(endoMul)
+      }
+    };
+  }
+  return beta;
+};
+
+Point.prototype.toJSON = function toJSON() {
+  if (!this.precomputed)
+    return [ this.x, this.y ];
+
+  return [ this.x, this.y, this.precomputed && {
+    doubles: this.precomputed.doubles && {
+      step: this.precomputed.doubles.step,
+      points: this.precomputed.doubles.points.slice(1)
+    },
+    naf: this.precomputed.naf && {
+      wnd: this.precomputed.naf.wnd,
+      points: this.precomputed.naf.points.slice(1)
+    }
+  } ];
+};
+
+Point.fromJSON = function fromJSON(curve, obj, red) {
+  if (typeof obj === 'string')
+    obj = JSON.parse(obj);
+  var res = curve.point(obj[0], obj[1], red);
+  if (!obj[2])
+    return res;
+
+  function obj2point(obj) {
+    return curve.point(obj[0], obj[1], red);
+  }
+
+  var pre = obj[2];
+  res.precomputed = {
+    beta: null,
+    doubles: pre.doubles && {
+      step: pre.doubles.step,
+      points: [ res ].concat(pre.doubles.points.map(obj2point))
+    },
+    naf: pre.naf && {
+      wnd: pre.naf.wnd,
+      points: [ res ].concat(pre.naf.points.map(obj2point))
+    }
+  };
+  return res;
+};
+
+Point.prototype.inspect = function inspect() {
+  if (this.isInfinity())
+    return '<EC Point Infinity>';
+  return '<EC Point x: ' + this.x.fromRed().toString(16, 2) +
+      ' y: ' + this.y.fromRed().toString(16, 2) + '>';
+};
+
+Point.prototype.isInfinity = function isInfinity() {
+  return this.inf;
+};
+
+Point.prototype.add = function add(p) {
+  // O + P = P
+  if (this.inf)
+    return p;
+
+  // P + O = P
+  if (p.inf)
+    return this;
+
+  // P + P = 2P
+  if (this.eq(p))
+    return this.dbl();
+
+  // P + (-P) = O
+  if (this.neg().eq(p))
+    return this.curve.point(null, null);
+
+  // P + Q = O
+  if (this.x.cmp(p.x) === 0)
+    return this.curve.point(null, null);
+
+  var c = this.y.redSub(p.y);
+  if (c.cmpn(0) !== 0)
+    c = c.redMul(this.x.redSub(p.x).redInvm());
+  var nx = c.redSqr().redISub(this.x).redISub(p.x);
+  var ny = c.redMul(this.x.redSub(nx)).redISub(this.y);
+  return this.curve.point(nx, ny);
+};
+
+Point.prototype.dbl = function dbl() {
+  if (this.inf)
+    return this;
+
+  // 2P = O
+  var ys1 = this.y.redAdd(this.y);
+  if (ys1.cmpn(0) === 0)
+    return this.curve.point(null, null);
+
+  var a = this.curve.a;
+
+  var x2 = this.x.redSqr();
+  var dyinv = ys1.redInvm();
+  var c = x2.redAdd(x2).redIAdd(x2).redIAdd(a).redMul(dyinv);
+
+  var nx = c.redSqr().redISub(this.x.redAdd(this.x));
+  var ny = c.redMul(this.x.redSub(nx)).redISub(this.y);
+  return this.curve.point(nx, ny);
+};
+
+Point.prototype.getX = function getX() {
+  return this.x.fromRed();
+};
+
+Point.prototype.getY = function getY() {
+  return this.y.fromRed();
+};
+
+Point.prototype.mul = function mul(k) {
+  k = new BN(k, 16);
+
+  if (this._hasDoubles(k))
+    return this.curve._fixedNafMul(this, k);
+  else if (this.curve.endo)
+    return this.curve._endoWnafMulAdd([ this ], [ k ]);
+  else
+    return this.curve._wnafMul(this, k);
+};
+
+Point.prototype.mulAdd = function mulAdd(k1, p2, k2) {
+  var points = [ this, p2 ];
+  var coeffs = [ k1, k2 ];
+  if (this.curve.endo)
+    return this.curve._endoWnafMulAdd(points, coeffs);
+  else
+    return this.curve._wnafMulAdd(1, points, coeffs, 2);
+};
+
+Point.prototype.eq = function eq(p) {
+  return this === p ||
+         this.inf === p.inf &&
+             (this.inf || this.x.cmp(p.x) === 0 && this.y.cmp(p.y) === 0);
+};
+
+Point.prototype.neg = function neg(_precompute) {
+  if (this.inf)
+    return this;
+
+  var res = this.curve.point(this.x, this.y.redNeg());
+  if (_precompute && this.precomputed) {
+    var pre = this.precomputed;
+    var negate = function(p) {
+      return p.neg();
+    };
+    res.precomputed = {
+      naf: pre.naf && {
+        wnd: pre.naf.wnd,
+        points: pre.naf.points.map(negate)
+      },
+      doubles: pre.doubles && {
+        step: pre.doubles.step,
+        points: pre.doubles.points.map(negate)
+      }
+    };
+  }
+  return res;
+};
+
+Point.prototype.toJ = function toJ() {
+  if (this.inf)
+    return this.curve.jpoint(null, null, null);
+
+  var res = this.curve.jpoint(this.x, this.y, this.curve.one);
+  return res;
+};
+
+function JPoint(curve, x, y, z) {
+  Base.BasePoint.call(this, curve, 'jacobian');
+  if (x === null && y === null && z === null) {
+    this.x = this.curve.one;
+    this.y = this.curve.one;
+    this.z = new BN(0);
+  } else {
+    this.x = new BN(x, 16);
+    this.y = new BN(y, 16);
+    this.z = new BN(z, 16);
+  }
+  if (!this.x.red)
+    this.x = this.x.toRed(this.curve.red);
+  if (!this.y.red)
+    this.y = this.y.toRed(this.curve.red);
+  if (!this.z.red)
+    this.z = this.z.toRed(this.curve.red);
+
+  this.zOne = this.z === this.curve.one;
+}
+inherits(JPoint, Base.BasePoint);
+
+ShortCurve.prototype.jpoint = function jpoint(x, y, z) {
+  return new JPoint(this, x, y, z);
+};
+
+JPoint.prototype.toP = function toP() {
+  if (this.isInfinity())
+    return this.curve.point(null, null);
+
+  var zinv = this.z.redInvm();
+  var zinv2 = zinv.redSqr();
+  var ax = this.x.redMul(zinv2);
+  var ay = this.y.redMul(zinv2).redMul(zinv);
+
+  return this.curve.point(ax, ay);
+};
+
+JPoint.prototype.neg = function neg() {
+  return this.curve.jpoint(this.x, this.y.redNeg(), this.z);
+};
+
+JPoint.prototype.add = function add(p) {
+  // O + P = P
+  if (this.isInfinity())
+    return p;
+
+  // P + O = P
+  if (p.isInfinity())
+    return this;
+
+  // 12M + 4S + 7A
+  var pz2 = p.z.redSqr();
+  var z2 = this.z.redSqr();
+  var u1 = this.x.redMul(pz2);
+  var u2 = p.x.redMul(z2);
+  var s1 = this.y.redMul(pz2.redMul(p.z));
+  var s2 = p.y.redMul(z2.redMul(this.z));
+
+  var h = u1.redSub(u2);
+  var r = s1.redSub(s2);
+  if (h.cmpn(0) === 0) {
+    if (r.cmpn(0) !== 0)
+      return this.curve.jpoint(null, null, null);
+    else
+      return this.dbl();
+  }
+
+  var h2 = h.redSqr();
+  var h3 = h2.redMul(h);
+  var v = u1.redMul(h2);
+
+  var nx = r.redSqr().redIAdd(h3).redISub(v).redISub(v);
+  var ny = r.redMul(v.redISub(nx)).redISub(s1.redMul(h3));
+  var nz = this.z.redMul(p.z).redMul(h);
+
+  return this.curve.jpoint(nx, ny, nz);
+};
+
+JPoint.prototype.mixedAdd = function mixedAdd(p) {
+  // O + P = P
+  if (this.isInfinity())
+    return p.toJ();
+
+  // P + O = P
+  if (p.isInfinity())
+    return this;
+
+  // 8M + 3S + 7A
+  var z2 = this.z.redSqr();
+  var u1 = this.x;
+  var u2 = p.x.redMul(z2);
+  var s1 = this.y;
+  var s2 = p.y.redMul(z2).redMul(this.z);
+
+  var h = u1.redSub(u2);
+  var r = s1.redSub(s2);
+  if (h.cmpn(0) === 0) {
+    if (r.cmpn(0) !== 0)
+      return this.curve.jpoint(null, null, null);
+    else
+      return this.dbl();
+  }
+
+  var h2 = h.redSqr();
+  var h3 = h2.redMul(h);
+  var v = u1.redMul(h2);
+
+  var nx = r.redSqr().redIAdd(h3).redISub(v).redISub(v);
+  var ny = r.redMul(v.redISub(nx)).redISub(s1.redMul(h3));
+  var nz = this.z.redMul(h);
+
+  return this.curve.jpoint(nx, ny, nz);
+};
+
+JPoint.prototype.dblp = function dblp(pow) {
+  if (pow === 0)
+    return this;
+  if (this.isInfinity())
+    return this;
+  if (!pow)
+    return this.dbl();
+
+  if (this.curve.zeroA || this.curve.threeA) {
+    var r = this;
+    for (var i = 0; i < pow; i++)
+      r = r.dbl();
+    return r;
+  }
+
+  // 1M + 2S + 1A + N * (4S + 5M + 8A)
+  // N = 1 => 6M + 6S + 9A
+  var a = this.curve.a;
+  var tinv = this.curve.tinv;
+
+  var jx = this.x;
+  var jy = this.y;
+  var jz = this.z;
+  var jz4 = jz.redSqr().redSqr();
+
+  // Reuse results
+  var jyd = jy.redAdd(jy);
+  for (var i = 0; i < pow; i++) {
+    var jx2 = jx.redSqr();
+    var jyd2 = jyd.redSqr();
+    var jyd4 = jyd2.redSqr();
+    var c = jx2.redAdd(jx2).redIAdd(jx2).redIAdd(a.redMul(jz4));
+
+    var t1 = jx.redMul(jyd2);
+    var nx = c.redSqr().redISub(t1.redAdd(t1));
+    var t2 = t1.redISub(nx);
+    var dny = c.redMul(t2);
+    dny = dny.redIAdd(dny).redISub(jyd4);
+    var nz = jyd.redMul(jz);
+    if (i + 1 < pow)
+      jz4 = jz4.redMul(jyd4);
+
+    jx = nx;
+    jz = nz;
+    jyd = dny;
+  }
+
+  return this.curve.jpoint(jx, jyd.redMul(tinv), jz);
+};
+
+JPoint.prototype.dbl = function dbl() {
+  if (this.isInfinity())
+    return this;
+
+  if (this.curve.zeroA)
+    return this._zeroDbl();
+  else if (this.curve.threeA)
+    return this._threeDbl();
+  else
+    return this._dbl();
+};
+
+JPoint.prototype._zeroDbl = function _zeroDbl() {
+  var nx;
+  var ny;
+  var nz;
+  // Z = 1
+  if (this.zOne) {
+    // hyperelliptic.org/EFD/g1p/auto-shortw-jacobian-0.html
+    //     #doubling-mdbl-2007-bl
+    // 1M + 5S + 14A
+
+    // XX = X1^2
+    var xx = this.x.redSqr();
+    // YY = Y1^2
+    var yy = this.y.redSqr();
+    // YYYY = YY^2
+    var yyyy = yy.redSqr();
+    // S = 2 * ((X1 + YY)^2 - XX - YYYY)
+    var s = this.x.redAdd(yy).redSqr().redISub(xx).redISub(yyyy);
+    s = s.redIAdd(s);
+    // M = 3 * XX + a; a = 0
+    var m = xx.redAdd(xx).redIAdd(xx);
+    // T = M ^ 2 - 2*S
+    var t = m.redSqr().redISub(s).redISub(s);
+
+    // 8 * YYYY
+    var yyyy8 = yyyy.redIAdd(yyyy);
+    yyyy8 = yyyy8.redIAdd(yyyy8);
+    yyyy8 = yyyy8.redIAdd(yyyy8);
+
+    // X3 = T
+    nx = t;
+    // Y3 = M * (S - T) - 8 * YYYY
+    ny = m.redMul(s.redISub(t)).redISub(yyyy8);
+    // Z3 = 2*Y1
+    nz = this.y.redAdd(this.y);
+  } else {
+    // hyperelliptic.org/EFD/g1p/auto-shortw-jacobian-0.html
+    //     #doubling-dbl-2009-l
+    // 2M + 5S + 13A
+
+    // A = X1^2
+    var a = this.x.redSqr();
+    // B = Y1^2
+    var b = this.y.redSqr();
+    // C = B^2
+    var c = b.redSqr();
+    // D = 2 * ((X1 + B)^2 - A - C)
+    var d = this.x.redAdd(b).redSqr().redISub(a).redISub(c);
+    d = d.redIAdd(d);
+    // E = 3 * A
+    var e = a.redAdd(a).redIAdd(a);
+    // F = E^2
+    var f = e.redSqr();
+
+    // 8 * C
+    var c8 = c.redIAdd(c);
+    c8 = c8.redIAdd(c8);
+    c8 = c8.redIAdd(c8);
+
+    // X3 = F - 2 * D
+    nx = f.redISub(d).redISub(d);
+    // Y3 = E * (D - X3) - 8 * C
+    ny = e.redMul(d.redISub(nx)).redISub(c8);
+    // Z3 = 2 * Y1 * Z1
+    nz = this.y.redMul(this.z);
+    nz = nz.redIAdd(nz);
+  }
+
+  return this.curve.jpoint(nx, ny, nz);
+};
+
+JPoint.prototype._threeDbl = function _threeDbl() {
+  var nx;
+  var ny;
+  var nz;
+  // Z = 1
+  if (this.zOne) {
+    // hyperelliptic.org/EFD/g1p/auto-shortw-jacobian-3.html
+    //     #doubling-mdbl-2007-bl
+    // 1M + 5S + 15A
+
+    // XX = X1^2
+    var xx = this.x.redSqr();
+    // YY = Y1^2
+    var yy = this.y.redSqr();
+    // YYYY = YY^2
+    var yyyy = yy.redSqr();
+    // S = 2 * ((X1 + YY)^2 - XX - YYYY)
+    var s = this.x.redAdd(yy).redSqr().redISub(xx).redISub(yyyy);
+    s = s.redIAdd(s);
+    // M = 3 * XX + a
+    var m = xx.redAdd(xx).redIAdd(xx).redIAdd(this.curve.a);
+    // T = M^2 - 2 * S
+    var t = m.redSqr().redISub(s).redISub(s);
+    // X3 = T
+    nx = t;
+    // Y3 = M * (S - T) - 8 * YYYY
+    var yyyy8 = yyyy.redIAdd(yyyy);
+    yyyy8 = yyyy8.redIAdd(yyyy8);
+    yyyy8 = yyyy8.redIAdd(yyyy8);
+    ny = m.redMul(s.redISub(t)).redISub(yyyy8);
+    // Z3 = 2 * Y1
+    nz = this.y.redAdd(this.y);
+  } else {
+    // hyperelliptic.org/EFD/g1p/auto-shortw-jacobian-3.html#doubling-dbl-2001-b
+    // 3M + 5S
+
+    // delta = Z1^2
+    var delta = this.z.redSqr();
+    // gamma = Y1^2
+    var gamma = this.y.redSqr();
+    // beta = X1 * gamma
+    var beta = this.x.redMul(gamma);
+    // alpha = 3 * (X1 - delta) * (X1 + delta)
+    var alpha = this.x.redSub(delta).redMul(this.x.redAdd(delta));
+    alpha = alpha.redAdd(alpha).redIAdd(alpha);
+    // X3 = alpha^2 - 8 * beta
+    var beta4 = beta.redIAdd(beta);
+    beta4 = beta4.redIAdd(beta4);
+    var beta8 = beta4.redAdd(beta4);
+    nx = alpha.redSqr().redISub(beta8);
+    // Z3 = (Y1 + Z1)^2 - gamma - delta
+    nz = this.y.redAdd(this.z).redSqr().redISub(gamma).redISub(delta);
+    // Y3 = alpha * (4 * beta - X3) - 8 * gamma^2
+    var ggamma8 = gamma.redSqr();
+    ggamma8 = ggamma8.redIAdd(ggamma8);
+    ggamma8 = ggamma8.redIAdd(ggamma8);
+    ggamma8 = ggamma8.redIAdd(ggamma8);
+    ny = alpha.redMul(beta4.redISub(nx)).redISub(ggamma8);
+  }
+
+  return this.curve.jpoint(nx, ny, nz);
+};
+
+JPoint.prototype._dbl = function _dbl() {
+  var a = this.curve.a;
+
+  // 4M + 6S + 10A
+  var jx = this.x;
+  var jy = this.y;
+  var jz = this.z;
+  var jz4 = jz.redSqr().redSqr();
+
+  var jx2 = jx.redSqr();
+  var jy2 = jy.redSqr();
+
+  var c = jx2.redAdd(jx2).redIAdd(jx2).redIAdd(a.redMul(jz4));
+
+  var jxd4 = jx.redAdd(jx);
+  jxd4 = jxd4.redIAdd(jxd4);
+  var t1 = jxd4.redMul(jy2);
+  var nx = c.redSqr().redISub(t1.redAdd(t1));
+  var t2 = t1.redISub(nx);
+
+  var jyd8 = jy2.redSqr();
+  jyd8 = jyd8.redIAdd(jyd8);
+  jyd8 = jyd8.redIAdd(jyd8);
+  jyd8 = jyd8.redIAdd(jyd8);
+  var ny = c.redMul(t2).redISub(jyd8);
+  var nz = jy.redAdd(jy).redMul(jz);
+
+  return this.curve.jpoint(nx, ny, nz);
+};
+
+JPoint.prototype.trpl = function trpl() {
+  if (!this.curve.zeroA)
+    return this.dbl().add(this);
+
+  // hyperelliptic.org/EFD/g1p/auto-shortw-jacobian-0.html#tripling-tpl-2007-bl
+  // 5M + 10S + ...
+
+  // XX = X1^2
+  var xx = this.x.redSqr();
+  // YY = Y1^2
+  var yy = this.y.redSqr();
+  // ZZ = Z1^2
+  var zz = this.z.redSqr();
+  // YYYY = YY^2
+  var yyyy = yy.redSqr();
+  // M = 3 * XX + a * ZZ2; a = 0
+  var m = xx.redAdd(xx).redIAdd(xx);
+  // MM = M^2
+  var mm = m.redSqr();
+  // E = 6 * ((X1 + YY)^2 - XX - YYYY) - MM
+  var e = this.x.redAdd(yy).redSqr().redISub(xx).redISub(yyyy);
+  e = e.redIAdd(e);
+  e = e.redAdd(e).redIAdd(e);
+  e = e.redISub(mm);
+  // EE = E^2
+  var ee = e.redSqr();
+  // T = 16*YYYY
+  var t = yyyy.redIAdd(yyyy);
+  t = t.redIAdd(t);
+  t = t.redIAdd(t);
+  t = t.redIAdd(t);
+  // U = (M + E)^2 - MM - EE - T
+  var u = m.redIAdd(e).redSqr().redISub(mm).redISub(ee).redISub(t);
+  // X3 = 4 * (X1 * EE - 4 * YY * U)
+  var yyu4 = yy.redMul(u);
+  yyu4 = yyu4.redIAdd(yyu4);
+  yyu4 = yyu4.redIAdd(yyu4);
+  var nx = this.x.redMul(ee).redISub(yyu4);
+  nx = nx.redIAdd(nx);
+  nx = nx.redIAdd(nx);
+  // Y3 = 8 * Y1 * (U * (T - U) - E * EE)
+  var ny = this.y.redMul(u.redMul(t.redISub(u)).redISub(e.redMul(ee)));
+  ny = ny.redIAdd(ny);
+  ny = ny.redIAdd(ny);
+  ny = ny.redIAdd(ny);
+  // Z3 = (Z1 + E)^2 - ZZ - EE
+  var nz = this.z.redAdd(e).redSqr().redISub(zz).redISub(ee);
+
+  return this.curve.jpoint(nx, ny, nz);
+};
+
+JPoint.prototype.mul = function mul(k, kbase) {
+  k = new BN(k, kbase);
+
+  return this.curve._wnafMul(this, k);
+};
+
+JPoint.prototype.eq = function eq(p) {
+  if (p.type === 'affine')
+    return this.eq(p.toJ());
+
+  if (this === p)
+    return true;
+
+  // x1 * z2^2 == x2 * z1^2
+  var z2 = this.z.redSqr();
+  var pz2 = p.z.redSqr();
+  if (this.x.redMul(pz2).redISub(p.x.redMul(z2)).cmpn(0) !== 0)
+    return false;
+
+  // y1 * z2^3 == y2 * z1^3
+  var z3 = z2.redMul(this.z);
+  var pz3 = pz2.redMul(p.z);
+  return this.y.redMul(pz3).redISub(p.y.redMul(z3)).cmpn(0) === 0;
+};
+
+JPoint.prototype.inspect = function inspect() {
+  if (this.isInfinity())
+    return '<EC JPoint Infinity>';
+  return '<EC JPoint x: ' + this.x.toString(16, 2) +
+      ' y: ' + this.y.toString(16, 2) +
+      ' z: ' + this.z.toString(16, 2) + '>';
+};
+
+JPoint.prototype.isInfinity = function isInfinity() {
+  // XXX This code assumes that zero is always zero in red
+  return this.z.cmpn(0) === 0;
+};
+
+},{"../../elliptic":107,"../curve":110,"bn.js":105,"inherits":265}],113:[function(require,module,exports){
+arguments[4][36][0].apply(exports,arguments)
+},{"../elliptic":107,"./precomputed/secp256k1":121,"dup":36,"hash.js":124}],114:[function(require,module,exports){
+'use strict';
+
+var BN = require('bn.js');
+var elliptic = require('../../elliptic');
+var utils = elliptic.utils;
+var assert = utils.assert;
+
+var KeyPair = require('./key');
+var Signature = require('./signature');
+
+function EC(options) {
+  if (!(this instanceof EC))
+    return new EC(options);
+
+  // Shortcut `elliptic.ec(curve-name)`
+  if (typeof options === 'string') {
+    assert(elliptic.curves.hasOwnProperty(options), 'Unknown curve ' + options);
+
+    options = elliptic.curves[options];
+  }
+
+  // Shortcut for `elliptic.ec(elliptic.curves.curveName)`
+  if (options instanceof elliptic.curves.PresetCurve)
+    options = { curve: options };
+
+  this.curve = options.curve.curve;
+  this.n = this.curve.n;
+  this.nh = this.n.ushrn(1);
+  this.g = this.curve.g;
+
+  // Point on curve
+  this.g = options.curve.g;
+  this.g.precompute(options.curve.n.bitLength() + 1);
+
+  // Hash for function for DRBG
+  this.hash = options.hash || options.curve.hash;
+}
+module.exports = EC;
+
+EC.prototype.keyPair = function keyPair(options) {
+  return new KeyPair(this, options);
+};
+
+EC.prototype.keyFromPrivate = function keyFromPrivate(priv, enc) {
+  return KeyPair.fromPrivate(this, priv, enc);
+};
+
+EC.prototype.keyFromPublic = function keyFromPublic(pub, enc) {
+  return KeyPair.fromPublic(this, pub, enc);
+};
+
+EC.prototype.genKeyPair = function genKeyPair(options) {
+  if (!options)
+    options = {};
+
+  // Instantiate Hmac_DRBG
+  var drbg = new elliptic.hmacDRBG({
+    hash: this.hash,
+    pers: options.pers,
+    entropy: options.entropy || elliptic.rand(this.hash.hmacStrength),
+    nonce: this.n.toArray()
+  });
+
+  var bytes = this.n.byteLength();
+  var ns2 = this.n.sub(new BN(2));
+  do {
+    var priv = new BN(drbg.generate(bytes));
+    if (priv.cmp(ns2) > 0)
+      continue;
+
+    priv.iaddn(1);
+    return this.keyFromPrivate(priv);
+  } while (true);
+};
+
+EC.prototype._truncateToN = function truncateToN(msg, truncOnly) {
+  var delta = msg.byteLength() * 8 - this.n.bitLength();
+  if (delta > 0)
+    msg = msg.ushrn(delta);
+  if (!truncOnly && msg.cmp(this.n) >= 0)
+    return msg.sub(this.n);
+  else
+    return msg;
+};
+
+EC.prototype.sign = function sign(msg, key, enc, options) {
+  if (typeof enc === 'object') {
+    options = enc;
+    enc = null;
+  }
+  if (!options)
+    options = {};
+
+  key = this.keyFromPrivate(key, enc);
+  msg = this._truncateToN(new BN(msg, 16));
+
+  // Zero-extend key to provide enough entropy
+  var bytes = this.n.byteLength();
+  var bkey = key.getPrivate().toArray('be', bytes);
+
+  // Zero-extend nonce to have the same byte size as N
+  var nonce = msg.toArray('be', bytes);
+
+  // Instantiate Hmac_DRBG
+  var drbg = new elliptic.hmacDRBG({
+    hash: this.hash,
+    entropy: bkey,
+    nonce: nonce,
+    pers: options.pers,
+    persEnc: options.persEnc
+  });
+
+  // Number of bytes to generate
+  var ns1 = this.n.sub(new BN(1));
+
+  for (var iter = 0; true; iter++) {
+    var k = options.k ?
+        options.k(iter) :
+        new BN(drbg.generate(this.n.byteLength()));
+    k = this._truncateToN(k, true);
+    if (k.cmpn(1) <= 0 || k.cmp(ns1) >= 0)
+      continue;
+
+    var kp = this.g.mul(k);
+    if (kp.isInfinity())
+      continue;
+
+    var kpX = kp.getX();
+    var r = kpX.umod(this.n);
+    if (r.cmpn(0) === 0)
+      continue;
+
+    var s = k.invm(this.n).mul(r.mul(key.getPrivate()).iadd(msg));
+    s = s.umod(this.n);
+    if (s.cmpn(0) === 0)
+      continue;
+
+    var recoveryParam = (kp.getY().isOdd() ? 1 : 0) |
+                        (kpX.cmp(r) !== 0 ? 2 : 0);
+
+    // Use complement of `s`, if it is > `n / 2`
+    if (options.canonical && s.cmp(this.nh) > 0) {
+      s = this.n.sub(s);
+      recoveryParam ^= 1;
+    }
+
+    return new Signature({ r: r, s: s, recoveryParam: recoveryParam });
+  }
+};
+
+EC.prototype.verify = function verify(msg, signature, key, enc) {
+  msg = this._truncateToN(new BN(msg, 16));
+  key = this.keyFromPublic(key, enc);
+  signature = new Signature(signature, 'hex');
+
+  // Perform primitive values validation
+  var r = signature.r;
+  var s = signature.s;
+  if (r.cmpn(1) < 0 || r.cmp(this.n) >= 0)
+    return false;
+  if (s.cmpn(1) < 0 || s.cmp(this.n) >= 0)
+    return false;
+
+  // Validate signature
+  var sinv = s.invm(this.n);
+  var u1 = sinv.mul(msg).umod(this.n);
+  var u2 = sinv.mul(r).umod(this.n);
+
+  var p = this.g.mulAdd(u1, key.getPublic(), u2);
+  if (p.isInfinity())
+    return false;
+
+  return p.getX().umod(this.n).cmp(r) === 0;
+};
+
+EC.prototype.recoverPubKey = function(msg, signature, j, enc) {
+  assert((3 & j) === j, 'The recovery param is more than two bits');
+  signature = new Signature(signature, enc);
+
+  var n = this.n;
+  var e = new BN(msg);
+  var r = signature.r;
+  var s = signature.s;
+
+  // A set LSB signifies that the y-coordinate is odd
+  var isYOdd = j & 1;
+  var isSecondKey = j >> 1;
+  if (r.cmp(this.curve.p.umod(this.curve.n)) >= 0 && isSecondKey)
+    throw new Error('Unable to find sencond key candinate');
+
+  // 1.1. Let x = r + jn.
+  if (isSecondKey)
+    r = this.curve.pointFromX(r.add(this.curve.n), isYOdd);
+  else
+    r = this.curve.pointFromX(r, isYOdd);
+
+  var eNeg = n.sub(e);
+
+  // 1.6.1 Compute Q = r^-1 (sR -  eG)
+  //               Q = r^-1 (sR + -eG)
+  var rInv = signature.r.invm(n);
+  return this.g.mulAdd(eNeg, r, s).mul(rInv);
+};
+
+EC.prototype.getKeyRecoveryParam = function(e, signature, Q, enc) {
+  signature = new Signature(signature, enc);
+  if (signature.recoveryParam !== null)
+    return signature.recoveryParam;
+
+  for (var i = 0; i < 4; i++) {
+    var Qprime;
+    try {
+      Qprime = this.recoverPubKey(e, signature, i);
+    } catch (e) {
+      continue;
+    }
+
+    if (Qprime.eq(Q))
+      return i;
+  }
+  throw new Error('Unable to find valid recovery factor');
+};
+
+},{"../../elliptic":107,"./key":115,"./signature":116,"bn.js":105}],115:[function(require,module,exports){
 arguments[4][38][0].apply(exports,arguments)
-},{"../../elliptic":106,"../curve":109,"bn.js":104,"dup":38,"inherits":264}],109:[function(require,module,exports){
+},{"bn.js":105,"dup":38}],116:[function(require,module,exports){
 arguments[4][39][0].apply(exports,arguments)
-},{"./base":107,"./edwards":108,"./mont":110,"./short":111,"dup":39}],110:[function(require,module,exports){
+},{"../../elliptic":107,"bn.js":105,"dup":39}],117:[function(require,module,exports){
 arguments[4][40][0].apply(exports,arguments)
-},{"../../elliptic":106,"../curve":109,"bn.js":104,"dup":40,"inherits":264}],111:[function(require,module,exports){
-arguments[4][41][0].apply(exports,arguments)
-},{"../../elliptic":106,"../curve":109,"bn.js":104,"dup":41,"inherits":264}],112:[function(require,module,exports){
-arguments[4][42][0].apply(exports,arguments)
-},{"../elliptic":106,"./precomputed/secp256k1":120,"dup":42,"hash.js":123}],113:[function(require,module,exports){
-arguments[4][43][0].apply(exports,arguments)
-},{"../../elliptic":106,"./key":114,"./signature":115,"bn.js":104,"dup":43}],114:[function(require,module,exports){
-arguments[4][44][0].apply(exports,arguments)
-},{"bn.js":104,"dup":44}],115:[function(require,module,exports){
-arguments[4][45][0].apply(exports,arguments)
-},{"../../elliptic":106,"bn.js":104,"dup":45}],116:[function(require,module,exports){
-arguments[4][46][0].apply(exports,arguments)
-},{"../../elliptic":106,"./key":117,"./signature":118,"dup":46,"hash.js":123}],117:[function(require,module,exports){
+},{"../../elliptic":107,"./key":118,"./signature":119,"dup":40,"hash.js":124}],118:[function(require,module,exports){
 'use strict';
 
 var elliptic = require('../../elliptic');
@@ -27470,7 +32427,7 @@ KeyPair.prototype.getPublic = function getPublic(enc) {
 
 module.exports = KeyPair;
 
-},{"../../elliptic":106}],118:[function(require,module,exports){
+},{"../../elliptic":107}],119:[function(require,module,exports){
 'use strict';
 
 var BN = require('bn.js');
@@ -27538,11 +32495,11 @@ Signature.prototype.toHex = function toHex() {
 
 module.exports = Signature;
 
-},{"../../elliptic":106,"bn.js":104}],119:[function(require,module,exports){
-arguments[4][49][0].apply(exports,arguments)
-},{"../elliptic":106,"dup":49,"hash.js":123}],120:[function(require,module,exports){
-arguments[4][50][0].apply(exports,arguments)
-},{"dup":50}],121:[function(require,module,exports){
+},{"../../elliptic":107,"bn.js":105}],120:[function(require,module,exports){
+arguments[4][43][0].apply(exports,arguments)
+},{"../elliptic":107,"dup":43,"hash.js":124}],121:[function(require,module,exports){
+arguments[4][44][0].apply(exports,arguments)
+},{"dup":44}],122:[function(require,module,exports){
 'use strict';
 
 var utils = exports;
@@ -27717,21 +32674,21 @@ function intFromLE(bytes) {
 utils.intFromLE = intFromLE;
 
 
-},{"bn.js":104}],122:[function(require,module,exports){
+},{"bn.js":105}],123:[function(require,module,exports){
+arguments[4][46][0].apply(exports,arguments)
+},{"dup":46}],124:[function(require,module,exports){
+arguments[4][47][0].apply(exports,arguments)
+},{"./hash/common":125,"./hash/hmac":126,"./hash/ripemd":127,"./hash/sha":128,"./hash/utils":129,"dup":47}],125:[function(require,module,exports){
+arguments[4][48][0].apply(exports,arguments)
+},{"../hash":124,"dup":48}],126:[function(require,module,exports){
+arguments[4][49][0].apply(exports,arguments)
+},{"../hash":124,"dup":49}],127:[function(require,module,exports){
+arguments[4][50][0].apply(exports,arguments)
+},{"../hash":124,"dup":50}],128:[function(require,module,exports){
+arguments[4][51][0].apply(exports,arguments)
+},{"../hash":124,"dup":51}],129:[function(require,module,exports){
 arguments[4][52][0].apply(exports,arguments)
-},{"dup":52}],123:[function(require,module,exports){
-arguments[4][53][0].apply(exports,arguments)
-},{"./hash/common":124,"./hash/hmac":125,"./hash/ripemd":126,"./hash/sha":127,"./hash/utils":128,"dup":53}],124:[function(require,module,exports){
-arguments[4][54][0].apply(exports,arguments)
-},{"../hash":123,"dup":54}],125:[function(require,module,exports){
-arguments[4][55][0].apply(exports,arguments)
-},{"../hash":123,"dup":55}],126:[function(require,module,exports){
-arguments[4][56][0].apply(exports,arguments)
-},{"../hash":123,"dup":56}],127:[function(require,module,exports){
-arguments[4][57][0].apply(exports,arguments)
-},{"../hash":123,"dup":57}],128:[function(require,module,exports){
-arguments[4][58][0].apply(exports,arguments)
-},{"dup":58,"inherits":264}],129:[function(require,module,exports){
+},{"dup":52,"inherits":265}],130:[function(require,module,exports){
 module.exports={
   "name": "elliptic",
   "version": "6.2.3",
@@ -27806,7 +32763,7 @@ module.exports={
   "readme": "ERROR: No README data found!"
 }
 
-},{}],130:[function(require,module,exports){
+},{}],131:[function(require,module,exports){
 module.exports={"2.16.840.1.101.3.4.1.1": "aes-128-ecb",
 "2.16.840.1.101.3.4.1.2": "aes-128-cbc",
 "2.16.840.1.101.3.4.1.3": "aes-128-ofb",
@@ -27820,7 +32777,7 @@ module.exports={"2.16.840.1.101.3.4.1.1": "aes-128-ecb",
 "2.16.840.1.101.3.4.1.43": "aes-256-ofb",
 "2.16.840.1.101.3.4.1.44": "aes-256-cfb"
 }
-},{}],131:[function(require,module,exports){
+},{}],132:[function(require,module,exports){
 // from https://github.com/indutny/self-signed/blob/gh-pages/lib/asn1.js
 // Fedor, you are amazing.
 
@@ -27939,7 +32896,7 @@ exports.signature = asn1.define('signature', function () {
   )
 })
 
-},{"asn1.js":134}],132:[function(require,module,exports){
+},{"asn1.js":135}],133:[function(require,module,exports){
 (function (Buffer){
 // adapted from https://github.com/apatil/pemstrip
 var findProc = /Proc-Type: 4,ENCRYPTED\r?\nDEK-Info: AES-((?:128)|(?:192)|(?:256))-CBC,([0-9A-H]+)\r?\n\r?\n([0-9A-z\n\r\+\/\=]+)\r?\n/m
@@ -27973,7 +32930,7 @@ module.exports = function (okey, password) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"browserify-aes":151,"buffer":67,"evp_bytestokey":166}],133:[function(require,module,exports){
+},{"browserify-aes":152,"buffer":68,"evp_bytestokey":167}],134:[function(require,module,exports){
 (function (Buffer){
 var asn1 = require('./asn1')
 var aesid = require('./aesid.json')
@@ -28078,7 +33035,7 @@ function decrypt (data, password) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"./aesid.json":130,"./asn1":131,"./fixProc":132,"browserify-aes":151,"buffer":67,"pbkdf2":216}],134:[function(require,module,exports){
+},{"./aesid.json":131,"./asn1":132,"./fixProc":133,"browserify-aes":152,"buffer":68,"pbkdf2":217}],135:[function(require,module,exports){
 var asn1 = exports;
 
 asn1.bignum = require('bn.js');
@@ -28089,7 +33046,7 @@ asn1.constants = require('./asn1/constants');
 asn1.decoders = require('./asn1/decoders');
 asn1.encoders = require('./asn1/encoders');
 
-},{"./asn1/api":135,"./asn1/base":137,"./asn1/constants":141,"./asn1/decoders":143,"./asn1/encoders":146,"bn.js":104}],135:[function(require,module,exports){
+},{"./asn1/api":136,"./asn1/base":138,"./asn1/constants":142,"./asn1/decoders":144,"./asn1/encoders":147,"bn.js":105}],136:[function(require,module,exports){
 var asn1 = require('../asn1');
 var inherits = require('inherits');
 
@@ -28150,7 +33107,7 @@ Entity.prototype.encode = function encode(data, enc, /* internal */ reporter) {
   return this._getEncoder(enc).encode(data, reporter);
 };
 
-},{"../asn1":134,"inherits":264,"vm":285}],136:[function(require,module,exports){
+},{"../asn1":135,"inherits":265,"vm":286}],137:[function(require,module,exports){
 var inherits = require('inherits');
 var Reporter = require('../base').Reporter;
 var Buffer = require('buffer').Buffer;
@@ -28268,7 +33225,7 @@ EncoderBuffer.prototype.join = function join(out, offset) {
   return out;
 };
 
-},{"../base":137,"buffer":67,"inherits":264}],137:[function(require,module,exports){
+},{"../base":138,"buffer":68,"inherits":265}],138:[function(require,module,exports){
 var base = exports;
 
 base.Reporter = require('./reporter').Reporter;
@@ -28276,7 +33233,7 @@ base.DecoderBuffer = require('./buffer').DecoderBuffer;
 base.EncoderBuffer = require('./buffer').EncoderBuffer;
 base.Node = require('./node');
 
-},{"./buffer":136,"./node":138,"./reporter":139}],138:[function(require,module,exports){
+},{"./buffer":137,"./node":139,"./reporter":140}],139:[function(require,module,exports){
 var Reporter = require('../base').Reporter;
 var EncoderBuffer = require('../base').EncoderBuffer;
 var DecoderBuffer = require('../base').DecoderBuffer;
@@ -28899,7 +33856,7 @@ Node.prototype._isPrintstr = function isPrintstr(str) {
   return /^[A-Za-z0-9 '\(\)\+,\-\.\/:=\?]*$/.test(str);
 };
 
-},{"../base":137,"minimalistic-assert":148}],139:[function(require,module,exports){
+},{"../base":138,"minimalistic-assert":149}],140:[function(require,module,exports){
 var inherits = require('inherits');
 
 function Reporter(options) {
@@ -29003,7 +33960,7 @@ ReporterError.prototype.rethrow = function rethrow(msg) {
   return this;
 };
 
-},{"inherits":264}],140:[function(require,module,exports){
+},{"inherits":265}],141:[function(require,module,exports){
 var constants = require('../constants');
 
 exports.tagClass = {
@@ -29047,7 +34004,7 @@ exports.tag = {
 };
 exports.tagByName = constants._reverse(exports.tag);
 
-},{"../constants":141}],141:[function(require,module,exports){
+},{"../constants":142}],142:[function(require,module,exports){
 var constants = exports;
 
 // Helper
@@ -29068,7 +34025,7 @@ constants._reverse = function reverse(map) {
 
 constants.der = require('./der');
 
-},{"./der":140}],142:[function(require,module,exports){
+},{"./der":141}],143:[function(require,module,exports){
 var inherits = require('inherits');
 
 var asn1 = require('../../asn1');
@@ -29391,13 +34348,13 @@ function derDecodeLen(buf, primitive, fail) {
   return len;
 }
 
-},{"../../asn1":134,"inherits":264}],143:[function(require,module,exports){
+},{"../../asn1":135,"inherits":265}],144:[function(require,module,exports){
 var decoders = exports;
 
 decoders.der = require('./der');
 decoders.pem = require('./pem');
 
-},{"./der":142,"./pem":144}],144:[function(require,module,exports){
+},{"./der":143,"./pem":145}],145:[function(require,module,exports){
 var inherits = require('inherits');
 var Buffer = require('buffer').Buffer;
 
@@ -29449,7 +34406,7 @@ PEMDecoder.prototype.decode = function decode(data, options) {
   return DERDecoder.prototype.decode.call(this, input, options);
 };
 
-},{"../../asn1":134,"./der":142,"buffer":67,"inherits":264}],145:[function(require,module,exports){
+},{"../../asn1":135,"./der":143,"buffer":68,"inherits":265}],146:[function(require,module,exports){
 var inherits = require('inherits');
 var Buffer = require('buffer').Buffer;
 
@@ -29745,13 +34702,13 @@ function encodeTag(tag, primitive, cls, reporter) {
   return res;
 }
 
-},{"../../asn1":134,"buffer":67,"inherits":264}],146:[function(require,module,exports){
+},{"../../asn1":135,"buffer":68,"inherits":265}],147:[function(require,module,exports){
 var encoders = exports;
 
 encoders.der = require('./der');
 encoders.pem = require('./pem');
 
-},{"./der":145,"./pem":147}],147:[function(require,module,exports){
+},{"./der":146,"./pem":148}],148:[function(require,module,exports){
 var inherits = require('inherits');
 var Buffer = require('buffer').Buffer;
 
@@ -29776,45 +34733,45 @@ PEMEncoder.prototype.encode = function encode(data, options) {
   return out.join('\n');
 };
 
-},{"../../asn1":134,"./der":145,"buffer":67,"inherits":264}],148:[function(require,module,exports){
-arguments[4][99][0].apply(exports,arguments)
-},{"dup":99}],149:[function(require,module,exports){
-arguments[4][73][0].apply(exports,arguments)
-},{"buffer":67,"dup":73}],150:[function(require,module,exports){
-arguments[4][74][0].apply(exports,arguments)
-},{"./aes":149,"./ghash":154,"buffer":67,"buffer-xor":163,"cipher-base":164,"dup":74,"inherits":264}],151:[function(require,module,exports){
-arguments[4][75][0].apply(exports,arguments)
-},{"./decrypter":152,"./encrypter":153,"./modes":155,"dup":75}],152:[function(require,module,exports){
-arguments[4][76][0].apply(exports,arguments)
-},{"./aes":149,"./authCipher":150,"./modes":155,"./modes/cbc":156,"./modes/cfb":157,"./modes/cfb1":158,"./modes/cfb8":159,"./modes/ctr":160,"./modes/ecb":161,"./modes/ofb":162,"./streamCipher":165,"buffer":67,"cipher-base":164,"dup":76,"evp_bytestokey":166,"inherits":264}],153:[function(require,module,exports){
-arguments[4][77][0].apply(exports,arguments)
-},{"./aes":149,"./authCipher":150,"./modes":155,"./modes/cbc":156,"./modes/cfb":157,"./modes/cfb1":158,"./modes/cfb8":159,"./modes/ctr":160,"./modes/ecb":161,"./modes/ofb":162,"./streamCipher":165,"buffer":67,"cipher-base":164,"dup":77,"evp_bytestokey":166,"inherits":264}],154:[function(require,module,exports){
-arguments[4][78][0].apply(exports,arguments)
-},{"buffer":67,"dup":78}],155:[function(require,module,exports){
-arguments[4][79][0].apply(exports,arguments)
-},{"dup":79}],156:[function(require,module,exports){
-arguments[4][80][0].apply(exports,arguments)
-},{"buffer-xor":163,"dup":80}],157:[function(require,module,exports){
-arguments[4][81][0].apply(exports,arguments)
-},{"buffer":67,"buffer-xor":163,"dup":81}],158:[function(require,module,exports){
-arguments[4][82][0].apply(exports,arguments)
-},{"buffer":67,"dup":82}],159:[function(require,module,exports){
-arguments[4][83][0].apply(exports,arguments)
-},{"buffer":67,"dup":83}],160:[function(require,module,exports){
-arguments[4][84][0].apply(exports,arguments)
-},{"buffer":67,"buffer-xor":163,"dup":84}],161:[function(require,module,exports){
-arguments[4][85][0].apply(exports,arguments)
-},{"dup":85}],162:[function(require,module,exports){
-arguments[4][86][0].apply(exports,arguments)
-},{"buffer":67,"buffer-xor":163,"dup":86}],163:[function(require,module,exports){
-arguments[4][87][0].apply(exports,arguments)
-},{"buffer":67,"dup":87}],164:[function(require,module,exports){
-arguments[4][15][0].apply(exports,arguments)
-},{"buffer":67,"dup":15,"inherits":264,"stream":281,"string_decoder":282}],165:[function(require,module,exports){
-arguments[4][89][0].apply(exports,arguments)
-},{"./aes":149,"buffer":67,"cipher-base":164,"dup":89,"inherits":264}],166:[function(require,module,exports){
+},{"../../asn1":135,"./der":146,"buffer":68,"inherits":265}],149:[function(require,module,exports){
 arguments[4][100][0].apply(exports,arguments)
-},{"buffer":67,"create-hash/md5":197,"dup":100}],167:[function(require,module,exports){
+},{"dup":100}],150:[function(require,module,exports){
+arguments[4][74][0].apply(exports,arguments)
+},{"buffer":68,"dup":74}],151:[function(require,module,exports){
+arguments[4][75][0].apply(exports,arguments)
+},{"./aes":150,"./ghash":155,"buffer":68,"buffer-xor":164,"cipher-base":165,"dup":75,"inherits":265}],152:[function(require,module,exports){
+arguments[4][76][0].apply(exports,arguments)
+},{"./decrypter":153,"./encrypter":154,"./modes":156,"dup":76}],153:[function(require,module,exports){
+arguments[4][77][0].apply(exports,arguments)
+},{"./aes":150,"./authCipher":151,"./modes":156,"./modes/cbc":157,"./modes/cfb":158,"./modes/cfb1":159,"./modes/cfb8":160,"./modes/ctr":161,"./modes/ecb":162,"./modes/ofb":163,"./streamCipher":166,"buffer":68,"cipher-base":165,"dup":77,"evp_bytestokey":167,"inherits":265}],154:[function(require,module,exports){
+arguments[4][78][0].apply(exports,arguments)
+},{"./aes":150,"./authCipher":151,"./modes":156,"./modes/cbc":157,"./modes/cfb":158,"./modes/cfb1":159,"./modes/cfb8":160,"./modes/ctr":161,"./modes/ecb":162,"./modes/ofb":163,"./streamCipher":166,"buffer":68,"cipher-base":165,"dup":78,"evp_bytestokey":167,"inherits":265}],155:[function(require,module,exports){
+arguments[4][79][0].apply(exports,arguments)
+},{"buffer":68,"dup":79}],156:[function(require,module,exports){
+arguments[4][80][0].apply(exports,arguments)
+},{"dup":80}],157:[function(require,module,exports){
+arguments[4][81][0].apply(exports,arguments)
+},{"buffer-xor":164,"dup":81}],158:[function(require,module,exports){
+arguments[4][82][0].apply(exports,arguments)
+},{"buffer":68,"buffer-xor":164,"dup":82}],159:[function(require,module,exports){
+arguments[4][83][0].apply(exports,arguments)
+},{"buffer":68,"dup":83}],160:[function(require,module,exports){
+arguments[4][84][0].apply(exports,arguments)
+},{"buffer":68,"dup":84}],161:[function(require,module,exports){
+arguments[4][85][0].apply(exports,arguments)
+},{"buffer":68,"buffer-xor":164,"dup":85}],162:[function(require,module,exports){
+arguments[4][86][0].apply(exports,arguments)
+},{"dup":86}],163:[function(require,module,exports){
+arguments[4][87][0].apply(exports,arguments)
+},{"buffer":68,"buffer-xor":164,"dup":87}],164:[function(require,module,exports){
+arguments[4][88][0].apply(exports,arguments)
+},{"buffer":68,"dup":88}],165:[function(require,module,exports){
+arguments[4][10][0].apply(exports,arguments)
+},{"buffer":68,"dup":10,"inherits":265,"stream":282,"string_decoder":283}],166:[function(require,module,exports){
+arguments[4][90][0].apply(exports,arguments)
+},{"./aes":150,"buffer":68,"cipher-base":165,"dup":90,"inherits":265}],167:[function(require,module,exports){
+arguments[4][101][0].apply(exports,arguments)
+},{"buffer":68,"create-hash/md5":198,"dup":101}],168:[function(require,module,exports){
 (function (Buffer){
 // much of this based on https://github.com/indutny/self-signed/blob/gh-pages/lib/rsa.js
 var createHmac = require('create-hmac')
@@ -30003,7 +34960,7 @@ module.exports.getKey = getKey
 module.exports.makeKey = makeKey
 
 }).call(this,require("buffer").Buffer)
-},{"./curves":103,"bn.js":104,"browserify-rsa":105,"buffer":67,"create-hmac":208,"elliptic":106,"parse-asn1":133}],168:[function(require,module,exports){
+},{"./curves":104,"bn.js":105,"browserify-rsa":106,"buffer":68,"create-hmac":209,"elliptic":107,"parse-asn1":134}],169:[function(require,module,exports){
 (function (Buffer){
 // much of this based on https://github.com/indutny/self-signed/blob/gh-pages/lib/rsa.js
 var curves = require('./curves')
@@ -30110,7 +35067,7 @@ function checkValue (b, q) {
 module.exports = verify
 
 }).call(this,require("buffer").Buffer)
-},{"./curves":103,"bn.js":104,"buffer":67,"elliptic":106,"parse-asn1":133}],169:[function(require,module,exports){
+},{"./curves":104,"bn.js":105,"buffer":68,"elliptic":107,"parse-asn1":134}],170:[function(require,module,exports){
 (function (Buffer){
 var elliptic = require('elliptic');
 var BN = require('bn.js');
@@ -30236,83 +35193,83 @@ function formatReturnValue(bn, enc, len) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"bn.js":170,"buffer":67,"elliptic":171}],170:[function(require,module,exports){
-arguments[4][104][0].apply(exports,arguments)
-},{"dup":104}],171:[function(require,module,exports){
+},{"bn.js":171,"buffer":68,"elliptic":172}],171:[function(require,module,exports){
+arguments[4][105][0].apply(exports,arguments)
+},{"dup":105}],172:[function(require,module,exports){
+arguments[4][30][0].apply(exports,arguments)
+},{"../package.json":195,"./elliptic/curve":175,"./elliptic/curves":178,"./elliptic/ec":179,"./elliptic/eddsa":182,"./elliptic/hmac-drbg":185,"./elliptic/utils":187,"brorand":188,"dup":30}],173:[function(require,module,exports){
+arguments[4][108][0].apply(exports,arguments)
+},{"../../elliptic":172,"bn.js":171,"dup":108}],174:[function(require,module,exports){
+arguments[4][109][0].apply(exports,arguments)
+},{"../../elliptic":172,"../curve":175,"bn.js":171,"dup":109,"inherits":265}],175:[function(require,module,exports){
+arguments[4][33][0].apply(exports,arguments)
+},{"./base":173,"./edwards":174,"./mont":176,"./short":177,"dup":33}],176:[function(require,module,exports){
+arguments[4][111][0].apply(exports,arguments)
+},{"../../elliptic":172,"../curve":175,"bn.js":171,"dup":111,"inherits":265}],177:[function(require,module,exports){
+arguments[4][112][0].apply(exports,arguments)
+},{"../../elliptic":172,"../curve":175,"bn.js":171,"dup":112,"inherits":265}],178:[function(require,module,exports){
 arguments[4][36][0].apply(exports,arguments)
-},{"../package.json":194,"./elliptic/curve":174,"./elliptic/curves":177,"./elliptic/ec":178,"./elliptic/eddsa":181,"./elliptic/hmac-drbg":184,"./elliptic/utils":186,"brorand":187,"dup":36}],172:[function(require,module,exports){
-arguments[4][107][0].apply(exports,arguments)
-},{"../../elliptic":171,"bn.js":170,"dup":107}],173:[function(require,module,exports){
+},{"../elliptic":172,"./precomputed/secp256k1":186,"dup":36,"hash.js":189}],179:[function(require,module,exports){
+arguments[4][114][0].apply(exports,arguments)
+},{"../../elliptic":172,"./key":180,"./signature":181,"bn.js":171,"dup":114}],180:[function(require,module,exports){
 arguments[4][38][0].apply(exports,arguments)
-},{"../../elliptic":171,"../curve":174,"bn.js":170,"dup":38,"inherits":264}],174:[function(require,module,exports){
+},{"bn.js":171,"dup":38}],181:[function(require,module,exports){
 arguments[4][39][0].apply(exports,arguments)
-},{"./base":172,"./edwards":173,"./mont":175,"./short":176,"dup":39}],175:[function(require,module,exports){
+},{"../../elliptic":172,"bn.js":171,"dup":39}],182:[function(require,module,exports){
 arguments[4][40][0].apply(exports,arguments)
-},{"../../elliptic":171,"../curve":174,"bn.js":170,"dup":40,"inherits":264}],176:[function(require,module,exports){
-arguments[4][41][0].apply(exports,arguments)
-},{"../../elliptic":171,"../curve":174,"bn.js":170,"dup":41,"inherits":264}],177:[function(require,module,exports){
-arguments[4][42][0].apply(exports,arguments)
-},{"../elliptic":171,"./precomputed/secp256k1":185,"dup":42,"hash.js":188}],178:[function(require,module,exports){
-arguments[4][43][0].apply(exports,arguments)
-},{"../../elliptic":171,"./key":179,"./signature":180,"bn.js":170,"dup":43}],179:[function(require,module,exports){
-arguments[4][44][0].apply(exports,arguments)
-},{"bn.js":170,"dup":44}],180:[function(require,module,exports){
-arguments[4][45][0].apply(exports,arguments)
-},{"../../elliptic":171,"bn.js":170,"dup":45}],181:[function(require,module,exports){
-arguments[4][46][0].apply(exports,arguments)
-},{"../../elliptic":171,"./key":182,"./signature":183,"dup":46,"hash.js":188}],182:[function(require,module,exports){
-arguments[4][117][0].apply(exports,arguments)
-},{"../../elliptic":171,"dup":117}],183:[function(require,module,exports){
+},{"../../elliptic":172,"./key":183,"./signature":184,"dup":40,"hash.js":189}],183:[function(require,module,exports){
 arguments[4][118][0].apply(exports,arguments)
-},{"../../elliptic":171,"bn.js":170,"dup":118}],184:[function(require,module,exports){
+},{"../../elliptic":172,"dup":118}],184:[function(require,module,exports){
+arguments[4][119][0].apply(exports,arguments)
+},{"../../elliptic":172,"bn.js":171,"dup":119}],185:[function(require,module,exports){
+arguments[4][43][0].apply(exports,arguments)
+},{"../elliptic":172,"dup":43,"hash.js":189}],186:[function(require,module,exports){
+arguments[4][44][0].apply(exports,arguments)
+},{"dup":44}],187:[function(require,module,exports){
+arguments[4][122][0].apply(exports,arguments)
+},{"bn.js":171,"dup":122}],188:[function(require,module,exports){
+arguments[4][46][0].apply(exports,arguments)
+},{"dup":46}],189:[function(require,module,exports){
+arguments[4][47][0].apply(exports,arguments)
+},{"./hash/common":190,"./hash/hmac":191,"./hash/ripemd":192,"./hash/sha":193,"./hash/utils":194,"dup":47}],190:[function(require,module,exports){
+arguments[4][48][0].apply(exports,arguments)
+},{"../hash":189,"dup":48}],191:[function(require,module,exports){
 arguments[4][49][0].apply(exports,arguments)
-},{"../elliptic":171,"dup":49,"hash.js":188}],185:[function(require,module,exports){
+},{"../hash":189,"dup":49}],192:[function(require,module,exports){
 arguments[4][50][0].apply(exports,arguments)
-},{"dup":50}],186:[function(require,module,exports){
-arguments[4][121][0].apply(exports,arguments)
-},{"bn.js":170,"dup":121}],187:[function(require,module,exports){
+},{"../hash":189,"dup":50}],193:[function(require,module,exports){
+arguments[4][51][0].apply(exports,arguments)
+},{"../hash":189,"dup":51}],194:[function(require,module,exports){
 arguments[4][52][0].apply(exports,arguments)
-},{"dup":52}],188:[function(require,module,exports){
-arguments[4][53][0].apply(exports,arguments)
-},{"./hash/common":189,"./hash/hmac":190,"./hash/ripemd":191,"./hash/sha":192,"./hash/utils":193,"dup":53}],189:[function(require,module,exports){
-arguments[4][54][0].apply(exports,arguments)
-},{"../hash":188,"dup":54}],190:[function(require,module,exports){
-arguments[4][55][0].apply(exports,arguments)
-},{"../hash":188,"dup":55}],191:[function(require,module,exports){
-arguments[4][56][0].apply(exports,arguments)
-},{"../hash":188,"dup":56}],192:[function(require,module,exports){
-arguments[4][57][0].apply(exports,arguments)
-},{"../hash":188,"dup":57}],193:[function(require,module,exports){
-arguments[4][58][0].apply(exports,arguments)
-},{"dup":58,"inherits":264}],194:[function(require,module,exports){
-arguments[4][129][0].apply(exports,arguments)
-},{"dup":129}],195:[function(require,module,exports){
+},{"dup":52,"inherits":265}],195:[function(require,module,exports){
+arguments[4][130][0].apply(exports,arguments)
+},{"dup":130}],196:[function(require,module,exports){
+arguments[4][7][0].apply(exports,arguments)
+},{"./md5":198,"buffer":68,"cipher-base":199,"dup":7,"inherits":265,"ripemd160":200,"sha.js":202}],197:[function(require,module,exports){
+arguments[4][8][0].apply(exports,arguments)
+},{"buffer":68,"dup":8}],198:[function(require,module,exports){
+arguments[4][9][0].apply(exports,arguments)
+},{"./helpers":197,"dup":9}],199:[function(require,module,exports){
+arguments[4][10][0].apply(exports,arguments)
+},{"buffer":68,"dup":10,"inherits":265,"stream":282,"string_decoder":283}],200:[function(require,module,exports){
 arguments[4][12][0].apply(exports,arguments)
-},{"./md5":197,"buffer":67,"cipher-base":198,"dup":12,"inherits":264,"ripemd160":199,"sha.js":201}],196:[function(require,module,exports){
+},{"buffer":68,"dup":12}],201:[function(require,module,exports){
 arguments[4][13][0].apply(exports,arguments)
-},{"buffer":67,"dup":13}],197:[function(require,module,exports){
+},{"buffer":68,"dup":13}],202:[function(require,module,exports){
 arguments[4][14][0].apply(exports,arguments)
-},{"./helpers":196,"dup":14}],198:[function(require,module,exports){
+},{"./sha":203,"./sha1":204,"./sha224":205,"./sha256":206,"./sha384":207,"./sha512":208,"dup":14}],203:[function(require,module,exports){
 arguments[4][15][0].apply(exports,arguments)
-},{"buffer":67,"dup":15,"inherits":264,"stream":281,"string_decoder":282}],199:[function(require,module,exports){
+},{"./hash":201,"buffer":68,"dup":15,"inherits":265}],204:[function(require,module,exports){
+arguments[4][16][0].apply(exports,arguments)
+},{"./hash":201,"buffer":68,"dup":16,"inherits":265}],205:[function(require,module,exports){
 arguments[4][17][0].apply(exports,arguments)
-},{"buffer":67,"dup":17}],200:[function(require,module,exports){
+},{"./hash":201,"./sha256":206,"buffer":68,"dup":17,"inherits":265}],206:[function(require,module,exports){
 arguments[4][18][0].apply(exports,arguments)
-},{"buffer":67,"dup":18}],201:[function(require,module,exports){
+},{"./hash":201,"buffer":68,"dup":18,"inherits":265}],207:[function(require,module,exports){
 arguments[4][19][0].apply(exports,arguments)
-},{"./sha":202,"./sha1":203,"./sha224":204,"./sha256":205,"./sha384":206,"./sha512":207,"dup":19}],202:[function(require,module,exports){
+},{"./hash":201,"./sha512":208,"buffer":68,"dup":19,"inherits":265}],208:[function(require,module,exports){
 arguments[4][20][0].apply(exports,arguments)
-},{"./hash":200,"buffer":67,"dup":20,"inherits":264}],203:[function(require,module,exports){
-arguments[4][21][0].apply(exports,arguments)
-},{"./hash":200,"buffer":67,"dup":21,"inherits":264}],204:[function(require,module,exports){
-arguments[4][22][0].apply(exports,arguments)
-},{"./hash":200,"./sha256":205,"buffer":67,"dup":22,"inherits":264}],205:[function(require,module,exports){
-arguments[4][23][0].apply(exports,arguments)
-},{"./hash":200,"buffer":67,"dup":23,"inherits":264}],206:[function(require,module,exports){
-arguments[4][24][0].apply(exports,arguments)
-},{"./hash":200,"./sha512":207,"buffer":67,"dup":24,"inherits":264}],207:[function(require,module,exports){
-arguments[4][25][0].apply(exports,arguments)
-},{"./hash":200,"buffer":67,"dup":25,"inherits":264}],208:[function(require,module,exports){
+},{"./hash":201,"buffer":68,"dup":20,"inherits":265}],209:[function(require,module,exports){
 (function (Buffer){
 'use strict';
 var createHash = require('create-hash/browser');
@@ -30384,7 +35341,7 @@ module.exports = function createHmac(alg, key) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":67,"create-hash/browser":195,"inherits":264,"stream":281}],209:[function(require,module,exports){
+},{"buffer":68,"create-hash/browser":196,"inherits":265,"stream":282}],210:[function(require,module,exports){
 (function (Buffer){
 var generatePrime = require('./lib/generatePrime')
 var primes = require('./lib/primes.json')
@@ -30430,7 +35387,7 @@ exports.DiffieHellmanGroup = exports.createDiffieHellmanGroup = exports.getDiffi
 exports.createDiffieHellman = exports.DiffieHellman = createDiffieHellman
 
 }).call(this,require("buffer").Buffer)
-},{"./lib/dh":210,"./lib/generatePrime":211,"./lib/primes.json":212,"buffer":67}],210:[function(require,module,exports){
+},{"./lib/dh":211,"./lib/generatePrime":212,"./lib/primes.json":213,"buffer":68}],211:[function(require,module,exports){
 (function (Buffer){
 var BN = require('bn.js');
 var MillerRabin = require('miller-rabin');
@@ -30598,7 +35555,7 @@ function formatReturnValue(bn, enc) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"./generatePrime":211,"bn.js":213,"buffer":67,"miller-rabin":214,"randombytes":262}],211:[function(require,module,exports){
+},{"./generatePrime":212,"bn.js":214,"buffer":68,"miller-rabin":215,"randombytes":263}],212:[function(require,module,exports){
 var randomBytes = require('randombytes');
 module.exports = findPrime;
 findPrime.simpleSieve = simpleSieve;
@@ -30705,7 +35662,7 @@ function findPrime(bits, gen) {
 
 }
 
-},{"bn.js":213,"miller-rabin":214,"randombytes":262}],212:[function(require,module,exports){
+},{"bn.js":214,"miller-rabin":215,"randombytes":263}],213:[function(require,module,exports){
 module.exports={
     "modp1": {
         "gen": "02",
@@ -30740,9 +35697,9 @@ module.exports={
         "prime": "ffffffffffffffffc90fdaa22168c234c4c6628b80dc1cd129024e088a67cc74020bbea63b139b22514a08798e3404ddef9519b3cd3a431b302b0a6df25f14374fe1356d6d51c245e485b576625e7ec6f44c42e9a637ed6b0bff5cb6f406b7edee386bfb5a899fa5ae9f24117c4b1fe649286651ece45b3dc2007cb8a163bf0598da48361c55d39a69163fa8fd24cf5f83655d23dca3ad961c62f356208552bb9ed529077096966d670c354e4abc9804f1746c08ca18217c32905e462e36ce3be39e772c180e86039b2783a2ec07a28fb5c55df06f4c52c9de2bcbf6955817183995497cea956ae515d2261898fa051015728e5a8aaac42dad33170d04507a33a85521abdf1cba64ecfb850458dbef0a8aea71575d060c7db3970f85a6e1e4c7abf5ae8cdb0933d71e8c94e04a25619dcee3d2261ad2ee6bf12ffa06d98a0864d87602733ec86a64521f2b18177b200cbbe117577a615d6c770988c0bad946e208e24fa074e5ab3143db5bfce0fd108e4b82d120a92108011a723c12a787e6d788719a10bdba5b2699c327186af4e23c1a946834b6150bda2583e9ca2ad44ce8dbbbc2db04de8ef92e8efc141fbecaa6287c59474e6bc05d99b2964fa090c3a2233ba186515be7ed1f612970cee2d7afb81bdd762170481cd0069127d5b05aa993b4ea988d8fddc186ffb7dc90a6c08f4df435c93402849236c3fab4d27c7026c1d4dcb2602646dec9751e763dba37bdf8ff9406ad9e530ee5db382f413001aeb06a53ed9027d831179727b0865a8918da3edbebcf9b14ed44ce6cbaced4bb1bdb7f1447e6cc254b332051512bd7af426fb8f401378cd2bf5983ca01c64b92ecf032ea15d1721d03f482d7ce6e74fef6d55e702f46980c82b5a84031900b1c9e59e7c97fbec7e8f323a97a7e36cc88be0f1d45b7ff585ac54bd407b22b4154aacc8f6d7ebf48e1d814cc5ed20f8037e0a79715eef29be32806a1d58bb7c5da76f550aa3d8a1fbff0eb19ccb1a313d55cda56c9ec2ef29632387fe8d76e3c0468043e8f663f4860ee12bf2d5b0b7474d6e694f91e6dbe115974a3926f12fee5e438777cb6a932df8cd8bec4d073b931ba3bc832b68d9dd300741fa7bf8afc47ed2576f6936ba424663aab639c5ae4f5683423b4742bf1c978238f16cbe39d652de3fdb8befc848ad922222e04a4037c0713eb57a81a23f0c73473fc646cea306b4bcbc8862f8385ddfa9d4b7fa2c087e879683303ed5bdd3a062b3cf5b3a278a66d2a13f83f44f82ddf310ee074ab6a364597e899a0255dc164f31cc50846851df9ab48195ded7ea1b1d510bd7ee74d73faf36bc31ecfa268359046f4eb879f924009438b481c6cd7889a002ed5ee382bc9190da6fc026e479558e4475677e9aa9e3050e2765694dfc81f56e880b96e7160c980dd98edd3dfffffffffffffffff"
     }
 }
-},{}],213:[function(require,module,exports){
-arguments[4][104][0].apply(exports,arguments)
-},{"dup":104}],214:[function(require,module,exports){
+},{}],214:[function(require,module,exports){
+arguments[4][105][0].apply(exports,arguments)
+},{"dup":105}],215:[function(require,module,exports){
 var bn = require('bn.js');
 var brorand = require('brorand');
 
@@ -30857,9 +35814,9 @@ MillerRabin.prototype.getDivisor = function getDivisor(n, k) {
   return false;
 };
 
-},{"bn.js":213,"brorand":215}],215:[function(require,module,exports){
-arguments[4][52][0].apply(exports,arguments)
-},{"dup":52}],216:[function(require,module,exports){
+},{"bn.js":214,"brorand":216}],216:[function(require,module,exports){
+arguments[4][46][0].apply(exports,arguments)
+},{"dup":46}],217:[function(require,module,exports){
 (function (Buffer){
 var createHmac = require('create-hmac')
 var MAX_ALLOC = Math.pow(2, 30) - 1 // default in iojs
@@ -30943,7 +35900,7 @@ function pbkdf2Sync (password, salt, iterations, keylen, digest) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":67,"create-hmac":208}],217:[function(require,module,exports){
+},{"buffer":68,"create-hmac":209}],218:[function(require,module,exports){
 exports.publicEncrypt = require('./publicEncrypt');
 exports.privateDecrypt = require('./privateDecrypt');
 
@@ -30954,7 +35911,7 @@ exports.privateEncrypt = function privateEncrypt(key, buf) {
 exports.publicDecrypt = function publicDecrypt(key, buf) {
   return exports.privateDecrypt(key, buf, true);
 };
-},{"./privateDecrypt":258,"./publicEncrypt":259}],218:[function(require,module,exports){
+},{"./privateDecrypt":259,"./publicEncrypt":260}],219:[function(require,module,exports){
 (function (Buffer){
 var createHash = require('create-hash');
 module.exports = function (seed, len) {
@@ -30973,85 +35930,85 @@ function i2ops(c) {
   return out;
 }
 }).call(this,require("buffer").Buffer)
-},{"buffer":67,"create-hash":195}],219:[function(require,module,exports){
-arguments[4][104][0].apply(exports,arguments)
-},{"dup":104}],220:[function(require,module,exports){
+},{"buffer":68,"create-hash":196}],220:[function(require,module,exports){
 arguments[4][105][0].apply(exports,arguments)
-},{"bn.js":219,"buffer":67,"dup":105,"randombytes":262}],221:[function(require,module,exports){
-arguments[4][130][0].apply(exports,arguments)
-},{"dup":130}],222:[function(require,module,exports){
+},{"dup":105}],221:[function(require,module,exports){
+arguments[4][106][0].apply(exports,arguments)
+},{"bn.js":220,"buffer":68,"dup":106,"randombytes":263}],222:[function(require,module,exports){
 arguments[4][131][0].apply(exports,arguments)
-},{"asn1.js":225,"dup":131}],223:[function(require,module,exports){
+},{"dup":131}],223:[function(require,module,exports){
 arguments[4][132][0].apply(exports,arguments)
-},{"browserify-aes":242,"buffer":67,"dup":132,"evp_bytestokey":257}],224:[function(require,module,exports){
+},{"asn1.js":226,"dup":132}],224:[function(require,module,exports){
 arguments[4][133][0].apply(exports,arguments)
-},{"./aesid.json":221,"./asn1":222,"./fixProc":223,"browserify-aes":242,"buffer":67,"dup":133,"pbkdf2":216}],225:[function(require,module,exports){
+},{"browserify-aes":243,"buffer":68,"dup":133,"evp_bytestokey":258}],225:[function(require,module,exports){
 arguments[4][134][0].apply(exports,arguments)
-},{"./asn1/api":226,"./asn1/base":228,"./asn1/constants":232,"./asn1/decoders":234,"./asn1/encoders":237,"bn.js":219,"dup":134}],226:[function(require,module,exports){
+},{"./aesid.json":222,"./asn1":223,"./fixProc":224,"browserify-aes":243,"buffer":68,"dup":134,"pbkdf2":217}],226:[function(require,module,exports){
 arguments[4][135][0].apply(exports,arguments)
-},{"../asn1":225,"dup":135,"inherits":264,"vm":285}],227:[function(require,module,exports){
+},{"./asn1/api":227,"./asn1/base":229,"./asn1/constants":233,"./asn1/decoders":235,"./asn1/encoders":238,"bn.js":220,"dup":135}],227:[function(require,module,exports){
 arguments[4][136][0].apply(exports,arguments)
-},{"../base":228,"buffer":67,"dup":136,"inherits":264}],228:[function(require,module,exports){
+},{"../asn1":226,"dup":136,"inherits":265,"vm":286}],228:[function(require,module,exports){
 arguments[4][137][0].apply(exports,arguments)
-},{"./buffer":227,"./node":229,"./reporter":230,"dup":137}],229:[function(require,module,exports){
+},{"../base":229,"buffer":68,"dup":137,"inherits":265}],229:[function(require,module,exports){
 arguments[4][138][0].apply(exports,arguments)
-},{"../base":228,"dup":138,"minimalistic-assert":239}],230:[function(require,module,exports){
+},{"./buffer":228,"./node":230,"./reporter":231,"dup":138}],230:[function(require,module,exports){
 arguments[4][139][0].apply(exports,arguments)
-},{"dup":139,"inherits":264}],231:[function(require,module,exports){
+},{"../base":229,"dup":139,"minimalistic-assert":240}],231:[function(require,module,exports){
 arguments[4][140][0].apply(exports,arguments)
-},{"../constants":232,"dup":140}],232:[function(require,module,exports){
+},{"dup":140,"inherits":265}],232:[function(require,module,exports){
 arguments[4][141][0].apply(exports,arguments)
-},{"./der":231,"dup":141}],233:[function(require,module,exports){
+},{"../constants":233,"dup":141}],233:[function(require,module,exports){
 arguments[4][142][0].apply(exports,arguments)
-},{"../../asn1":225,"dup":142,"inherits":264}],234:[function(require,module,exports){
+},{"./der":232,"dup":142}],234:[function(require,module,exports){
 arguments[4][143][0].apply(exports,arguments)
-},{"./der":233,"./pem":235,"dup":143}],235:[function(require,module,exports){
+},{"../../asn1":226,"dup":143,"inherits":265}],235:[function(require,module,exports){
 arguments[4][144][0].apply(exports,arguments)
-},{"../../asn1":225,"./der":233,"buffer":67,"dup":144,"inherits":264}],236:[function(require,module,exports){
+},{"./der":234,"./pem":236,"dup":144}],236:[function(require,module,exports){
 arguments[4][145][0].apply(exports,arguments)
-},{"../../asn1":225,"buffer":67,"dup":145,"inherits":264}],237:[function(require,module,exports){
+},{"../../asn1":226,"./der":234,"buffer":68,"dup":145,"inherits":265}],237:[function(require,module,exports){
 arguments[4][146][0].apply(exports,arguments)
-},{"./der":236,"./pem":238,"dup":146}],238:[function(require,module,exports){
+},{"../../asn1":226,"buffer":68,"dup":146,"inherits":265}],238:[function(require,module,exports){
 arguments[4][147][0].apply(exports,arguments)
-},{"../../asn1":225,"./der":236,"buffer":67,"dup":147,"inherits":264}],239:[function(require,module,exports){
-arguments[4][99][0].apply(exports,arguments)
-},{"dup":99}],240:[function(require,module,exports){
-arguments[4][73][0].apply(exports,arguments)
-},{"buffer":67,"dup":73}],241:[function(require,module,exports){
-arguments[4][74][0].apply(exports,arguments)
-},{"./aes":240,"./ghash":245,"buffer":67,"buffer-xor":254,"cipher-base":255,"dup":74,"inherits":264}],242:[function(require,module,exports){
-arguments[4][75][0].apply(exports,arguments)
-},{"./decrypter":243,"./encrypter":244,"./modes":246,"dup":75}],243:[function(require,module,exports){
-arguments[4][76][0].apply(exports,arguments)
-},{"./aes":240,"./authCipher":241,"./modes":246,"./modes/cbc":247,"./modes/cfb":248,"./modes/cfb1":249,"./modes/cfb8":250,"./modes/ctr":251,"./modes/ecb":252,"./modes/ofb":253,"./streamCipher":256,"buffer":67,"cipher-base":255,"dup":76,"evp_bytestokey":257,"inherits":264}],244:[function(require,module,exports){
-arguments[4][77][0].apply(exports,arguments)
-},{"./aes":240,"./authCipher":241,"./modes":246,"./modes/cbc":247,"./modes/cfb":248,"./modes/cfb1":249,"./modes/cfb8":250,"./modes/ctr":251,"./modes/ecb":252,"./modes/ofb":253,"./streamCipher":256,"buffer":67,"cipher-base":255,"dup":77,"evp_bytestokey":257,"inherits":264}],245:[function(require,module,exports){
-arguments[4][78][0].apply(exports,arguments)
-},{"buffer":67,"dup":78}],246:[function(require,module,exports){
-arguments[4][79][0].apply(exports,arguments)
-},{"dup":79}],247:[function(require,module,exports){
-arguments[4][80][0].apply(exports,arguments)
-},{"buffer-xor":254,"dup":80}],248:[function(require,module,exports){
-arguments[4][81][0].apply(exports,arguments)
-},{"buffer":67,"buffer-xor":254,"dup":81}],249:[function(require,module,exports){
-arguments[4][82][0].apply(exports,arguments)
-},{"buffer":67,"dup":82}],250:[function(require,module,exports){
-arguments[4][83][0].apply(exports,arguments)
-},{"buffer":67,"dup":83}],251:[function(require,module,exports){
-arguments[4][84][0].apply(exports,arguments)
-},{"buffer":67,"buffer-xor":254,"dup":84}],252:[function(require,module,exports){
-arguments[4][85][0].apply(exports,arguments)
-},{"dup":85}],253:[function(require,module,exports){
-arguments[4][86][0].apply(exports,arguments)
-},{"buffer":67,"buffer-xor":254,"dup":86}],254:[function(require,module,exports){
-arguments[4][87][0].apply(exports,arguments)
-},{"buffer":67,"dup":87}],255:[function(require,module,exports){
-arguments[4][15][0].apply(exports,arguments)
-},{"buffer":67,"dup":15,"inherits":264,"stream":281,"string_decoder":282}],256:[function(require,module,exports){
-arguments[4][89][0].apply(exports,arguments)
-},{"./aes":240,"buffer":67,"cipher-base":255,"dup":89,"inherits":264}],257:[function(require,module,exports){
+},{"./der":237,"./pem":239,"dup":147}],239:[function(require,module,exports){
+arguments[4][148][0].apply(exports,arguments)
+},{"../../asn1":226,"./der":237,"buffer":68,"dup":148,"inherits":265}],240:[function(require,module,exports){
 arguments[4][100][0].apply(exports,arguments)
-},{"buffer":67,"create-hash/md5":197,"dup":100}],258:[function(require,module,exports){
+},{"dup":100}],241:[function(require,module,exports){
+arguments[4][74][0].apply(exports,arguments)
+},{"buffer":68,"dup":74}],242:[function(require,module,exports){
+arguments[4][75][0].apply(exports,arguments)
+},{"./aes":241,"./ghash":246,"buffer":68,"buffer-xor":255,"cipher-base":256,"dup":75,"inherits":265}],243:[function(require,module,exports){
+arguments[4][76][0].apply(exports,arguments)
+},{"./decrypter":244,"./encrypter":245,"./modes":247,"dup":76}],244:[function(require,module,exports){
+arguments[4][77][0].apply(exports,arguments)
+},{"./aes":241,"./authCipher":242,"./modes":247,"./modes/cbc":248,"./modes/cfb":249,"./modes/cfb1":250,"./modes/cfb8":251,"./modes/ctr":252,"./modes/ecb":253,"./modes/ofb":254,"./streamCipher":257,"buffer":68,"cipher-base":256,"dup":77,"evp_bytestokey":258,"inherits":265}],245:[function(require,module,exports){
+arguments[4][78][0].apply(exports,arguments)
+},{"./aes":241,"./authCipher":242,"./modes":247,"./modes/cbc":248,"./modes/cfb":249,"./modes/cfb1":250,"./modes/cfb8":251,"./modes/ctr":252,"./modes/ecb":253,"./modes/ofb":254,"./streamCipher":257,"buffer":68,"cipher-base":256,"dup":78,"evp_bytestokey":258,"inherits":265}],246:[function(require,module,exports){
+arguments[4][79][0].apply(exports,arguments)
+},{"buffer":68,"dup":79}],247:[function(require,module,exports){
+arguments[4][80][0].apply(exports,arguments)
+},{"dup":80}],248:[function(require,module,exports){
+arguments[4][81][0].apply(exports,arguments)
+},{"buffer-xor":255,"dup":81}],249:[function(require,module,exports){
+arguments[4][82][0].apply(exports,arguments)
+},{"buffer":68,"buffer-xor":255,"dup":82}],250:[function(require,module,exports){
+arguments[4][83][0].apply(exports,arguments)
+},{"buffer":68,"dup":83}],251:[function(require,module,exports){
+arguments[4][84][0].apply(exports,arguments)
+},{"buffer":68,"dup":84}],252:[function(require,module,exports){
+arguments[4][85][0].apply(exports,arguments)
+},{"buffer":68,"buffer-xor":255,"dup":85}],253:[function(require,module,exports){
+arguments[4][86][0].apply(exports,arguments)
+},{"dup":86}],254:[function(require,module,exports){
+arguments[4][87][0].apply(exports,arguments)
+},{"buffer":68,"buffer-xor":255,"dup":87}],255:[function(require,module,exports){
+arguments[4][88][0].apply(exports,arguments)
+},{"buffer":68,"dup":88}],256:[function(require,module,exports){
+arguments[4][10][0].apply(exports,arguments)
+},{"buffer":68,"dup":10,"inherits":265,"stream":282,"string_decoder":283}],257:[function(require,module,exports){
+arguments[4][90][0].apply(exports,arguments)
+},{"./aes":241,"buffer":68,"cipher-base":256,"dup":90,"inherits":265}],258:[function(require,module,exports){
+arguments[4][101][0].apply(exports,arguments)
+},{"buffer":68,"create-hash/md5":198,"dup":101}],259:[function(require,module,exports){
 (function (Buffer){
 var parseKeys = require('parse-asn1');
 var mgf = require('./mgf');
@@ -31162,7 +36119,7 @@ function compare(a, b){
   return dif;
 }
 }).call(this,require("buffer").Buffer)
-},{"./mgf":218,"./withPublic":260,"./xor":261,"bn.js":219,"browserify-rsa":220,"buffer":67,"create-hash":195,"parse-asn1":224}],259:[function(require,module,exports){
+},{"./mgf":219,"./withPublic":261,"./xor":262,"bn.js":220,"browserify-rsa":221,"buffer":68,"create-hash":196,"parse-asn1":225}],260:[function(require,module,exports){
 (function (Buffer){
 var parseKeys = require('parse-asn1');
 var randomBytes = require('randombytes');
@@ -31260,7 +36217,7 @@ function nonZero(len, crypto) {
   return out;
 }
 }).call(this,require("buffer").Buffer)
-},{"./mgf":218,"./withPublic":260,"./xor":261,"bn.js":219,"browserify-rsa":220,"buffer":67,"create-hash":195,"parse-asn1":224,"randombytes":262}],260:[function(require,module,exports){
+},{"./mgf":219,"./withPublic":261,"./xor":262,"bn.js":220,"browserify-rsa":221,"buffer":68,"create-hash":196,"parse-asn1":225,"randombytes":263}],261:[function(require,module,exports){
 (function (Buffer){
 var bn = require('bn.js');
 function withPublic(paddedMsg, key) {
@@ -31273,7 +36230,7 @@ function withPublic(paddedMsg, key) {
 
 module.exports = withPublic;
 }).call(this,require("buffer").Buffer)
-},{"bn.js":219,"buffer":67}],261:[function(require,module,exports){
+},{"bn.js":220,"buffer":68}],262:[function(require,module,exports){
 module.exports = function xor(a, b) {
   var len = a.length;
   var i = -1;
@@ -31282,7 +36239,7 @@ module.exports = function xor(a, b) {
   }
   return a
 };
-},{}],262:[function(require,module,exports){
+},{}],263:[function(require,module,exports){
 (function (process,global,Buffer){
 'use strict'
 
@@ -31322,7 +36279,7 @@ function randomBytes (size, cb) {
 }
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer)
-},{"_process":266,"buffer":67}],263:[function(require,module,exports){
+},{"_process":267,"buffer":68}],264:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -31622,9 +36579,9 @@ function isUndefined(arg) {
   return arg === void 0;
 }
 
-},{}],264:[function(require,module,exports){
-arguments[4][16][0].apply(exports,arguments)
-},{"dup":16}],265:[function(require,module,exports){
+},{}],265:[function(require,module,exports){
+arguments[4][11][0].apply(exports,arguments)
+},{"dup":11}],266:[function(require,module,exports){
 /**
  * Determine if an object is Buffer
  *
@@ -31643,7 +36600,7 @@ module.exports = function (obj) {
     ))
 }
 
-},{}],266:[function(require,module,exports){
+},{}],267:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -31736,10 +36693,10 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],267:[function(require,module,exports){
+},{}],268:[function(require,module,exports){
 module.exports = require("./lib/_stream_duplex.js")
 
-},{"./lib/_stream_duplex.js":268}],268:[function(require,module,exports){
+},{"./lib/_stream_duplex.js":269}],269:[function(require,module,exports){
 // a duplex stream is just a stream that is both readable and writable.
 // Since JS doesn't have multiple prototypal inheritance, this class
 // prototypally inherits from Readable, and then parasitically from
@@ -31815,7 +36772,7 @@ function forEach(xs, f) {
     f(xs[i], i);
   }
 }
-},{"./_stream_readable":270,"./_stream_writable":272,"core-util-is":273,"inherits":264,"process-nextick-args":275}],269:[function(require,module,exports){
+},{"./_stream_readable":271,"./_stream_writable":273,"core-util-is":274,"inherits":265,"process-nextick-args":276}],270:[function(require,module,exports){
 // a passthrough stream.
 // basically just the most minimal sort of Transform stream.
 // Every written chunk gets output as-is.
@@ -31842,7 +36799,7 @@ function PassThrough(options) {
 PassThrough.prototype._transform = function (chunk, encoding, cb) {
   cb(null, chunk);
 };
-},{"./_stream_transform":271,"core-util-is":273,"inherits":264}],270:[function(require,module,exports){
+},{"./_stream_transform":272,"core-util-is":274,"inherits":265}],271:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -32725,7 +37682,7 @@ function indexOf(xs, x) {
   return -1;
 }
 }).call(this,require('_process'))
-},{"./_stream_duplex":268,"_process":266,"buffer":67,"core-util-is":273,"events":263,"inherits":264,"isarray":274,"process-nextick-args":275,"string_decoder/":282,"util":66}],271:[function(require,module,exports){
+},{"./_stream_duplex":269,"_process":267,"buffer":68,"core-util-is":274,"events":264,"inherits":265,"isarray":275,"process-nextick-args":276,"string_decoder/":283,"util":67}],272:[function(require,module,exports){
 // a transform stream is a readable/writable stream where you do
 // something with the data.  Sometimes it's called a "filter",
 // but that's not a great name for it, since that implies a thing where
@@ -32906,7 +37863,7 @@ function done(stream, er) {
 
   return stream.push(null);
 }
-},{"./_stream_duplex":268,"core-util-is":273,"inherits":264}],272:[function(require,module,exports){
+},{"./_stream_duplex":269,"core-util-is":274,"inherits":265}],273:[function(require,module,exports){
 (function (process){
 // A bit simpler than readable streams.
 // Implement an async ._write(chunk, encoding, cb), and it'll handle all
@@ -33425,7 +38382,7 @@ function CorkedRequest(state) {
   };
 }
 }).call(this,require('_process'))
-},{"./_stream_duplex":268,"_process":266,"buffer":67,"core-util-is":273,"events":263,"inherits":264,"process-nextick-args":275,"util-deprecate":276}],273:[function(require,module,exports){
+},{"./_stream_duplex":269,"_process":267,"buffer":68,"core-util-is":274,"events":264,"inherits":265,"process-nextick-args":276,"util-deprecate":277}],274:[function(require,module,exports){
 (function (Buffer){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -33536,9 +38493,9 @@ function objectToString(o) {
 }
 
 }).call(this,{"isBuffer":require("../../../../insert-module-globals/node_modules/is-buffer/index.js")})
-},{"../../../../insert-module-globals/node_modules/is-buffer/index.js":265}],274:[function(require,module,exports){
-arguments[4][70][0].apply(exports,arguments)
-},{"dup":70}],275:[function(require,module,exports){
+},{"../../../../insert-module-globals/node_modules/is-buffer/index.js":266}],275:[function(require,module,exports){
+arguments[4][71][0].apply(exports,arguments)
+},{"dup":71}],276:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -33562,7 +38519,7 @@ function nextTick(fn) {
 }
 
 }).call(this,require('_process'))
-},{"_process":266}],276:[function(require,module,exports){
+},{"_process":267}],277:[function(require,module,exports){
 (function (global){
 
 /**
@@ -33633,10 +38590,10 @@ function config (name) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],277:[function(require,module,exports){
+},{}],278:[function(require,module,exports){
 module.exports = require("./lib/_stream_passthrough.js")
 
-},{"./lib/_stream_passthrough.js":269}],278:[function(require,module,exports){
+},{"./lib/_stream_passthrough.js":270}],279:[function(require,module,exports){
 var Stream = (function (){
   try {
     return require('st' + 'ream'); // hack to fix a circular dependency issue when used with browserify
@@ -33650,13 +38607,13 @@ exports.Duplex = require('./lib/_stream_duplex.js');
 exports.Transform = require('./lib/_stream_transform.js');
 exports.PassThrough = require('./lib/_stream_passthrough.js');
 
-},{"./lib/_stream_duplex.js":268,"./lib/_stream_passthrough.js":269,"./lib/_stream_readable.js":270,"./lib/_stream_transform.js":271,"./lib/_stream_writable.js":272}],279:[function(require,module,exports){
+},{"./lib/_stream_duplex.js":269,"./lib/_stream_passthrough.js":270,"./lib/_stream_readable.js":271,"./lib/_stream_transform.js":272,"./lib/_stream_writable.js":273}],280:[function(require,module,exports){
 module.exports = require("./lib/_stream_transform.js")
 
-},{"./lib/_stream_transform.js":271}],280:[function(require,module,exports){
+},{"./lib/_stream_transform.js":272}],281:[function(require,module,exports){
 module.exports = require("./lib/_stream_writable.js")
 
-},{"./lib/_stream_writable.js":272}],281:[function(require,module,exports){
+},{"./lib/_stream_writable.js":273}],282:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -33785,7 +38742,7 @@ Stream.prototype.pipe = function(dest, options) {
   return dest;
 };
 
-},{"events":263,"inherits":264,"readable-stream/duplex.js":267,"readable-stream/passthrough.js":277,"readable-stream/readable.js":278,"readable-stream/transform.js":279,"readable-stream/writable.js":280}],282:[function(require,module,exports){
+},{"events":264,"inherits":265,"readable-stream/duplex.js":268,"readable-stream/passthrough.js":278,"readable-stream/readable.js":279,"readable-stream/transform.js":280,"readable-stream/writable.js":281}],283:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -34008,14 +38965,14 @@ function base64DetectIncompleteChar(buffer) {
   this.charLength = this.charReceived ? 3 : 0;
 }
 
-},{"buffer":67}],283:[function(require,module,exports){
+},{"buffer":68}],284:[function(require,module,exports){
 module.exports = function isBuffer(arg) {
   return arg && typeof arg === 'object'
     && typeof arg.copy === 'function'
     && typeof arg.fill === 'function'
     && typeof arg.readUInt8 === 'function';
 }
-},{}],284:[function(require,module,exports){
+},{}],285:[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -34605,7 +39562,7 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":283,"_process":266,"inherits":264}],285:[function(require,module,exports){
+},{"./support/isBuffer":284,"_process":267,"inherits":265}],286:[function(require,module,exports){
 var indexOf = require('indexof');
 
 var Object_keys = function (obj) {
@@ -34745,7 +39702,7 @@ exports.createContext = Script.createContext = function (context) {
     return copy;
 };
 
-},{"indexof":286}],286:[function(require,module,exports){
+},{"indexof":287}],287:[function(require,module,exports){
 
 var indexOf = [].indexOf;
 
@@ -34756,7 +39713,7 @@ module.exports = function(arr, obj){
   }
   return -1;
 };
-},{}],287:[function(require,module,exports){
+},{}],288:[function(require,module,exports){
 (function (process){
 /**
  * JSON RPC methods for Ethereum
@@ -36170,7 +41127,7 @@ module.exports = {
 };
 
 }).call(this,require('_process'))
-},{"_process":266,"async":288,"augur-abi":1,"augur-contracts":6,"bignumber.js":289,"browser-request":290,"clone":291,"js-sha3":292,"net":64,"request":66,"sync-request":66,"websocket":66}],288:[function(require,module,exports){
+},{"_process":267,"async":289,"augur-abi":1,"augur-contracts":59,"bignumber.js":290,"browser-request":291,"clone":292,"js-sha3":293,"net":65,"request":67,"sync-request":67,"websocket":67}],289:[function(require,module,exports){
 (function (process,global){
 /*!
  * async
@@ -37438,7 +42395,7 @@ module.exports = {
 }());
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":266}],289:[function(require,module,exports){
+},{"_process":267}],290:[function(require,module,exports){
 /*! bignumber.js v2.1.3 https://github.com/MikeMcl/bignumber.js/LICENCE */
 
 ;(function (globalObj) {
@@ -40136,7 +45093,7 @@ module.exports = {
     }
 })(this);
 
-},{}],290:[function(require,module,exports){
+},{}],291:[function(require,module,exports){
 // Browser Request
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -40632,171 +45589,9 @@ function b64_enc (data) {
 }));
 //UMD FOOTER END
 
-},{}],291:[function(require,module,exports){
-(function (Buffer){
-var clone = (function() {
-'use strict';
-
-/**
- * Clones (copies) an Object using deep copying.
- *
- * This function supports circular references by default, but if you are certain
- * there are no circular references in your object, you can save some CPU time
- * by calling clone(obj, false).
- *
- * Caution: if `circular` is false and `parent` contains circular references,
- * your program may enter an infinite loop and crash.
- *
- * @param `parent` - the object to be cloned
- * @param `circular` - set to true if the object to be cloned may contain
- *    circular references. (optional - true by default)
- * @param `depth` - set to a number if the object is only to be cloned to
- *    a particular depth. (optional - defaults to Infinity)
- * @param `prototype` - sets the prototype to be used when cloning an object.
- *    (optional - defaults to parent prototype).
-*/
-function clone(parent, circular, depth, prototype) {
-  var filter;
-  if (typeof circular === 'object') {
-    depth = circular.depth;
-    prototype = circular.prototype;
-    filter = circular.filter;
-    circular = circular.circular
-  }
-  // maintain two arrays for circular references, where corresponding parents
-  // and children have the same index
-  var allParents = [];
-  var allChildren = [];
-
-  var useBuffer = typeof Buffer != 'undefined';
-
-  if (typeof circular == 'undefined')
-    circular = true;
-
-  if (typeof depth == 'undefined')
-    depth = Infinity;
-
-  // recurse this function so we don't reset allParents and allChildren
-  function _clone(parent, depth) {
-    // cloning null always returns null
-    if (parent === null)
-      return null;
-
-    if (depth == 0)
-      return parent;
-
-    var child;
-    var proto;
-    if (typeof parent != 'object') {
-      return parent;
-    }
-
-    if (clone.__isArray(parent)) {
-      child = [];
-    } else if (clone.__isRegExp(parent)) {
-      child = new RegExp(parent.source, __getRegExpFlags(parent));
-      if (parent.lastIndex) child.lastIndex = parent.lastIndex;
-    } else if (clone.__isDate(parent)) {
-      child = new Date(parent.getTime());
-    } else if (useBuffer && Buffer.isBuffer(parent)) {
-      child = new Buffer(parent.length);
-      parent.copy(child);
-      return child;
-    } else {
-      if (typeof prototype == 'undefined') {
-        proto = Object.getPrototypeOf(parent);
-        child = Object.create(proto);
-      }
-      else {
-        child = Object.create(prototype);
-        proto = prototype;
-      }
-    }
-
-    if (circular) {
-      var index = allParents.indexOf(parent);
-
-      if (index != -1) {
-        return allChildren[index];
-      }
-      allParents.push(parent);
-      allChildren.push(child);
-    }
-
-    for (var i in parent) {
-      var attrs;
-      if (proto) {
-        attrs = Object.getOwnPropertyDescriptor(proto, i);
-      }
-
-      if (attrs && attrs.set == null) {
-        continue;
-      }
-      child[i] = _clone(parent[i], depth - 1);
-    }
-
-    return child;
-  }
-
-  return _clone(parent, depth);
-}
-
-/**
- * Simple flat clone using prototype, accepts only objects, usefull for property
- * override on FLAT configuration object (no nested props).
- *
- * USE WITH CAUTION! This may not behave as you wish if you do not know how this
- * works.
- */
-clone.clonePrototype = function clonePrototype(parent) {
-  if (parent === null)
-    return null;
-
-  var c = function () {};
-  c.prototype = parent;
-  return new c();
-};
-
-// private utility functions
-
-function __objToStr(o) {
-  return Object.prototype.toString.call(o);
-};
-clone.__objToStr = __objToStr;
-
-function __isDate(o) {
-  return typeof o === 'object' && __objToStr(o) === '[object Date]';
-};
-clone.__isDate = __isDate;
-
-function __isArray(o) {
-  return typeof o === 'object' && __objToStr(o) === '[object Array]';
-};
-clone.__isArray = __isArray;
-
-function __isRegExp(o) {
-  return typeof o === 'object' && __objToStr(o) === '[object RegExp]';
-};
-clone.__isRegExp = __isRegExp;
-
-function __getRegExpFlags(re) {
-  var flags = '';
-  if (re.global) flags += 'g';
-  if (re.ignoreCase) flags += 'i';
-  if (re.multiline) flags += 'm';
-  return flags;
-};
-clone.__getRegExpFlags = __getRegExpFlags;
-
-return clone;
-})();
-
-if (typeof module === 'object' && module.exports) {
-  module.exports = clone;
-}
-
-}).call(this,require("buffer").Buffer)
-},{"buffer":67}],292:[function(require,module,exports){
+},{}],292:[function(require,module,exports){
+arguments[4][60][0].apply(exports,arguments)
+},{"buffer":68,"dup":60}],293:[function(require,module,exports){
 (function (global){
 /*
  * js-sha3 v0.5.1
@@ -41273,4 +46068,4 @@ if (typeof module === 'object' && module.exports) {
 }(this));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}]},{},[61]);
+},{}]},{},[62]);
