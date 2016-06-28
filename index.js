@@ -96,9 +96,12 @@ module.exports = {
 
     from_field_tx: function (account) {
         if (account && account !== "0x") {
-            for (var method in this.tx) {
-                if (!this.tx.hasOwnProperty(method)) continue;
-                this.tx[method].from = account;
+            for (var contract in this.tx) {
+                if (!this.tx.hasOwnProperty(contract)) continue;
+                for (var method in this.tx[contract]) {
+                    if (!this.tx[contract].hasOwnProperty(method)) continue;
+                    this.tx[contract][method].from = account;
+                }
             }
         }
     },
