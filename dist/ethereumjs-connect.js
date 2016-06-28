@@ -20326,9 +20326,11 @@ module.exports={
 module.exports={
     "0x": "no response or bad input",
     "buy": {
+        "0": "couldn't place buy order",
         "-1": "amount/price bad or no market",
         "-2": "oracle-only branch",
-        "-4": "not enough money or shares"
+        "-4": "not enough money or shares",
+        "21": "trade already exists"
     },
     "buyCompleteSets": {
         "0": "market not found",
@@ -20424,9 +20426,12 @@ module.exports={
         "-4": "early resolution already attempted or outcome already exists"
     },
     "sell": {
+        "0": "couldn't place sell order",
         "-1": "amount/price bad or no market",
         "-2": "oracle only branch",
-        "-4": "not enough money or shares"
+        "-3": "bad outcome to trade",
+        "-4": "not enough money or shares",
+        "21": "trade already exists"
     },
     "sellCompleteSets": {
         "-1": "oracle-only branch",
