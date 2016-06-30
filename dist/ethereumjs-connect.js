@@ -20239,7 +20239,7 @@ module.exports={
         "Consensus": "0xd752e83681d78c344dc1636f3088294b8573dc49", 
         "ConsensusData": "0x3ed2cdd6bfbb4368a249368ee681b77fc9965492", 
         "CreateBranch": "0x6577c99511bc1d5eb74bfde123881a21428ae812", 
-        "CreateMarket": "0xc9ce26545179816b7a82e161cfbaaab547aa1989", 
+        "CreateMarket": "0x54894e13b69e760e9d0f6af18b9b2c87c5fc5525", 
         "EventResolution": "0x34eea9d6769355b56348f22d6e1e2b25fbd8f513", 
         "Events": "0xa80cb397a4a0f401980c758fa768d5c0f6d6d5f2", 
         "ExpiringEvents": "0xd2cfe56ceb218117da138fe6a7450aa8c6b450d2", 
