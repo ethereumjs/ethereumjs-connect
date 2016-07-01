@@ -28035,7 +28035,8 @@ module.exports = {
                     delete self.ipcRequests[parsed.id];
                     self.parse(JSON.stringify(parsed), req.returns, req.callback);
                 } else if (parsed.method === "eth_subscription" && parsed.params &&
-                    parsed.params.subscription && parsed.params.result) {
+                    parsed.params.subscription && parsed.params.result &&
+                    self.subscriptions[parsed.params.subscription]) {
                     self.subscriptions[parsed.params.subscription](parsed.params.result);
                 }
                 received = "";
@@ -28093,10 +28094,13 @@ module.exports = {
                     delete self.wsRequests[res.id];
                     self.parse(res, req.returns, req.callback);
                 } else if (res.method === "eth_subscription" && res.params &&
-                    res.params.subscription && res.params.result) {
+                    res.params.subscription && res.params.result &&
+                    self.subscriptions[res.params.subscription]) {
                     self.subscriptions[res.params.subscription](res.params.result);
                 } else {
-                    console.warn("unknown message received:", msg);
+                    if (self.debug.broadcast) {
+                        console.warn("unknown message received:", msg);
+                    }
                 }
             }
         };
