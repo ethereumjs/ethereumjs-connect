@@ -18880,6 +18880,8 @@ module.exports={
         "sender"
       ], 
       "method": "calculateReportTargetForEvent", 
+      "returns": "unfix", 
+      "send": true, 
       "signature": [
         "int256", 
         "int256", 
