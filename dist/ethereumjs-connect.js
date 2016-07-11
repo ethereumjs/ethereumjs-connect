@@ -17581,6 +17581,7 @@ module.exports={
         "event"
       ], 
       "method": "getEventResolution", 
+      "returns": "string", 
       "signature": [
         "int256"
       ]
@@ -27915,6 +27916,8 @@ module.exports = {
 
     notifications: {},
 
+    gasPrice: 20000000000,
+
     unmarshal: function (string, returns, stride, init) {
         var elements, array, position;
         if (string && string.length >= 66) {
@@ -28500,7 +28503,7 @@ module.exports = {
         return abi.prefix_hex(keccak_256(data));
     },
 
-    gasPrice: function (f) {
+    getGasPrice: function (f) {
         return this.broadcast(this.marshal("gasPrice"), f);
     },
 
