@@ -25,6 +25,8 @@ function clone(obj) {
     return copy;
 }
 
+var api = new contracts.Tx(network_id);
+
 module.exports = {
 
     debug: false,
@@ -45,7 +47,9 @@ module.exports = {
 
     custom_contracts: null,
 
-    tx: new contracts.Tx(network_id),
+    api: api,
+
+    tx: api.functions,
 
     has_value: function (o, v) {
         for (var p in o) {
@@ -62,16 +66,17 @@ module.exports = {
         {
             if (is_function(callback)) {
                 this.rpc.version(function (version) {
-                    var key;
+                    var key, method;
                     if (version !== null && version !== undefined && !version.error) {
                         self.network_id = version;
-                        self.tx = new contracts.Tx(version, self.custom_contracts);
+                        self.api = new contracts.Tx(version, self.custom_contracts);
                         self.contracts = clone(self.custom_contracts || contracts[self.network_id]);
-                        for (var method in self.tx) {
-                            if (!self.tx.hasOwnProperty(method)) continue;
-                            key = self.has_value(self.init_contracts, self.tx[method].to);
-                            if (key) self.tx[method].to = self.contracts[key];
+                        for (method in self.api.functions) {
+                            if (!self.api.functions.hasOwnProperty(method)) continue;
+                            key = self.has_value(self.init_contracts, self.api.functions[method].to);
+                            if (key) self.api.functions[method].to = self.contracts[key];
                         }
+                        self.tx = self.api.functions;
                     } else {
                         return callback(version);
                     }
@@ -80,13 +85,14 @@ module.exports = {
             } else {
                 var key, method;
                 this.network_id = this.rpc.version() || "2";
-                this.tx = new contracts.Tx(this.network_id, this.custom_contracts);
+                this.api = new contracts.Tx(this.network_id, this.custom_contracts);
                 this.contracts = clone(this.custom_contracts || contracts[this.network_id]);
-                for (method in this.tx) {
-                    if (!this.tx.hasOwnProperty(method)) continue;
-                    key = this.has_value(this.init_contracts, this.tx[method].to);
-                    if (key) this.tx[method].to = this.contracts[key];
+                for (method in this.api.functions) {
+                    if (!this.api.functions.hasOwnProperty(method)) continue;
+                    key = this.has_value(this.init_contracts, this.api.functions[method].to);
+                    if (key) this.api.functions[method].to = this.contracts[key];
                 }
+                this.tx = this.api.functions;
                 return this.network_id;
             }
         } else {
