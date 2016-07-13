@@ -84,6 +84,7 @@ module.exports = {
                 });
             } else {
                 var key, method;
+                this.rpc.blockNumber(noop);
                 this.network_id = this.rpc.version() || "2";
                 this.api = new contracts.Tx(this.network_id, this.custom_contracts);
                 this.contracts = clone(this.custom_contracts || contracts[this.network_id]);
@@ -295,11 +296,7 @@ module.exports = {
                 }
                 return callback(false);
             }
-            if (options.contracts) {
-
-            } else {
-                self.update_contracts();
-            }
+            if (!options.contracts) self.update_contracts();
             self.connection = true;
             callback({
                 http: self.rpc.nodes.local || self.rpc.nodes.hosted,
