@@ -10,8 +10,7 @@ var assert = require("chai").assert;
 var connector = require("../");
 connector.debug = true;
 
-var TIMEOUT = 48000;
-var IPCPATH = process.env.GETH_IPC;
+var TIMEOUT = 128000;
 
 require('it-each')({testPerIteration: true});
 
@@ -288,11 +287,11 @@ describe("connect", function () {
         });
     });
 
-    if (process.env.ETHEREUMJS_INTEGRATION_TESTS) {
+    if (process.env.INTEGRATION_TESTS) {
         describe("local node", function () {
             var connectOptions = [
-                {http: "http://localhost:8545"},
-                {http: "http://127.0.0.1:8545"}
+                {http: "http://localhost:8545", ws: null, ipc: null},
+                {http: "http://127.0.0.1:8545", ws: null, ipc: null}
             ];
             it.each(connectOptions,
                 "[sync] connect to",
@@ -330,25 +329,6 @@ describe("connect", function () {
                     assert.deepEqual(connector.contracts, custom_contracts);
                     assert.deepEqual(connector.init_contracts, custom_contracts);
                     assert.deepEqual(connector.custom_contracts, custom_contracts);
-                    next();
-                }
-            );
-            it.each(connectOptions,
-                "[sync] connect with IPC support",
-                ["element"],
-                function (element, next) {
-                    this.timeout(TIMEOUT);
-                    delete require.cache[require.resolve("../")];
-                    var connector = require("../");
-                    var options = element;
-                    options.ipc = IPCPATH;
-                    var conn = connector.connect(options);
-                    assert.isObject(conn);
-                    assert.strictEqual(conn.http, element.http);
-                    assert.strictEqual(conn.ws, element.ws);
-                    assert.strictEqual(conn.ipc, element.ipc);
-                    assert.isTrue(connector.connected());
-                    assert.isString(connector.coinbase);
                     next();
                 }
             );
@@ -407,26 +387,6 @@ describe("connect", function () {
                         assert.deepEqual(connector.contracts, custom_contracts);
                         assert.deepEqual(connector.init_contracts, custom_contracts);
                         assert.deepEqual(connector.custom_contracts, custom_contracts);
-                        next();
-                    });
-                }
-            );
-            it.each(connectOptions,
-                "[async] connect with IPC support",
-                ["element"],
-                function (element, next) {
-                    this.timeout(TIMEOUT);
-                    delete require.cache[require.resolve("../")];
-                    var connector = require("../");
-                    var options = element;
-                    options.ipc = IPCPATH;
-                    connector.connect(options, function (conn) {
-                        assert.isObject(conn);
-                        assert.strictEqual(conn.http, element.http);
-                        assert.strictEqual(conn.ws, element.ws);
-                        assert.strictEqual(conn.ipc, element.ipc);
-                        assert.isTrue(connector.connected());
-                        assert.isString(connector.coinbase);
                         next();
                     });
                 }

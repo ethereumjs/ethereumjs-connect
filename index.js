@@ -296,7 +296,7 @@ module.exports = {
                 }
                 return callback(false);
             }
-            if (!options.contracts) self.update_contracts();
+            self.update_contracts();
             self.connection = true;
             callback({
                 http: self.rpc.nodes.local || self.rpc.nodes.hosted,
