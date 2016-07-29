@@ -224,7 +224,8 @@ module.exports = {
             this.rpc.nodes.local = options.http;
             this.rpc.nodes.hosted = [];
             this.rpc.wsUrl = options.ws;
-            this.rpc.wsStatus = 0;
+            this.rpc.rpcStatus.ws = 0;
+            this.rpc.rpcStatus.ipc = 0;
 
         // if this is the second attempt to connect, fall back to the
         // default hosted nodes
@@ -235,7 +236,8 @@ module.exports = {
             this.rpc.ipcpath = null;
             this.rpc.reset();
             this.rpc.useHostedNode();
-            this.rpc.wsStatus = 0;
+            this.rpc.rpcStatus.ws = 0;
+            this.rpc.rpcStatus.ipc = 0;
             if (this.debug) {
                 console.debug("HTTP RPC:", JSON.stringify(this.rpc.nodes.hosted, null, 2));
                 console.debug("WebSocket:", this.rpc.wsUrl);
@@ -273,12 +275,12 @@ module.exports = {
             function (next) {
                 if (!options.http || !options.ws) return next();
                 var wsUrl = self.rpc.wsUrl;
-                var wsStatus = self.rpc.wsStatus;
+                var wsStatus = self.rpc.rpcStatus.ws;
                 self.rpc.wsUrl = null;
-                self.rpc.wsStatus = 0;
+                self.rpc.rpcStatus.ws = 0;
                 self.detect_network(function (err) {
                     self.rpc.wsUrl = wsUrl;
-                    self.rpc.wsStatus = wsStatus;
+                    self.rpc.rpcStatus.ws = wsStatus;
                     next(err);
                 });
             },
