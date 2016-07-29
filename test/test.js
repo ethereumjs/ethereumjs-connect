@@ -291,7 +291,7 @@ describe("connect", function () {
         describe("local node", function () {
             var connectOptions = [
                 {http: "http://localhost:8545", ws: null, ipc: null},
-                // {http: "http://127.0.0.1:8545", ws: null, ipc: null}
+                {http: "http://127.0.0.1:8545", ws: null, ipc: null}
             ];
             it.each(connectOptions,
                 "[sync] connect to",
