@@ -3681,7 +3681,7 @@ module.exports={
           "market"
         ], 
         "method": "getTotalSharesPurchased", 
-        "returns": "int256", 
+        "returns": "unfix", 
         "signature": [
           "int256"
         ]
