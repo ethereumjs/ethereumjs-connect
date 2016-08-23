@@ -16283,6 +16283,23 @@ module.exports={
       "name": "consensus_logReturn(int256)", 
       "signature": "0x2c8fae543971d12ce9baeaa8ac11b4873683653fdcb1a6104f6e0c9d5c3ecf02"
     }, 
+    "deposit": {
+      "contract": "Cash", 
+      "inputs": [
+        {
+          "indexed": true, 
+          "name": "sender", 
+          "type": "int256"
+        }, 
+        {
+          "indexed": false, 
+          "name": "value", 
+          "type": "int256"
+        }
+      ], 
+      "name": "deposit(int256,int256)", 
+      "signature": "0x34a501c7333ea92b0cf92686a6a375317e717114a9850e9a10661c6e4b873971"
+    }, 
     "log_add_tx": {
       "contract": "BuyAndSellShares", 
       "inputs": [
@@ -16525,6 +16542,28 @@ module.exports={
       ], 
       "name": "tradingFeeUpdated(int256,int256)", 
       "signature": "0xb8c735cc6495f8dac2581d532413dea78d7e03e0ff0880c32b4648c2145fba41"
+    }, 
+    "withdraw": {
+      "contract": "Cash", 
+      "inputs": [
+        {
+          "indexed": true, 
+          "name": "sender", 
+          "type": "int256"
+        }, 
+        {
+          "indexed": true, 
+          "name": "to", 
+          "type": "int256"
+        }, 
+        {
+          "indexed": false, 
+          "name": "value", 
+          "type": "int256"
+        }
+      ], 
+      "name": "withdraw(int256,int256,int256)", 
+      "signature": "0x4fd09602a6b4d418a14ba8c67f52e6962860ff302879ec1a88a04a1a44aac03b"
     }
   }, 
   "functions": {
@@ -17451,13 +17490,17 @@ module.exports={
           "int256"
         ]
       }, 
-      "getMarketCreatorFeesCollected": {
+      "getEventsWithSubmittedReport": {
         "inputs": [
-          "market"
+          "branch", 
+          "period", 
+          "reporter"
         ], 
-        "method": "getMarketCreatorFeesCollected", 
-        "returns": "unfix", 
+        "method": "getEventsWithSubmittedReport", 
+        "returns": "int256[]", 
         "signature": [
+          "int256", 
+          "int256", 
           "int256"
         ]
       }, 
@@ -20968,43 +21011,44 @@ module.exports={
         "Trades": "0xf26707c1f3b94d80611c5373013098ccd2d4ea9d"
     }, 
     "2": {
-        "Backstops": "0xe8e97f54a9de1c90e5c7ed9fb7ffbcff65dbafdb", 
-        "Branches": "0xac88faf06b1b2d37288bd557ad6cb3aa8fac757f", 
-        "BuyAndSellShares": "0x07fc22f07807cad664edcdb2494f359f1599db4c", 
-        "Cash": "0xa726b9e21388b5ccfee429804a3a9f234bf93535", 
-        "CloseMarket": "0xd2f91c2e30ca71b2bba10dc5851ccf23ffe1b0cc", 
-        "CloseMarketOne": "0x7b8c830588df2970171b598acb9ca0be2860bbda", 
-        "CloseMarketTwo": "0x94db3bc4184e320498455774b424802462458d3a", 
-        "CollectFees": "0xbb57b07e50038086617d722739efdf0cb81569fd", 
-        "CompleteSets": "0xb9bb5c2e404868469d8421db4964622f4163a116", 
-        "CompositeGetters": "0x27c8fe512983c1bedce37f1e312acb92456a3c5b", 
-        "Consensus": "0xfb262777af60c63de479ba9237861e89ca5dd8ba", 
-        "ConsensusData": "0xc4cee1d39d0b793addfffd3b20ff20c064a88008", 
-        "CreateBranch": "0x551a0bfeb54cfd2a0296ab60af657a1a8ae8937c", 
-        "CreateMarket": "0x0654c3bf4f57312caff94272a6f73d89ace5937f", 
-        "EventResolution": "0x4e2fb3c24c3c2bea754fcba0e67301c0f9566c4c", 
-        "Events": "0x54ad03abdf2a86ff2e758dd60c234702928f5a41", 
-        "ExpiringEvents": "0xadb4d0e959d0224100911b49ff2d61816e50f907", 
-        "Faucets": "0xc4959845c5eaa621cf1faa2be1a54079aac16c8f", 
-        "ForkPenalize": "0x5505c2123fa285ff17091fbd930d79409b0eaa46", 
-        "Forking": "0x1a42fd28ebfceee4e312fd7107fcbda752a314be", 
-        "FxpFunctions": "0x76049293138d99ebfaf9e229290fa9fa0331f39c", 
-        "Info": "0xd56d0f911c3f2bb4e4bf6fb56122ce1a5713e6d6", 
-        "MakeReports": "0x684907137f91d25532e8431053d3802146300d2b", 
-        "Markets": "0x9a98b727297eb0869ab07bad057cc4f0acf6ce8a", 
-        "PenalizationCatchup": "0xddb5b9e5ada53fb7c8926a7f2b093020699ff658", 
-        "PenalizeNotEnoughReports": "0xcdff160a9e70c4864b9f8198880055e96f9fa84d", 
-        "ProportionCorrect": "0x7f6e2d85f54d7a2fa32a20db024cb09492ae3c8f", 
-        "Reporting": "0x8949c7f290a46f3b11bf0abb1f1a900ed0ce1732", 
-        "ReportingThreshold": "0xc4bfdf52f8e78c6712186a34e397d3483a9b4d66", 
-        "RoundTwo": "0x65bb41e1efda8eae70ec3d55c285b749973ac50a", 
-        "RoundTwoPenalize": "0x227a7bc76fb182077ed002b7752ebf274842ef92", 
-        "SendReputation": "0x5544e08a66c1381694223a9d0663fe4d824093cc", 
-        "SlashRep": "0x0bd61e4524885c3f08c1a919bee2ce144dd96fea", 
-        "Trade": "0x97a5ddc68c0f14c1375b9e6d2ac3ea0abe33b137", 
-        "Trades": "0xfbe993b523d1829d1dec8fe787a2630eaa2d3e96"
+        "Backstops": "0x6239979341ecb76d51b011bc115503ea6d0f46f5", 
+        "Branches": "0x01c31752a1207eb55310f60359d464641e4197b9", 
+        "BuyAndSellShares": "0xc93d650f4018a7b1d4865b536d9891beb55c4dee", 
+        "Cash": "0x0ecd022b305c2a49896fa18146ce59f67279dc41", 
+        "CloseMarket": "0x91c29e5e1f089bb307acf2707499948313ff8087", 
+        "CloseMarketOne": "0xd03049dcf8c0e604f6938c053ec557a85c5877ef", 
+        "CloseMarketTwo": "0xe3a5f40465de053e55fb598e744d13e226c42663", 
+        "CollectFees": "0x09ea0c0232767cdea0c66d9e3dd4662db6e7531c", 
+        "CompleteSets": "0x1b362e65b91026f24b7078e1fc74aa36e955e181", 
+        "CompositeGetters": "0x93f487c9a564c93de792193a574ec77c10c2ccf5", 
+        "Consensus": "0xcbec2d671987cba1cb18e23def63fb28b9e24eb0", 
+        "ConsensusData": "0x02c442a6fc581feb279008da896fd72a341e0080", 
+        "CreateBranch": "0x5264ce217d71b3dcc5134ceeeaa91a53722629cb", 
+        "CreateMarket": "0xcfde977c61c26de739ea60ae57c4320b9a6e8258", 
+        "EventResolution": "0x288b78c19f21152437beecfe35ffa05e47b94812", 
+        "Events": "0x92b685fa534e2a170fbf435783125556be77dad3", 
+        "ExpiringEvents": "0x5cb95b62900ecb0fd6f88f849eeeb52d0978a7cb", 
+        "Faucets": "0x2866256ad91ae37cf9b6ec1b58ad059ccda23274", 
+        "ForkPenalize": "0xd5a93d5c69dbe6cfeee82ef43fc72983c436da39", 
+        "Forking": "0xc5c2b1744de2a98d227d72e77692785fee354db3", 
+        "FxpFunctions": "0x79ebd3f33d85d525aa5c6b41cc41c3fe00ebbf50", 
+        "Info": "0xc44c8654168e0de6f3dd9389ef129c00fe29938b", 
+        "MakeReports": "0xa8d7bbbeb051a6c41d91d4015d28680b1176aa31", 
+        "Markets": "0x8227e26b242d8f75bc52a3bf844aa68122416f3b", 
+        "PenalizationCatchup": "0xf0e86a2cc878e1d56c0f955566ad8778aae22bcd", 
+        "PenalizeNotEnoughReports": "0xe2442756b2488018330db4986fb0eb0858927fbb", 
+        "ProportionCorrect": "0xeeb5eee0ea9be4ab317ce52e021d3e1ba002429e", 
+        "Reporting": "0x6e5d234275e48c4422a654bacd2165f0863363b8", 
+        "ReportingThreshold": "0xe7d2b0926d61f3ed11c5ff05fbcaa765e50fb162", 
+        "RoundTwo": "0xe8e9a4ec088a2e2065633245201ae37c1eaeb830", 
+        "RoundTwoPenalize": "0x46a5320515ca9014d3b694e29996c4c706e5999b", 
+        "SendReputation": "0x1725c48131094a6ea44126d10bb78d40a0e63cee", 
+        "SlashRep": "0x847dc287f1ba6d4ca5437b1bef42c03c49ff1852", 
+        "Trade": "0x7a896fe5413dd305dac18d23fdeaffd19678ddc6", 
+        "Trades": "0xb6fc9abc692f7d806ff38f8820b71701bdaa576f"
     }
 }
+
 },{}],57:[function(require,module,exports){
 module.exports={
     "0x": "no response or bad input",
@@ -30011,14 +30055,14 @@ module.exports = {
             if (tx) return callback(null, tx);
             self.txs[txHash].status = "failed";
             if (self.retryDroppedTxs) {
-                console.debug(" *** Re-submitting transaction:", txHash);
+                if (self.debug.broadcast) console.debug(" *** Re-submitting transaction:", txHash);
                 self.txs[txHash].status = "resubmitted";
                 return callback(null, null);
             }
             // only resubmit if this is a raw transaction and has a duplicate nonce
             self.checkDroppedTxForDuplicateNonce(txHash, function (err) {
                 if (err !== null) return callback(err);
-                console.debug(" *** Re-submitting transaction:", txHash);
+                if (self.debug.broadcast) console.debug(" *** Re-submitting transaction:", txHash);
                 self.txs[txHash].status = "resubmitted";
                 return callback(null, null);
             });
