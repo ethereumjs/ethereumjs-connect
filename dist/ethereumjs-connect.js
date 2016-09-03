@@ -17541,7 +17541,7 @@ module.exports={
           "market"
         ], 
         "method": "getMarketCreatorFeesCollected", 
-        "returns": "int256", 
+        "returns": "unfix", 
         "signature": [
           "int256"
         ]
