@@ -21223,7 +21223,7 @@ module.exports={
         "RoundTwoPenalize": "0xbe15d0d952c21d5fb181dac9941764cce2e0c240", 
         "SendReputation": "0xc1dc9753a0f143bbdb605805cf27cac9489524b0", 
         "SlashRep": "0xaf0b38b11949930453c9ccaaddb284e8c7b662a5", 
-        "Trade": "0xdeebe2062823831949a255e59961e21948caae05", 
+        "Trade": "0x024892dfaec607abd60f1d7357624d3b74fb19a5", 
         "Trades": "0x1e997132f2aa4b8d52518e3935cccb59f42210f7"
     }
 }
