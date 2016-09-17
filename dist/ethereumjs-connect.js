@@ -30084,7 +30084,6 @@ module.exports = {
             return converted;
         }
         this.invoke(tx, function (res) {
-            if (self.debug.tx) console.debug("invoked (fire):", res);
             if (res === undefined || res === null) {
                 return callback(errors.NO_RESPONSE);
             }
@@ -30372,7 +30371,7 @@ module.exports = {
                         // if mutable return value, then lookup logged return
                         // value in transaction receipt (after confirmation)
                         self.getLoggedReturnValue(txHash, function (err, log) {
-                            if (self.debug.tx) console.debug("loggedReturnValue:", err, log.returnValue);
+                            if (self.debug.tx) console.debug("loggedReturnValue:", err, log);
                             if (err) {
                                 payload.send = false;
                                 return self.fire(payload, function (callReturn) {
