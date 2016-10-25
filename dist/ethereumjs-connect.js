@@ -29290,7 +29290,7 @@ module.exports = {
             this.unsubscribe(this.blockFilter.id, function () {
                 self.blockFilter.id = null;
                 self.subscribeNewHeads(function (filterID) {
-                    console.log("new subscription:", filterID);
+                    if (self.debug.broadcast) console.log("subscribed:", filterID);
                     if (filterID && !filterID.error) {
                         self.blockFilter.id = filterID;
                         self.registerSubscriptionCallback(filterID, self.onNewBlock.bind(self));
@@ -29300,7 +29300,7 @@ module.exports = {
             });
         } else {
             this.subscribeNewHeads(function (filterID) {
-                console.log("subscribed:", filterID);
+                if (self.debug.broadcast) console.log("subscribed:", filterID);
                 if (filterID && !filterID.error) {
                     self.blockFilter.id = filterID;
                     self.registerSubscriptionCallback(filterID, self.onNewBlock.bind(self));
