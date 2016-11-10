@@ -16766,7 +16766,7 @@ module.exports={
           "event"
         ], 
         "method": "getFinal", 
-        "returns": "int256", 
+        "returns": "number", 
         "signature": [
           "int256"
         ]
@@ -16868,7 +16868,7 @@ module.exports={
           "event"
         ], 
         "method": "getRoundTwo", 
-        "returns": "int256", 
+        "returns": "number", 
         "signature": [
           "int256"
         ]
@@ -16880,6 +16880,7 @@ module.exports={
         ], 
         "method": "increaseBondPaid", 
         "returns": "int256", 
+        "send": true, 
         "signature": [
           "int256", 
           "int256"
@@ -16892,6 +16893,7 @@ module.exports={
         ], 
         "method": "setBondAmount", 
         "returns": "int256", 
+        "send": true, 
         "signature": [
           "int256", 
           "int256"
@@ -16916,6 +16918,7 @@ module.exports={
         ], 
         "method": "setBondReturned", 
         "returns": "int256", 
+        "send": true, 
         "signature": [
           "int256"
         ]
@@ -16938,6 +16941,7 @@ module.exports={
         ], 
         "method": "setForkBondPoster", 
         "returns": "int256", 
+        "send": true, 
         "signature": [
           "int256", 
           "int256"
@@ -16949,6 +16953,7 @@ module.exports={
         ], 
         "method": "setForkedOverEthicality", 
         "returns": "int256", 
+        "send": true, 
         "signature": [
           "int256"
         ]
@@ -16959,6 +16964,7 @@ module.exports={
         ], 
         "method": "setMoved", 
         "returns": "int256", 
+        "send": true, 
         "signature": [
           "int256"
         ]
@@ -16970,6 +16976,7 @@ module.exports={
         ], 
         "method": "setOriginalBranch", 
         "returns": "int256", 
+        "send": true, 
         "signature": [
           "int256", 
           "int256"
@@ -17022,6 +17029,7 @@ module.exports={
         ], 
         "method": "setResolved", 
         "returns": "int256", 
+        "send": true, 
         "signature": [
           "int256", 
           "int256", 
@@ -17048,6 +17056,7 @@ module.exports={
         ], 
         "method": "setRoundTwoRefund", 
         "returns": "int256", 
+        "send": true, 
         "signature": [
           "int256", 
           "int256"
@@ -17062,6 +17071,7 @@ module.exports={
         ], 
         "method": "addMarketToBranch", 
         "returns": "int256", 
+        "send": true, 
         "signature": [
           "int256", 
           "int256"
@@ -17259,6 +17269,7 @@ module.exports={
         ], 
         "method": "initializeBranch", 
         "returns": "int256", 
+        "send": true, 
         "signature": [
           "int256", 
           "int256", 
@@ -17276,6 +17287,7 @@ module.exports={
         ], 
         "method": "setBaseReporters", 
         "returns": "int256", 
+        "send": true, 
         "signature": [
           "int256", 
           "int256"
@@ -17288,6 +17300,7 @@ module.exports={
         ], 
         "method": "setEventForkedOver", 
         "returns": "int256", 
+        "send": true, 
         "signature": [
           "int256", 
           "int256"
@@ -17299,6 +17312,7 @@ module.exports={
         ], 
         "method": "setForkPeriod", 
         "returns": "int256", 
+        "send": true, 
         "signature": [
           "int256"
         ]
@@ -17311,6 +17325,7 @@ module.exports={
         ], 
         "method": "setInitialBalance", 
         "returns": "int256", 
+        "send": true, 
         "signature": [
           "int256", 
           "int256", 
@@ -19606,7 +19621,7 @@ module.exports={
           "event"
         ], 
         "method": "proportionCorrectForkEvent", 
-        "returns": "int256", 
+        "returns": "unfix", 
         "signature": [
           "int256"
         ]
@@ -20448,7 +20463,7 @@ module.exports={
           "event"
         ], 
         "method": "proportionCorrect", 
-        "returns": "int256", 
+        "returns": "unfix", 
         "signature": [
           "int256"
         ]
@@ -21322,7 +21337,7 @@ module.exports={
         "CloseMarketTwo": "0x9fe69262bbaa47f013b7dbd6ca5f01e17446c645", 
         "CollectFees": "0x9ce7d44719e0d12b5aba76b80fcb7c1b2e7770fd", 
         "CompleteSets": "0x77c424f86a1b80f1e303d1c2651acd6aba653cb6", 
-        "CompositeGetters": "0x5f67ab9ff79be97b27ac8f26ef9f4b429b82e2df", 
+        "CompositeGetters": "0x53f3c6eebb33db6cdaf3a1222045b79b29950add", 
         "Consensus": "0x9308cf21b5a11f182f9707ca284bbb71bb84f893", 
         "ConsensusData": "0x0fbddb6bfb81c8d0965a894567cf4061446072c2", 
         "CreateBranch": "0x52ccb0490bc81a2ae363fccbb2b367bca546cec7", 
