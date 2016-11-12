@@ -19215,7 +19215,7 @@ module.exports={
           "sender"
         ], 
         "method": "getReport", 
-        "returns": "unfix", 
+        "returns": "int256", 
         "signature": [
           "int256", 
           "int256", 
