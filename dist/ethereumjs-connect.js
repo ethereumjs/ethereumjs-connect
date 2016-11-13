@@ -18484,7 +18484,7 @@ module.exports={
           "event"
         ], 
         "method": "getMaxValue", 
-        "returns": "number", 
+        "returns": "unfix", 
         "signature": [
           "int256"
         ]
@@ -18494,7 +18494,7 @@ module.exports={
           "event"
         ], 
         "method": "getMinValue", 
-        "returns": "number", 
+        "returns": "unfix", 
         "signature": [
           "int256"
         ]
