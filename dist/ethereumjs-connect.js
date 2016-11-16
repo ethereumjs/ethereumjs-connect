@@ -21192,6 +21192,30 @@ module.exports={
           "int256"
         ]
       }, 
+      "getBestAskID": {
+        "inputs": [
+          "market", 
+          "outcome"
+        ], 
+        "method": "getBestAskID", 
+        "returns": "int256", 
+        "signature": [
+          "int256", 
+          "int256"
+        ]
+      }, 
+      "getBestBidID": {
+        "inputs": [
+          "market", 
+          "outcome"
+        ], 
+        "method": "getBestBidID", 
+        "returns": "int256", 
+        "signature": [
+          "int256", 
+          "int256"
+        ]
+      }, 
       "getID": {
         "inputs": [
           "tradeID"
@@ -21323,7 +21347,7 @@ module.exports={
     "10101": {
         "Backstops": "0x8c19616de17acdfbc933b99d9f529a689d22098f", 
         "Branches": "0x8f2c2267687cb0f047b28a1b6f945da6e101a0d7", 
-        "BuyAndSellShares": "0xc1c4e2f32e4b84a60b8b7983b6356af4269aab79", 
+        "BuyAndSellShares": "0x6c4c9fa11d6d8ed2c7a08ddcf4d4654c85194f68", 
         "Cash": "0x708fdfe18bf28afe861a69e95419d183ace003eb", 
         "CloseMarket": "0x70a893eb9569041e97a3787f0c76a1eb6378d8b2", 
         "CloseMarketOne": "0x482c57abdce592b39434e3f619ffc3db62ab6d01", 
@@ -21355,7 +21379,7 @@ module.exports={
         "RoundTwoPenalize": "0x031d9d02520cc708ea3c865278508c9cdb92bd51", 
         "SendReputation": "0x448c01a2e1fd6c2ef133402c403d2f48c99993e7", 
         "SlashRep": "0xd15a6cfc462ae76b9ec590cab8b34bfa8e1302d7", 
-        "Trade": "0x6c4c9fa11d6d8ed2c7a08ddcf4d4654c85194f68", 
+        "Trade": "0xc1c4e2f32e4b84a60b8b7983b6356af4269aab79", 
         "Trades": "0x3f3276849a878a176b2f02dd48a483e8182a49e4"
     }, 
     "2": {
@@ -21443,6 +21467,7 @@ module.exports={
         "-1": "amount/price bad",
         "-2": "oracle-only branch",
         "-4": "not enough money",
+        "-5": "bid price exceeds best ask",
         "21": "trade already exists"
     },
     "buyCompleteSets": {
@@ -21547,6 +21572,7 @@ module.exports={
         "-2": "oracle only branch",
         "-3": "bad outcome to trade",
         "-4": "not enough shares",
+        "-5": "best bid exceeds ask price",
         "10": "insufficient balance",
         "21": "trade already exists"
     },
