@@ -17116,6 +17116,7 @@ module.exports={
           "branch"
         ], 
         "method": "getEventForkedOver", 
+        "parser": "parseMarket", 
         "returns": "int256", 
         "signature": [
           "int256"
@@ -17148,6 +17149,7 @@ module.exports={
           "branch"
         ], 
         "method": "getMarketsInBranch", 
+        "parser": "parseMarkets", 
         "returns": "hash[]", 
         "signature": [
           "int256"
@@ -17680,6 +17682,7 @@ module.exports={
           "reporter"
         ], 
         "method": "getEventsWithSubmittedReport", 
+        "parser": "parseMarkets", 
         "returns": "int256[]", 
         "signature": [
           "int256", 
@@ -17718,6 +17721,7 @@ module.exports={
           "last"
         ], 
         "method": "getMarketsCreatedByMarketCreator", 
+        "parser": "parseMarkets", 
         "returns": "int256[]", 
         "signature": [
           "int256", 
@@ -19050,6 +19054,7 @@ module.exports={
           "eventIndex"
         ], 
         "method": "getEvent", 
+        "parser": "parseMarket", 
         "returns": "hash", 
         "signature": [
           "int256", 
@@ -19075,6 +19080,7 @@ module.exports={
           "expDateIndex"
         ], 
         "method": "getEvents", 
+        "parser": "parseMarkets", 
         "returns": "hash[]", 
         "signature": [
           "int256", 
@@ -19089,6 +19095,7 @@ module.exports={
           "end"
         ], 
         "method": "getEventsRange", 
+        "parser": "parseMarkets", 
         "returns": "int256[]", 
         "signature": [
           "int256", 
@@ -20093,6 +20100,7 @@ module.exports={
           "index"
         ], 
         "method": "getMarketEvent", 
+        "parser": "parseMarket", 
         "returns": "int256", 
         "signature": [
           "int256", 
@@ -20104,6 +20112,7 @@ module.exports={
           "market"
         ], 
         "method": "getMarketEvents", 
+        "parser": "parseMarkets", 
         "returns": "hash[]", 
         "signature": [
           "int256"
@@ -20916,6 +20925,7 @@ module.exports={
           "start"
         ], 
         "method": "getEventsToReportOn", 
+        "parser": "parseMarkets", 
         "returns": "int256[]", 
         "signature": [
           "int256", 
