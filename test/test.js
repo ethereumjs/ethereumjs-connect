@@ -436,11 +436,11 @@ describe("connect", function () {
         });
     });
 
-    it("network_id = 0, 1, 2, 7, or 10101", function () {
+    it("network_id = 0, 1, 2, 3, 7, or 10101", function () {
         delete require.cache[require.resolve("../")];
         var connector = require("../");
         connector.connect();
-        assert.include(["0", "1", "2", "7", "10101"], connector.network_id);
+        assert.include(["0", "1", "2", "3", "7", "10101"], connector.network_id);
     });
 
 });
