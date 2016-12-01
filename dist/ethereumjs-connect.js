@@ -22426,7 +22426,7 @@ global.connector = connector;
 var async = require("async");
 var rpc = require("ethrpc");
 var contracts = require("augur-contracts");
-var network_id = "2";
+var network_id = "3";
 
 function noop() {}
 
