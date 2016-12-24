@@ -1236,7 +1236,7 @@ module.exports={
         ], 
         "label": "Get Base Reporters", 
         "method": "getBaseReporters", 
-        "returns": "int256", 
+        "returns": "number", 
         "signature": [
           "int256"
         ]
@@ -1519,7 +1519,8 @@ module.exports={
           "amount", 
           "price", 
           "market", 
-          "outcome"
+          "outcome", 
+          "minimumTradeSize"
         ], 
         "label": "Bid", 
         "method": "buy", 
@@ -1527,6 +1528,7 @@ module.exports={
         "returns": "int256", 
         "send": true, 
         "signature": [
+          "int256", 
           "int256", 
           "int256", 
           "int256", 
@@ -1553,7 +1555,8 @@ module.exports={
           "amount", 
           "price", 
           "market", 
-          "outcome"
+          "outcome", 
+          "minimumTradeSize"
         ], 
         "label": "Ask", 
         "method": "sell", 
@@ -1561,6 +1564,7 @@ module.exports={
         "returns": "int256", 
         "send": true, 
         "signature": [
+          "int256", 
           "int256", 
           "int256", 
           "int256", 
@@ -1573,13 +1577,15 @@ module.exports={
           "amount", 
           "price", 
           "market", 
-          "outcome"
+          "outcome", 
+          "minimumTradeSize"
         ], 
         "label": "Short Ask", 
         "method": "shortAsk", 
         "mutable": true, 
         "returns": "int256", 
         "signature": [
+          "int256", 
           "int256", 
           "int256", 
           "int256", 
@@ -2775,7 +2781,7 @@ module.exports={
         ], 
         "label": "Get Past24", 
         "method": "getPast24", 
-        "returns": "int256", 
+        "returns": "number", 
         "signature": [
           "int256"
         ]
