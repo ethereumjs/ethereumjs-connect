@@ -1509,6 +1509,9 @@ module.exports={
     }, 
     "BuyAndSellShares": {
       "buy": {
+        "events": [
+          "log_add_tx"
+        ], 
         "gas": 725202, 
         "inputs": [
           "amount", 
@@ -1531,6 +1534,9 @@ module.exports={
         ]
       }, 
       "cancel": {
+        "events": [
+          "log_cancel"
+        ], 
         "gas": 288060, 
         "inputs": [
           "trade_id"
@@ -1545,6 +1551,9 @@ module.exports={
         ]
       }, 
       "sell": {
+        "events": [
+          "log_add_tx"
+        ], 
         "gas": 696759, 
         "inputs": [
           "amount", 
@@ -1567,6 +1576,10 @@ module.exports={
         ]
       }, 
       "shortAsk": {
+        "events": [
+          "completeSets_logReturn", 
+          "log_add_tx"
+        ], 
         "gas": 1500000, 
         "inputs": [
           "amount", 
@@ -1619,6 +1632,9 @@ module.exports={
       }, 
       "depositEther": {
         "description": "Convert Ether to tradeable Ether token", 
+        "events": [
+          "deposit"
+        ], 
         "label": "Deposit Ether", 
         "method": "depositEther", 
         "returns": "number", 
@@ -1704,6 +1720,9 @@ module.exports={
       }, 
       "withdrawEther": {
         "description": "Convert tradeable Ether token to Ether", 
+        "events": [
+          "withdraw"
+        ], 
         "fixed": [
           1
         ], 
@@ -1723,6 +1742,9 @@ module.exports={
     }, 
     "CloseMarket": {
       "claimProceeds": {
+        "events": [
+          "payout"
+        ], 
         "inputs": [
           "branch", 
           "market"
@@ -1756,6 +1778,9 @@ module.exports={
     }, 
     "CollectFees": {
       "collectFees": {
+        "events": [
+          "collectedFees"
+        ], 
         "inputs": [
           "branch", 
           "sender"
@@ -1772,6 +1797,9 @@ module.exports={
     }, 
     "CompleteSets": {
       "buyCompleteSets": {
+        "events": [
+          "completeSets_logReturn"
+        ], 
         "fixed": [
           1
         ], 
@@ -1791,6 +1819,9 @@ module.exports={
         ]
       }, 
       "sellCompleteSets": {
+        "events": [
+          "completeSets_logReturn"
+        ], 
         "fixed": [
           1
         ], 
@@ -1961,6 +1992,9 @@ module.exports={
         ]
       }, 
       "penalizeWrong": {
+        "events": [
+          "penalize"
+        ], 
         "inputs": [
           "branch", 
           "event"
@@ -2365,6 +2399,9 @@ module.exports={
         ]
       }, 
       "createMarket": {
+        "events": [
+          "marketCreated"
+        ], 
         "inputs": [
           "branch", 
           "description", 
@@ -2394,6 +2431,9 @@ module.exports={
         ]
       }, 
       "createSingleEventMarket": {
+        "events": [
+          "marketCreated"
+        ], 
         "inputs": [
           "branch", 
           "description", 
@@ -2445,6 +2485,9 @@ module.exports={
         ]
       }, 
       "updateTradingFee": {
+        "events": [
+          "tradingFeeUpdated"
+        ], 
         "inputs": [
           "branch", 
           "market", 
@@ -4009,6 +4052,10 @@ module.exports={
         ]
       }, 
       "fork": {
+        "events": [
+          "penalizationCaughtUp", 
+          "collectedFees"
+        ], 
         "inputs": [
           "event", 
           "branch", 
@@ -4196,6 +4243,10 @@ module.exports={
         ]
       }, 
       "submitReport": {
+        "events": [
+          "penalizationCaughtUp", 
+          "submittedReportHash"
+        ], 
         "fixed": [
           3
         ], 
@@ -4218,6 +4269,10 @@ module.exports={
         ]
       }, 
       "submitReportHash": {
+        "events": [
+          "penalizationCaughtUp", 
+          "submittedReportHash"
+        ], 
         "inputs": [
           "event", 
           "reportHash", 
@@ -4878,6 +4933,9 @@ module.exports={
     }, 
     "Payout": {
       "oneOutcome": {
+        "events": [
+          "payout"
+        ], 
         "inputs": [
           "market", 
           "winningOutcome", 
@@ -4897,6 +4955,9 @@ module.exports={
         ]
       }, 
       "twoOutcomes": {
+        "events": [
+          "payout"
+        ], 
         "inputs": [
           "market", 
           "winningOutcome", 
@@ -4916,6 +4977,9 @@ module.exports={
     }, 
     "PenalizationCatchup": {
       "penalizationCatchup": {
+        "events": [
+          "penalizationCaughtUp"
+        ], 
         "inputs": [
           "branch", 
           "sender"
@@ -4964,6 +5028,9 @@ module.exports={
     "Register": {
       "register": {
         "description": "Write registration timestamp to the blockchain", 
+        "events": [
+          "registration"
+        ], 
         "label": "Register New Account", 
         "method": "register", 
         "returns": "number", 
@@ -5409,6 +5476,10 @@ module.exports={
         ]
       }, 
       "roundTwoPostBond": {
+        "events": [
+          "penalizationCaughtUp", 
+          "collectedFees"
+        ], 
         "inputs": [
           "branch", 
           "event", 
@@ -5475,6 +5546,9 @@ module.exports={
         ]
       }, 
       "approve": {
+        "events": [
+          "Approval"
+        ], 
         "inputs": [
           "branch", 
           "spender", 
@@ -5490,6 +5564,10 @@ module.exports={
         ]
       }, 
       "convertToActiveRep": {
+        "events": [
+          "penalizationCaughtUp", 
+          "collectedFees"
+        ], 
         "inputs": [
           "branch", 
           "value"
@@ -5503,6 +5581,10 @@ module.exports={
         ]
       }, 
       "convertToDormantRep": {
+        "events": [
+          "penalizationCaughtUp", 
+          "collectedFees"
+        ], 
         "inputs": [
           "branch", 
           "value"
@@ -5516,6 +5598,10 @@ module.exports={
         ]
       }, 
       "sendReputation": {
+        "events": [
+          "penalizationCaughtUp", 
+          "collectedFees"
+        ], 
         "inputs": [
           "branch", 
           "recver", 
@@ -5532,6 +5618,9 @@ module.exports={
         ]
       }, 
       "transfer": {
+        "events": [
+          "Transfer"
+        ], 
         "inputs": [
           "branch", 
           "recver", 
@@ -5547,6 +5636,9 @@ module.exports={
         ]
       }, 
       "transferFrom": {
+        "events": [
+          "Transfer"
+        ], 
         "inputs": [
           "branch", 
           "from", 
@@ -5589,6 +5681,10 @@ module.exports={
     }, 
     "Trade": {
       "short_sell": {
+        "events": [
+          "log_short_fill_tx", 
+          "trade_logArrayReturn"
+        ], 
         "gas": 1059796, 
         "inputs": [
           "buyer_trade_id", 
@@ -5605,6 +5701,10 @@ module.exports={
         ]
       }, 
       "trade": {
+        "events": [
+          "trade_logArrayReturn", 
+          "log_fill_tx"
+        ], 
         "gas": 787421, 
         "inputs": [
           "max_value", 
