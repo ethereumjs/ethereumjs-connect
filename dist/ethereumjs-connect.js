@@ -69,6 +69,28 @@ module.exports={
       "name": "closeMarket_logReturn(int256)", 
       "signature": "0x7111c90bbf79fe51a8f95606c2c44137f600abeb3b5631db7d06ed168c13eea7"
     }, 
+    "closedMarket": {
+      "contract": "CloseMarket", 
+      "inputs": [
+        {
+          "indexed": true, 
+          "name": "market", 
+          "type": "int256"
+        }, 
+        {
+          "indexed": true, 
+          "name": "branch", 
+          "type": "int256"
+        }, 
+        {
+          "indexed": true, 
+          "name": "sender", 
+          "type": "int256"
+        }
+      ], 
+      "name": "closedMarket(int256,int256,int256)", 
+      "signature": "0x32c2330374d337682bae09f8332c0cc2ca58d413047a81c2282ad2c3641b4d92"
+    }, 
     "collectedFees": {
       "contract": "CollectFees", 
       "inputs": [
@@ -1759,6 +1781,9 @@ module.exports={
         ]
       }, 
       "closeMarket": {
+        "events": [
+          "closedMarket"
+        ], 
         "inputs": [
           "branch", 
           "market", 
@@ -1993,7 +2018,8 @@ module.exports={
       }, 
       "penalizeWrong": {
         "events": [
-          "penalize"
+          "penalize", 
+          "closedMarket"
         ], 
         "inputs": [
           "branch", 
