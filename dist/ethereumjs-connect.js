@@ -308,10 +308,15 @@ module.exports={
           "indexed": false, 
           "name": "timestamp", 
           "type": "int256"
+        }, 
+        {
+          "indexed": false, 
+          "name": "tradeGroupID", 
+          "type": "int256"
         }
       ], 
-      "name": "log_add_tx(int256,int256,int256,int256,int256,int256,int256,int256,int256)", 
-      "signature": "0xf6ebadeafdbe1f52fd45da6789b3f8fd7a39efd3b536a8c5ad1bfcf3914a1443"
+      "name": "log_add_tx(int256,int256,int256,int256,int256,int256,int256,int256,int256,int256)", 
+      "signature": "0x3922406b6c1bc74fdedc2f7b5f84f64655e6a78d29229166b493c9b738a5e40e"
     }, 
     "log_cancel": {
       "contract": "BuyAndSellShares", 
@@ -432,10 +437,15 @@ module.exports={
           "indexed": false, 
           "name": "tradeHash", 
           "type": "int256"
+        }, 
+        {
+          "indexed": false, 
+          "name": "tradeGroupID", 
+          "type": "int256"
         }
       ], 
-      "name": "log_fill_tx(int256,int256,int256,int256,int256,int256,int256,int256,int256,int256,int256,int256,int256)", 
-      "signature": "0x458df6858b43ba351946c2ebb255e91a6ae5d642f0869c39d9ea146c551db43f"
+      "name": "log_fill_tx(int256,int256,int256,int256,int256,int256,int256,int256,int256,int256,int256,int256,int256,int256)", 
+      "signature": "0xe054ca76966cd4f17c6c6a8e55f1c6352cb2b58b760f658e013353f1613d32c7"
     }, 
     "log_short_fill_tx": {
       "contract": "Trade", 
@@ -504,10 +514,15 @@ module.exports={
           "indexed": false, 
           "name": "tradeHash", 
           "type": "int256"
+        }, 
+        {
+          "indexed": false, 
+          "name": "tradeGroupID", 
+          "type": "int256"
         }
       ], 
-      "name": "log_short_fill_tx(int256,int256,int256,int256,int256,int256,int256,int256,int256,int256,int256,int256,int256)", 
-      "signature": "0x6ddcee277b0bc8892c2a869d356c2ebb1f91c3400a95aa1a049d7f0f003249ad"
+      "name": "log_short_fill_tx(int256,int256,int256,int256,int256,int256,int256,int256,int256,int256,int256,int256,int256,int256)", 
+      "signature": "0x3572c2b345009b4c449540a9d7fe10a7464ae662d6bb1bae9fea96ce21a8ebb1"
     }, 
     "makeReports_logReturn": {
       "contract": "MakeReports", 
@@ -1625,7 +1640,8 @@ module.exports={
           "price", 
           "market", 
           "outcome", 
-          "minimumTradeSize"
+          "minimumTradeSize", 
+          "tradeGroupID"
         ], 
         "label": "Bid", 
         "method": "buy", 
@@ -1633,6 +1649,7 @@ module.exports={
         "returns": "int256", 
         "send": true, 
         "signature": [
+          "int256", 
           "int256", 
           "int256", 
           "int256", 
@@ -1669,7 +1686,8 @@ module.exports={
           "market", 
           "outcome", 
           "minimumTradeSize", 
-          "isShortAsk"
+          "isShortAsk", 
+          "tradeGroupID"
         ], 
         "label": "Ask", 
         "method": "sell", 
@@ -1677,6 +1695,7 @@ module.exports={
         "returns": "int256", 
         "send": true, 
         "signature": [
+          "int256", 
           "int256", 
           "int256", 
           "int256", 
@@ -1697,13 +1716,15 @@ module.exports={
           "price", 
           "market", 
           "outcome", 
-          "minimumTradeSize"
+          "minimumTradeSize", 
+          "tradeGroupID"
         ], 
         "label": "Short Ask", 
         "method": "shortAsk", 
         "mutable": true, 
         "returns": "int256", 
         "signature": [
+          "int256", 
           "int256", 
           "int256", 
           "int256", 
@@ -5828,7 +5849,8 @@ module.exports={
         "gas": 1059796, 
         "inputs": [
           "buyer_trade_id", 
-          "max_amount"
+          "max_amount", 
+          "tradeGroupID"
         ], 
         "label": "Short sell", 
         "method": "short_sell", 
@@ -5836,6 +5858,7 @@ module.exports={
         "returns": "hash[]", 
         "send": true, 
         "signature": [
+          "int256", 
           "int256", 
           "int256"
         ]
@@ -5849,7 +5872,8 @@ module.exports={
         "inputs": [
           "max_value", 
           "max_amount", 
-          "trade_ids"
+          "trade_ids", 
+          "tradeGroupID"
         ], 
         "label": "Trade", 
         "method": "trade", 
@@ -5859,7 +5883,8 @@ module.exports={
         "signature": [
           "int256", 
           "int256", 
-          "int256[]"
+          "int256[]", 
+          "int256"
         ]
       }
     }, 
