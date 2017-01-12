@@ -2959,7 +2959,7 @@ module.exports={
         ], 
         "label": "Get Outcome", 
         "method": "getOutcome", 
-        "returns": "unfix", 
+        "returns": "number", 
         "signature": [
           "int256"
         ]
@@ -3036,7 +3036,7 @@ module.exports={
         ], 
         "label": "Get Uncaught Outcome", 
         "method": "getUncaughtOutcome", 
-        "returns": "unfix", 
+        "returns": "number", 
         "signature": [
           "int256"
         ]
@@ -6115,7 +6115,7 @@ module.exports={
         "CloseMarket": "0x3f3276849a878a176b2f02dd48a483e8182a49e4", 
         "CollectFees": "0x81a7621e9a286d061b3dea040888a51c96693b1c", 
         "CompleteSets": "0x60cb05deb51f92ee25ce99f67181ecaeb0b743ea", 
-        "CompositeGetters": "0xd2e9f7c2fd4635199b8cc9e8128fc4d27c693945", 
+        "CompositeGetters": "0x4803e0b158ab66eae81a48bba2799f905c379eb2", 
         "Consensus": "0xc1c4e2f32e4b84a60b8b7983b6356af4269aab79", 
         "ConsensusData": "0x4a61f3db785f1e2a23ffefeafaceeef2df551667", 
         "CreateBranch": "0x9fe69262bbaa47f013b7dbd6ca5f01e17446c645", 
