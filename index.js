@@ -89,7 +89,7 @@ module.exports = {
             } else {
                 var key, method;
                 this.rpc.blockNumber(noop);
-                this.network_id = this.rpc.version() || "2";
+                this.network_id = this.rpc.version() || "3";
                 this.api = new contracts.Tx(this.network_id, this.custom_contracts);
                 this.contracts = clone(this.custom_contracts || contracts[this.network_id]);
                 for (method in this.api.functions) {
