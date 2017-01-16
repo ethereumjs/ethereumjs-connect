@@ -374,23 +374,35 @@ describe("setGasPrice", function () {
     after(function () {
       ethcon.rpc.getGasPrice = getGasPrice;
     });
-    it(t.description, function (done) {
-      ethcon.state = clone(t.state);
-      ethcon.rpc.getGasPrice = function (callback) {
-        ethcon.rpc.gasPrice = t.blockchain.gasPrice;
-        if (callback) callback(null);
-      };
-      ethcon.setGasPrice(function (err) {
-        t.assertions(err, ethcon.rpc, ethcon.state);
+    describe(t.description, function () {
+      it("sync", function () {
+        ethcon.state = clone(t.state);
+        ethcon.rpc.getGasPrice = function (callback) {
+          if (!callback) return t.blockchain.gasPrice;
+          callback(t.blockchain.gasPrice);
+        };
+        ethcon.setGasPrice();
+        t.assertions(null, ethcon.rpc, ethcon.state);
         ethcon.resetState();
-        done();
+      });
+      it("async", function (done) {
+        ethcon.state = clone(t.state);
+        ethcon.rpc.getGasPrice = function (callback) {
+          if (!callback) return t.blockchain.gasPrice;
+          callback(t.blockchain.gasPrice);
+        };
+        ethcon.setGasPrice(function (err) {
+          t.assertions(err, ethcon.rpc, ethcon.state);
+          ethcon.resetState();
+          done();
+        });
       });
     });
   };
   test({
     description: "set rpc.gasPrice to latest block value",
     blockchain: {
-      gasPrice: 20000000001
+      gasPrice: "0x4a817c801"
     },
     state: {
       from: "0xb0b",
@@ -426,7 +438,7 @@ describe("setGasPrice", function () {
   test({
     description: "rpc.gasPrice the same as latest block value",
     blockchain: {
-      gasPrice: 20000000000
+      gasPrice: "0x4a817c800"
     },
     state: {
       from: "0xb0b",
@@ -444,6 +456,109 @@ describe("setGasPrice", function () {
     assertions: function (err, rpc, state) {
       assert.isNull(err);
       assert.strictEqual(rpc.gasPrice, 20000000000);
+      assert.deepEqual(state, {
+        from: "0xb0b",
+        coinbase: "0xb0b",
+        networkID: "3",
+        contracts: null,
+        allContracts: {
+          1: {myContract: "0xc1"},
+          3: {myContract: "0xc3"}
+        },
+        initialContracts: null,
+        api: {events: null, functions: null},
+        connection: {http: "http://127.0.0.1:8545", ws: "ws://127.0.0.1:8546", ipc: null}
+      });
+    }
+  });
+});
+
+describe("setNetworkID", function () {
+  var test = function (t) {
+    var version = ethcon.rpc.version;
+    after(function () {
+      ethcon.rpc.version = version;
+    });
+    describe(t.description, function () {
+      it("sync", function () {
+        ethcon.rpc.version = function (callback) {
+          if (!callback) return t.blockchain.networkID;
+          callback(t.blockchain.networkID);
+        };
+        ethcon.state = clone(t.state);
+        ethcon.setNetworkID();
+        t.assertions(null, ethcon.state);
+        ethcon.resetState();
+      });
+      it("async", function (done) {
+        ethcon.rpc.version = function (callback) {
+          if (!callback) return t.blockchain.networkID;
+          callback(t.blockchain.networkID);
+        };
+        ethcon.state = clone(t.state);
+        ethcon.setNetworkID(function (err) {
+          t.assertions(err, ethcon.state);
+          ethcon.resetState();
+          done();
+        });
+      });
+    });
+  };
+  test({
+    description: "network ID unchanged",
+    blockchain: {
+      networkID: "3"
+    },
+    state: {
+      from: "0xb0b",
+      coinbase: "0xb0b",
+      networkID: "3",
+      contracts: null,
+      allContracts: {
+        1: {myContract: "0xc1"},
+        3: {myContract: "0xc3"}
+      },
+      initialContracts: null,
+      api: {events: null, functions: null},
+      connection: {http: "http://127.0.0.1:8545", ws: "ws://127.0.0.1:8546", ipc: null}
+    },
+    assertions: function (err, state) {
+      assert.isNull(err);
+      assert.deepEqual(state, {
+        from: "0xb0b",
+        coinbase: "0xb0b",
+        networkID: "3",
+        contracts: null,
+        allContracts: {
+          1: {myContract: "0xc1"},
+          3: {myContract: "0xc3"}
+        },
+        initialContracts: null,
+        api: {events: null, functions: null},
+        connection: {http: "http://127.0.0.1:8545", ws: "ws://127.0.0.1:8546", ipc: null}
+      });
+    }
+  });
+  test({
+    description: "change network ID from 1 to 3",
+    blockchain: {
+      networkID: "3"
+    },
+    state: {
+      from: "0xb0b",
+      coinbase: "0xb0b",
+      networkID: "1",
+      contracts: null,
+      allContracts: {
+        1: {myContract: "0xc1"},
+        3: {myContract: "0xc3"}
+      },
+      initialContracts: null,
+      api: {events: null, functions: null},
+      connection: {http: "http://127.0.0.1:8545", ws: "ws://127.0.0.1:8546", ipc: null}
+    },
+    assertions: function (err, state) {
+      assert.isNull(err);
       assert.deepEqual(state, {
         from: "0xb0b",
         coinbase: "0xb0b",

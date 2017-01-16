@@ -95,20 +95,16 @@ module.exports = {
 
   setNetworkID: function (callback) {
     var self = this;
-    if (this.state.connection === null && JSON.stringify(this.state.initialContracts) === JSON.stringify(this.state.contracts)) {
-      if (isFunction(callback)) {
-        this.rpc.version(function (version) {
-          if (version === null || version === undefined || version.error) {
-            return callback(version);
-          }
-          self.state.networkID = version;
-          callback(null);
-        });
-      } else {
-        this.state.networkID = this.rpc.version();
-      }
+    if (!isFunction(callback)) {
+      this.state.networkID = this.rpc.version();
     } else {
-      if (isFunction(callback)) callback(null);
+      this.rpc.version(function (version) {
+        if (version === null || version === undefined || version.error) {
+          return callback(version);
+        }
+        self.state.networkID = version;
+        callback(null);
+      });
     }
   },
 
