@@ -121,7 +121,14 @@ module.exports = {
 
   setCoinbase: function (callback) {
     var self = this;
-    if (isFunction(callback)) {
+    if (!isFunction(callback)) {
+      var coinbase = this.rpc.coinbase();
+      if (!coinbase || coinbase.error || coinbase === "0x") {
+        throw new Error("[ethereumjs-connect] setCoinbase: coinbase not found");
+      }
+      this.state.coinbase = coinbase;
+      this.state.from = this.state.from || coinbase;
+    } else {
       this.rpc.coinbase(function (coinbase) {
         if (!coinbase || coinbase.error || coinbase === "0x") {
           return callback("[ethereumjs-connect] setCoinbase: coinbase not found");
@@ -130,13 +137,6 @@ module.exports = {
         self.state.from = self.state.from || coinbase;
         return callback(null);
       });
-    } else {
-      var coinbase = this.rpc.coinbase();
-      if (!coinbase || coinbase.error || coinbase === "0x") {
-        throw new Error("[ethereumjs-connect] setCoinbase: coinbase not found");
-      }
-      this.state.coinbase = coinbase;
-      this.state.from = this.state.from || coinbase;
     }
   },
 
