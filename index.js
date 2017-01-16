@@ -30,34 +30,53 @@ module.exports = {
   debug: false,
   rpc: rpc,
 
-  from: null,
-  coinbase: null,
-  networkID: null,
-  contracts: null,
-  initialContracts: null,
-  customContracts: null,
-  api: {events: null, functions: null},
+  state: {
+    from: null,
+    coinbase: null,
+    networkID: null,
+    contracts: null,
+    allContracts: null,
+    initialContracts: null,
+    api: {events: null, functions: null},
+    connection: null
+  },
 
-  connection: null,
+  resetState: function () {
+    this.rpc.reset();
+    this.state = {
+      from: null,
+      coinbase: null,
+      networkID: null,
+      contracts: null,
+      allContracts: null,
+      initialContracts: null,
+      api: {events: null, functions: null},
+      connection: null
+    };
+  },
 
   setContracts: function () {
-    this.contracts = clone(this.allContracts[this.networkID]);
+    this.state.contracts = clone(this.state.allContracts[this.state.networkID]);
   },
 
   setupFunctionsAPI: function () {
-    for (var contract in this.api.functions) {
-      if (!this.api.functions.hasOwnProperty(contract)) continue;
-      for (var method in this.api.functions[contract]) {
-        if (!this.api.functions[contract].hasOwnProperty(method)) continue;
-        this.api.functions[contract][method].to = this.contracts[contract];
+    if (this.state.api.functions) {
+      for (var contract in this.state.api.functions) {
+        if (!this.state.api.functions.hasOwnProperty(contract)) continue;
+        for (var method in this.state.api.functions[contract]) {
+          if (!this.state.api.functions[contract].hasOwnProperty(method)) continue;
+          this.state.api.functions[contract][method].to = this.state.contracts[contract];
+        }
       }
     }
   },
 
   setupEventsAPI: function () {
-    for (var event in this.api.events) {
-      if (!this.api.events.hasOwnProperty(event)) continue;
-      this.api.events[event].address = this.contracts[this.api.events[event].contract];
+    if (this.state.api.events) {
+      for (var event in this.state.api.events) {
+        if (!this.state.api.events.hasOwnProperty(event)) continue;
+        this.state.api.events[event].address = this.state.contracts[this.state.api.events[event].contract];
+      }
     }
   },
 
@@ -65,41 +84,41 @@ module.exports = {
     var self = this;
     if (!isFunction(callback)) {
       this.rpc.gasPrice = parseInt(this.rpc.getGasPrice(), 16);
+    } else {
+      this.rpc.getGasPrice(function (gasPrice) {
+        if (!gasPrice || gasPrice.error) return callback(gasPrice);
+        self.rpc.gasPrice = parseInt(gasPrice, 16);
+        callback(null);
+      });
     }
-    this.rpc.getGasPrice(function (gasPrice) {
-      if (!gasPrice || gasPrice.error) return callback(gasPrice);
-      self.rpc.gasPrice = parseInt(gasPrice, 16);
-      callback(null);
-    });
   },
 
   setNetworkID: function (callback) {
     var self = this;
-    if (this.connection === null && JSON.stringify(this.initialContracts) === JSON.stringify(this.contracts)) {
+    if (this.state.connection === null && JSON.stringify(this.state.initialContracts) === JSON.stringify(this.state.contracts)) {
       if (isFunction(callback)) {
         this.rpc.version(function (version) {
           if (version === null || version === undefined || version.error) {
             return callback(version);
           }
-          self.networkID = version;
-          callback(null, version);
+          self.state.networkID = version;
+          callback(null);
         });
       } else {
-        this.networkID = this.rpc.version();
-        return this.networkID;
+        this.state.networkID = this.rpc.version();
       }
     } else {
-      if (isFunction(callback)) callback();
+      if (isFunction(callback)) callback(null);
     }
   },
 
   setFrom: function (account) {
-    this.from = this.from || account;
-    for (var contract in this.api.functions) {
-      if (!this.api.functions.hasOwnProperty(contract)) continue;
-      for (var method in this.api.functions[contract]) {
-        if (!this.api.functions[contract].hasOwnProperty(method)) continue;
-        this.api.functions[contract][method].from = account || this.from;
+    this.state.from = this.state.from || account;
+    for (var contract in this.state.api.functions) {
+      if (!this.state.api.functions.hasOwnProperty(contract)) continue;
+      for (var method in this.state.api.functions[contract]) {
+        if (!this.state.api.functions[contract].hasOwnProperty(method)) continue;
+        this.state.api.functions[contract][method].from = account || this.state.from;
       }
     }
   },
@@ -111,8 +130,8 @@ module.exports = {
         if (!coinbase || coinbase.error || coinbase === "0x") {
           return callback("[ethereumjs-connect] setCoinbase: coinbase not found");
         }
-        self.coinbase = coinbase;
-        self.from = self.from || coinbase;
+        self.state.coinbase = coinbase;
+        self.state.from = self.state.from || coinbase;
         return callback(null);
       });
     } else {
@@ -120,45 +139,45 @@ module.exports = {
       if (!coinbase || coinbase.error || coinbase === "0x") {
         throw new Error("[ethereumjs-connect] setCoinbase: coinbase not found");
       }
-      this.coinbase = coinbase;
-      this.from = this.from || this.coinbase;
+      this.state.coinbase = coinbase;
+      this.state.from = this.state.from || coinbase;
     }
   },
 
   updateContracts: function () {
     var key;
-    if (JSON.stringify(this.initialContracts) !== JSON.stringify(this.contracts)) {
-      for (var method in this.api.functions) {
-        if (!this.api.functions.hasOwnProperty(method)) continue;
-        if (!this.api.functions[method].method) {
-          for (var m in this.api.functions[method]) {
-            if (!this.api.functions[method].hasOwnProperty(m)) continue;
-            key = getKeyFromValue(this.initialContracts, this.api.functions[method][m].to);
+    if (JSON.stringify(this.state.initialContracts) !== JSON.stringify(this.state.contracts)) {
+      for (var method in this.state.api.functions) {
+        if (!this.state.api.functions.hasOwnProperty(method)) continue;
+        if (!this.state.api.functions[method].method) {
+          for (var m in this.state.api.functions[method]) {
+            if (!this.state.api.functions[method].hasOwnProperty(m)) continue;
+            key = getKeyFromValue(this.state.initialContracts, this.state.api.functions[method][m].to);
             if (key) {
-              this.api.functions[method][m].to = this.contracts[key];
+              this.state.api.functions[method][m].to = this.state.contracts[key];
             }
           }
         } else {
-          key = getKeyFromValue(this.initialContracts, this.api.functions[method].to);
+          key = getKeyFromValue(this.state.initialContracts, this.state.api.functions[method].to);
           if (key) {
-            this.api.functions[method].to = this.contracts[key];
+            this.state.api.functions[method].to = this.state.contracts[key];
           }
         }
       }
     }
-    this.initialContracts = clone(this.contracts);
+    this.state.initialContracts = clone(this.state.contracts);
   },
 
   retryConnect: function (err, options, callback) {
     if (this.debug) {
       console.warn("[ethereumjs-connect] Couldn't connect to Ethereum", err, JSON.stringify(options, null, 2));
     }
-    this.connection = null;
+    this.state.connection = null;
     if (!options.attempts) {
       options.attempts = 1;
       return this.connect(options, callback);
     }
-    if (isFunction(callback)) callback(this.connection);
+    if (isFunction(callback)) callback(this.state.connection);
   },
 
   // asynchronous connection sequence
@@ -187,12 +206,12 @@ module.exports = {
       this.updateContracts.bind(this)
     ], function (err) {
       if (err) return self.retryConnect(err, options, callback);
-      self.connection = {
+      self.state.connection = {
         http: self.rpc.nodes.local || self.rpc.nodes.hosted,
         ws: self.rpc.wsUrl,
         ipc: self.rpc.ipcpath
       };
-      callback(self.connection);
+      callback(self.state.connection);
     });
   },
 
@@ -208,7 +227,7 @@ module.exports = {
       this.setupEventsAPI();
       this.setGasPrice();
       this.updateContracts();
-      this.connection = {
+      this.state.connection = {
         http: this.rpc.nodes.local || this.rpc.nodes.hosted,
         ws: this.rpc.wsUrl,
         ipc: this.rpc.ipcpath
@@ -216,15 +235,15 @@ module.exports = {
     } catch (exc) {
       this.retryConnect(exc, options);
     }
-    return this.connection;
+    return this.state.connection;
   },
 
   configure: function (options) {
     if (!options.contracts) {
       throw new Error("[ethereumjs-connect] options.contracts is required");
     }
-    this.allContracts = options.contracts;
-    if (options.api) this.api = clone(options.api);
+    this.state.allContracts = options.contracts;
+    if (options.api) this.state.api = clone(options.api);
 
     // if this is the first attempt to connect, connect using the
     // parameters provided by the user exactly
