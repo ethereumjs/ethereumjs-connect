@@ -5,7 +5,7 @@ ethereumjs-connect
 [![Coverage Status](https://coveralls.io/repos/ethereumjs/ethereumjs-connect/badge.svg?branch=master&service=github)](https://coveralls.io/github/ethereumjs/ethereumjs-connect?branch=master)
 [![npm version](https://badge.fury.io/js/ethereumjs-connect.svg)](http://badge.fury.io/js/ethereumjs-connect)
 
-ethereumjs-connect automates a few basic Ethereum network connection tasks.
+ethereumjs-connect automates a few basic Ethereum network connection tasks: looks up the network ID, the coinbase address, sets the `from` field for transaction objects, and (optionally) will setup functions and events APIs for use with [ethrpc](https://github.com/AugurProject/ethrpc).  For examples of contracts and API inputs, see [augur-contracts](https://github.com/AugurProject/augur-contracts).  (Important note: the static API setup in ethereumjs-connect is not yet compatible with [web3](https://github.com/ethereum/web3)!)
 
 Usage
 -----
@@ -40,10 +40,11 @@ connector.connect({http: "https://eth3.augur.net", ws: "ws://ws.augur.net"}, fun
 After connecting, several network properties are attached to the `connector` object:
 ```javascript
 connector.networkID
-connector.from       // sets "from" for outgoing transactions
+connector.from       // sets the "from" address for outgoing transactions
 connector.coinbase
 connector.connection // connection info
 connector.contracts  // contract addresses
+connector.api        // static API data (for use with ethrpc transactions)
 connector.debug      // display debugging logs
 ```
 `connector.from` is used to set the `from` field for outgoing transactions.  By default, it is set to the coinbase address.  However, you can manually set it to something else (for example, for client-side transactions):
