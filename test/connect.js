@@ -927,4 +927,388 @@ describe("setFrom", function () {
       }
     });
   });
+
+  
+  describe("configure", function () {
+    var test = function (t) {
+      it(t.description, function () {
+        ethcon.state = clone(t.state);
+        ethcon.configure(t.params.options);
+        t.assertions(ethcon.state, ethcon.rpc);
+        ethcon.resetState();
+      });
+    };
+    test({
+      description: "http-only without api",
+      params: {
+        options: {
+          http: "http://127.0.0.1:8545",
+          ws: null,
+          ipc: null,
+          api: {events: null, functions: null},
+          contracts: {
+            3: {contract1: "0xc1", contract2: "0xc2"}
+          },
+          noFallback: false
+        }
+      },
+      state: {
+        from: null,
+        coinbase: null,
+        networkID: null,
+        contracts: null,
+        allContracts: null,
+        initialContracts: null,
+        api: {events: null, functions: null},
+        connection: null
+      },
+      assertions: function (state, rpc) {
+        assert.deepEqual(state, {
+          allContracts: {
+            3: {contract1: "0xc1", contract2: "0xc2"}
+          },
+          api: {events: null, functions: null},
+          coinbase: null,
+          connection: null,
+          contracts: null,
+          from: null,
+          initialContracts: null,
+          networkID: null
+        });
+        assert.strictEqual(rpc.nodes.local, "http://127.0.0.1:8545");
+        assert.deepEqual(rpc.nodes.hosted, []);
+        assert.isNull(rpc.wsUrl);
+        assert.isNull(rpc.ipcpath);
+        assert.strictEqual(rpc.rpcStatus.ws, 0);
+        assert.strictEqual(rpc.rpcStatus.ipc, 0);
+      }
+    });
+    test({
+      description: "http-only with api",
+      params: {
+        options: {
+          http: "http://127.0.0.1:8545",
+          ws: null,
+          ipc: null,
+          api: {
+            events: {
+              event1: {contract: "contract1"},
+              event2: {contract: "contract1"},
+              event3: {contract: "contract2"}
+            },
+            functions: {
+              contract1: {method1: {}, method2: {}},
+              contract2: {method1: {}}
+            }
+          },
+          contracts: {
+            3: {contract1: "0xc1", contract2: "0xc2"}
+          },
+          noFallback: false
+        }
+      },
+      state: {
+        from: null,
+        coinbase: null,
+        networkID: null,
+        contracts: null,
+        allContracts: null,
+        initialContracts: null,
+        api: {events: null, functions: null},
+        connection: null
+      },
+      assertions: function (state, rpc) {
+        assert.deepEqual(state, {
+          allContracts: {
+            3: {contract1: "0xc1", contract2: "0xc2"}
+          },
+          api: {
+            events: {
+              event1: {contract: "contract1"},
+              event2: {contract: "contract1"},
+              event3: {contract: "contract2"}
+            },
+            functions: {
+              contract1: {method1: {}, method2: {}},
+              contract2: {method1: {}}
+            }
+          },
+          coinbase: null,
+          connection: null,
+          contracts: null,
+          from: null,
+          initialContracts: null,
+          networkID: null
+        });
+        assert.strictEqual(rpc.nodes.local, "http://127.0.0.1:8545");
+        assert.deepEqual(rpc.nodes.hosted, []);
+        assert.isNull(rpc.wsUrl);
+        assert.isNull(rpc.ipcpath);
+        assert.strictEqual(rpc.rpcStatus.ws, 0);
+        assert.strictEqual(rpc.rpcStatus.ipc, 0);
+      }
+    });
+    test({
+      description: "http and websockets with api",
+      params: {
+        options: {
+          http: "http://127.0.0.1:8545",
+          ws: "ws://127.0.0.1:8546",
+          ipc: null,
+          api: {
+            events: {
+              event1: {contract: "contract1"},
+              event2: {contract: "contract1"},
+              event3: {contract: "contract2"}
+            },
+            functions: {
+              contract1: {method1: {}, method2: {}},
+              contract2: {method1: {}}
+            }
+          },
+          contracts: {
+            3: {contract1: "0xc1", contract2: "0xc2"}
+          },
+          noFallback: false
+        }
+      },
+      state: {
+        from: null,
+        coinbase: null,
+        networkID: null,
+        contracts: null,
+        allContracts: null,
+        initialContracts: null,
+        api: {events: null, functions: null},
+        connection: null
+      },
+      assertions: function (state, rpc) {
+        assert.deepEqual(state, {
+          allContracts: {
+            3: {contract1: "0xc1", contract2: "0xc2"}
+          },
+          api: {
+            events: {
+              event1: {contract: "contract1"},
+              event2: {contract: "contract1"},
+              event3: {contract: "contract2"}
+            },
+            functions: {
+              contract1: {method1: {}, method2: {}},
+              contract2: {method1: {}}
+            }
+          },
+          coinbase: null,
+          connection: null,
+          contracts: null,
+          from: null,
+          initialContracts: null,
+          networkID: null
+        });
+        assert.strictEqual(rpc.nodes.local, "http://127.0.0.1:8545");
+        assert.deepEqual(rpc.nodes.hosted, []);
+        assert.strictEqual(rpc.wsUrl, "ws://127.0.0.1:8546");
+        assert.isNull(rpc.ipcpath);
+        assert.strictEqual(rpc.rpcStatus.ws, 0);
+        assert.strictEqual(rpc.rpcStatus.ipc, 0);
+      }
+    });
+    test({
+      description: "http, websockets, and ipc with api",
+      params: {
+        options: {
+          http: "http://127.0.0.1:8545",
+          ws: "ws://127.0.0.1:8546",
+          ipc: "/home/jack/.ethereum/geth.ipc",
+          api: {
+            events: {
+              event1: {contract: "contract1"},
+              event2: {contract: "contract1"},
+              event3: {contract: "contract2"}
+            },
+            functions: {
+              contract1: {method1: {}, method2: {}},
+              contract2: {method1: {}}
+            }
+          },
+          contracts: {
+            3: {contract1: "0xc1", contract2: "0xc2"}
+          },
+          noFallback: false
+        }
+      },
+      state: {
+        from: null,
+        coinbase: null,
+        networkID: null,
+        contracts: null,
+        allContracts: null,
+        initialContracts: null,
+        api: {events: null, functions: null},
+        connection: null
+      },
+      assertions: function (state, rpc) {
+        assert.deepEqual(state, {
+          allContracts: {
+            3: {contract1: "0xc1", contract2: "0xc2"}
+          },
+          api: {
+            events: {
+              event1: {contract: "contract1"},
+              event2: {contract: "contract1"},
+              event3: {contract: "contract2"}
+            },
+            functions: {
+              contract1: {method1: {}, method2: {}},
+              contract2: {method1: {}}
+            }
+          },
+          coinbase: null,
+          connection: null,
+          contracts: null,
+          from: null,
+          initialContracts: null,
+          networkID: null
+        });
+        assert.strictEqual(rpc.nodes.local, "http://127.0.0.1:8545");
+        assert.deepEqual(rpc.nodes.hosted, []);
+        assert.strictEqual(rpc.wsUrl, "ws://127.0.0.1:8546");
+        assert.strictEqual(rpc.ipcpath, "/home/jack/.ethereum/geth.ipc");
+        assert.strictEqual(rpc.rpcStatus.ws, 0);
+        assert.strictEqual(rpc.rpcStatus.ipc, 0);
+      }
+    });
+    test({
+      description: "second pass with fallback",
+      params: {
+        options: {
+          attempts: 1,
+          http: "http://127.0.0.1:8545",
+          ws: "ws://127.0.0.1:8546",
+          ipc: "/home/jack/.ethereum/geth.ipc",
+          api: {
+            events: {
+              event1: {contract: "contract1"},
+              event2: {contract: "contract1"},
+              event3: {contract: "contract2"}
+            },
+            functions: {
+              contract1: {method1: {}, method2: {}},
+              contract2: {method1: {}}
+            }
+          },
+          contracts: {
+            3: {contract1: "0xc1", contract2: "0xc2"}
+          },
+          noFallback: false
+        }
+      },
+      state: {
+        from: null,
+        coinbase: null,
+        networkID: null,
+        contracts: null,
+        allContracts: null,
+        initialContracts: null,
+        api: {events: null, functions: null},
+        connection: null
+      },
+      assertions: function (state, rpc) {
+        assert.deepEqual(state, {
+          allContracts: {
+            3: {contract1: "0xc1", contract2: "0xc2"}
+          },
+          api: {
+            events: {
+              event1: {contract: "contract1"},
+              event2: {contract: "contract1"},
+              event3: {contract: "contract2"}
+            },
+            functions: {
+              contract1: {method1: {}, method2: {}},
+              contract2: {method1: {}}
+            }
+          },
+          coinbase: null,
+          connection: null,
+          contracts: null,
+          from: null,
+          initialContracts: null,
+          networkID: null
+        });
+        assert.isNull(rpc.nodes.local);
+        assert.deepEqual(rpc.nodes.hosted, ["https://eth3.augur.net"]);
+        assert.strictEqual(rpc.wsUrl, "wss://ws.augur.net");
+        assert.isNull(rpc.ipcpath);
+        assert.strictEqual(rpc.rpcStatus.ws, 0);
+        assert.strictEqual(rpc.rpcStatus.ipc, 0);
+      }
+    });
+    test({
+      description: "second pass without fallback",
+      params: {
+        options: {
+          attempts: 1,
+          http: "http://127.0.0.1:8545",
+          ws: "ws://127.0.0.1:8546",
+          ipc: "/home/jack/.ethereum/geth.ipc",
+          api: {
+            events: {
+              event1: {contract: "contract1"},
+              event2: {contract: "contract1"},
+              event3: {contract: "contract2"}
+            },
+            functions: {
+              contract1: {method1: {}, method2: {}},
+              contract2: {method1: {}}
+            }
+          },
+          contracts: {
+            3: {contract1: "0xc1", contract2: "0xc2"}
+          },
+          noFallback: true
+        }
+      },
+      state: {
+        from: null,
+        coinbase: null,
+        networkID: null,
+        contracts: null,
+        allContracts: null,
+        initialContracts: null,
+        api: {events: null, functions: null},
+        connection: null
+      },
+      assertions: function (state, rpc) {
+        assert.deepEqual(state, {
+          allContracts: {
+            3: {contract1: "0xc1", contract2: "0xc2"}
+          },
+          api: {
+            events: {
+              event1: {contract: "contract1"},
+              event2: {contract: "contract1"},
+              event3: {contract: "contract2"}
+            },
+            functions: {
+              contract1: {method1: {}, method2: {}},
+              contract2: {method1: {}}
+            }
+          },
+          coinbase: null,
+          connection: null,
+          contracts: null,
+          from: null,
+          initialContracts: null,
+          networkID: null
+        });
+        assert.strictEqual(rpc.nodes.local, "http://127.0.0.1:8545");
+        assert.deepEqual(rpc.nodes.hosted, []);
+        assert.strictEqual(rpc.wsUrl, "ws://127.0.0.1:8546");
+        assert.strictEqual(rpc.ipcpath, "/home/jack/.ethereum/geth.ipc");
+        assert.strictEqual(rpc.rpcStatus.ws, 0);
+        assert.strictEqual(rpc.rpcStatus.ipc, 0);
+      }
+    });
+  });
 });
