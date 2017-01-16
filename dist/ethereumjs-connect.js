@@ -6773,14 +6773,6 @@ function isFunction(f) {
   return Object.prototype.toString.call(f) === "[object Function]";
 }
 
-function getKeyFromValue(o, value) {
-  for (var key in o) {
-    if (o.hasOwnProperty(key)) {
-      if (o[key] === value) return key;
-    }
-  }
-}
-
 module.exports = {
 
   version: "2.0.0",
@@ -6794,20 +6786,18 @@ module.exports = {
     networkID: null,
     contracts: null,
     allContracts: null,
-    initialContracts: null,
     api: {events: null, functions: null},
     connection: null
   },
 
   resetState: function () {
-    this.rpc.reset();
+    this.rpc.reset(true);
     this.state = {
       from: null,
       coinbase: null,
       networkID: null,
       contracts: null,
       allContracts: null,
-      initialContracts: null,
       api: {events: null, functions: null},
       connection: null
     };
@@ -6868,11 +6858,13 @@ module.exports = {
 
   setFrom: function (account) {
     this.state.from = this.state.from || account;
-    for (var contract in this.state.api.functions) {
-      if (!this.state.api.functions.hasOwnProperty(contract)) continue;
-      for (var method in this.state.api.functions[contract]) {
-        if (!this.state.api.functions[contract].hasOwnProperty(method)) continue;
-        this.state.api.functions[contract][method].from = account || this.state.from;
+    if (this.state.api.functions) {
+      for (var contract in this.state.api.functions) {
+        if (!this.state.api.functions.hasOwnProperty(contract)) continue;
+        for (var method in this.state.api.functions[contract]) {
+          if (!this.state.api.functions[contract].hasOwnProperty(method)) continue;
+          this.state.api.functions[contract][method].from = account || this.state.from;
+        }
       }
     }
   },
@@ -6893,33 +6885,9 @@ module.exports = {
         }
         self.state.coinbase = coinbase;
         self.state.from = self.state.from || coinbase;
-        return callback(null);
+        callback(null);
       });
     }
-  },
-
-  updateContracts: function () {
-    var key;
-    if (JSON.stringify(this.state.initialContracts) !== JSON.stringify(this.state.contracts)) {
-      for (var method in this.state.api.functions) {
-        if (!this.state.api.functions.hasOwnProperty(method)) continue;
-        if (!this.state.api.functions[method].method) {
-          for (var m in this.state.api.functions[method]) {
-            if (!this.state.api.functions[method].hasOwnProperty(m)) continue;
-            key = getKeyFromValue(this.state.initialContracts, this.state.api.functions[method][m].to);
-            if (key) {
-              this.state.api.functions[method][m].to = this.state.contracts[key];
-            }
-          }
-        } else {
-          key = getKeyFromValue(this.state.initialContracts, this.state.api.functions[method].to);
-          if (key) {
-            this.state.api.functions[method].to = this.state.contracts[key];
-          }
-        }
-      }
-    }
-    this.state.initialContracts = clone(this.state.contracts);
   },
 
   retryConnect: function (err, options, callback) {
@@ -6951,13 +6919,18 @@ module.exports = {
         });
       },
       this.setNetworkID.bind(this),
-      this.setContracts.bind(this),
+      function (next) {
+        self.setContracts();
+        next();
+      },
       this.setCoinbase.bind(this),
-      this.setFrom.bind(this),
-      this.setupFunctionsAPI.bind(this),
-      this.setupEventsAPI.bind(this),
-      this.setGasPrice.bind(this),
-      this.updateContracts.bind(this)
+      function (next) {
+        self.setFrom();
+        self.setupFunctionsAPI();
+        self.setupEventsAPI();
+        next();
+      },
+      this.setGasPrice.bind(this)
     ], function (err) {
       if (err) return self.retryConnect(err, options, callback);
       self.state.connection = {
@@ -6970,7 +6943,7 @@ module.exports = {
   },
 
   // synchronous connection sequence
-  syncConnect: function (options) {    
+  syncConnect: function (options) {
     try {
       this.rpc.blockNumber(noop);
       this.setNetworkID();
@@ -6980,7 +6953,6 @@ module.exports = {
       this.setupFunctionsAPI();
       this.setupEventsAPI();
       this.setGasPrice();
-      this.updateContracts();
       this.state.connection = {
         http: this.rpc.nodes.local || this.rpc.nodes.hosted,
         ws: this.rpc.wsUrl,
@@ -7001,7 +6973,7 @@ module.exports = {
 
     // if this is the first attempt to connect, connect using the
     // parameters provided by the user exactly
-    if ((options.http || options.ipc || options.ws) && !options.attempts) {
+    if ((options.http || options.ipc || options.ws) && (!options.attempts || options.noFallback)) {
       this.rpc.ipcpath = options.ipc || null;
       this.rpc.nodes.local = options.http;
       this.rpc.nodes.hosted = [];
@@ -7009,9 +6981,8 @@ module.exports = {
       this.rpc.rpcStatus.ws = 0;
       this.rpc.rpcStatus.ipc = 0;
 
-    // if this is the second attempt to connect, fall back to the
-    // default hosted nodes
-    } else if (!options.noFallback) {
+    // if this is the second attempt to connect, fall back to the default hosted nodes
+    } else {
       if (this.debug) {
         console.debug("Connecting to fallback node...");
       }
@@ -7026,7 +6997,7 @@ module.exports = {
   connect: function (options, callback) {
     this.configure(options || {});
     if (!isFunction(callback)) return this.syncConnect(options);
-    this.asyncConnect(options, callback);
+    this.asyncConnect(options || {}, callback);
   }
 };
 
@@ -14947,6 +14918,10 @@ module.exports = {
         clearTimeout(this.notifications[n]);
       }
     }
+    this.blockFilter = {id: null, heartbeat: null};
+    this.block = null;
+    this.rpcRequests = {ipc: {}, ws: {}};
+    this.subscriptions = {};
     this.notifications = {};
     this.rawTxs = {};
     this.txs = {};
@@ -14957,6 +14932,8 @@ module.exports = {
   reset: function (deleteData) {
     this.nodes.hosted = this.DEFAULT_HOSTED_NODES.slice();
     this.wsUrl = process.env.GETH_WEBSOCKET_URL || this.DEFAULT_HOSTED_WEBSOCKET;
+    this.ipcpath = null;
+    this.rpcStatus = {ipc: 0, ws: 0};
     if (deleteData) this.clear();
   },
 
