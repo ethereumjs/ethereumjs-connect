@@ -212,7 +212,7 @@ module.exports = {
   },
 
   // synchronous connection sequence
-  syncConnect: function (options) {    
+  syncConnect: function (options) {
     try {
       this.rpc.blockNumber(noop);
       this.setNetworkID();
