@@ -26,7 +26,6 @@ describe("resetState", function () {
       networkID: null,
       contracts: null,
       allContracts: null,
-      initialContracts: null,
       api: {events: null, functions: null},
       connection: null
     },
@@ -37,7 +36,6 @@ describe("resetState", function () {
         networkID: null,
         contracts: null,
         allContracts: null,
-        initialContracts: null,
         api: {events: null, functions: null},
         connection: null
       });
@@ -54,7 +52,6 @@ describe("resetState", function () {
         1: {myContract: "0xc1"},
         3: {myContract: "0xc3"}
       },
-      initialContracts: null,
       api: {events: null, functions: null},
       connection: {http: "http://127.0.0.1:8545", ws: "ws://127.0.0.1:8546", ipc: null}
     },
@@ -65,7 +62,6 @@ describe("resetState", function () {
         networkID: null,
         contracts: null,
         allContracts: null,
-        initialContracts: null,
         api: {events: null, functions: null},
         connection: null
       });
@@ -93,7 +89,6 @@ describe("setContracts", function () {
         1: {myContract: "0xc1"},
         3: {myContract: "0xc3"}
       },
-      initialContracts: null,
       api: {events: null, functions: null},
       connection: {http: "http://127.0.0.1:8545", ws: "ws://127.0.0.1:8546", ipc: null}
     },
@@ -112,7 +107,6 @@ describe("setContracts", function () {
         1: {myContract: "0xc1"},
         3: {myContract: "0xc3"}
       },
-      initialContracts: null,
       api: {events: null, functions: null},
       connection: {http: "http://127.0.0.1:8545", ws: "ws://127.0.0.1:8546", ipc: null}
     },
@@ -147,7 +141,6 @@ describe("setupFunctionsAPI", function () {
           contract2: "0xc2"
         }
       },
-      initialContracts: null,
       api: {
         events: null,
         functions: {
@@ -181,7 +174,6 @@ describe("setupFunctionsAPI", function () {
           contract2: "0xc2"
         }
       },
-      initialContracts: null,
       api: {
         events: null,
         functions: {
@@ -215,7 +207,6 @@ describe("setupFunctionsAPI", function () {
           contract2: "0xc2"
         }
       },
-      initialContracts: null,
       api: {
         events: {
           event1: {address: "0xC1", contract: "contract1"},
@@ -268,7 +259,6 @@ describe("setupEventsAPI", function () {
           contract2: "0xc2"
         }
       },
-      initialContracts: null,
       api: {
         events: {
           event1: {contract: "contract1"},
@@ -304,7 +294,6 @@ describe("setupEventsAPI", function () {
           contract2: "0xc2"
         }
       },
-      initialContracts: null,
       api: {
         events: {
           event1: {address: "0xC1", contract: "contract1"},
@@ -340,7 +329,6 @@ describe("setupEventsAPI", function () {
           contract2: "0xc2"
         }
       },
-      initialContracts: null,
       api: {
         events: {
           event1: {address: "0xC1", contract: "contract1"},
@@ -413,7 +401,6 @@ describe("setGasPrice", function () {
         1: {myContract: "0xc1"},
         3: {myContract: "0xc3"}
       },
-      initialContracts: null,
       api: {events: null, functions: null},
       connection: {http: "http://127.0.0.1:8545", ws: "ws://127.0.0.1:8546", ipc: null}
     },
@@ -429,7 +416,6 @@ describe("setGasPrice", function () {
           1: {myContract: "0xc1"},
           3: {myContract: "0xc3"}
         },
-        initialContracts: null,
         api: {events: null, functions: null},
         connection: {http: "http://127.0.0.1:8545", ws: "ws://127.0.0.1:8546", ipc: null}
       });
@@ -449,7 +435,6 @@ describe("setGasPrice", function () {
         1: {myContract: "0xc1"},
         3: {myContract: "0xc3"}
       },
-      initialContracts: null,
       api: {events: null, functions: null},
       connection: {http: "http://127.0.0.1:8545", ws: "ws://127.0.0.1:8546", ipc: null}
     },
@@ -465,7 +450,6 @@ describe("setGasPrice", function () {
           1: {myContract: "0xc1"},
           3: {myContract: "0xc3"}
         },
-        initialContracts: null,
         api: {events: null, functions: null},
         connection: {http: "http://127.0.0.1:8545", ws: "ws://127.0.0.1:8546", ipc: null}
       });
@@ -518,7 +502,6 @@ describe("setNetworkID", function () {
         1: {myContract: "0xc1"},
         3: {myContract: "0xc3"}
       },
-      initialContracts: null,
       api: {events: null, functions: null},
       connection: {http: "http://127.0.0.1:8545", ws: "ws://127.0.0.1:8546", ipc: null}
     },
@@ -541,7 +524,6 @@ describe("setNetworkID", function () {
         1: {myContract: "0xc1"},
         3: {myContract: "0xc3"}
       },
-      initialContracts: null,
       api: {events: null, functions: null},
       connection: {http: "http://127.0.0.1:8545", ws: "ws://127.0.0.1:8546", ipc: null}
     },
@@ -580,7 +562,6 @@ describe("setFrom", function () {
           contract2: "0xc2"
         }
       },
-      initialContracts: null,
       api: {
         events: null,
         functions: {
@@ -617,7 +598,6 @@ describe("setFrom", function () {
           contract2: "0xc2"
         }
       },
-      initialContracts: null,
       api: {
         events: null,
         functions: {
@@ -654,7 +634,6 @@ describe("setFrom", function () {
           contract2: "0xc2"
         }
       },
-      initialContracts: null,
       api: {
         events: null,
         functions: {
@@ -691,7 +670,6 @@ describe("setFrom", function () {
           contract2: "0xc2"
         }
       },
-      initialContracts: null,
       api: {
         events: null,
         functions: {
@@ -728,7 +706,6 @@ describe("setFrom", function () {
           contract2: "0xc2"
         }
       },
-      initialContracts: null,
       api: {
         events: null,
         functions: {
@@ -796,7 +773,6 @@ describe("setFrom", function () {
           1: {myContract: "0xc1"},
           3: {myContract: "0xc3"}
         },
-        initialContracts: null,
         api: {events: null, functions: null},
         connection: {http: "http://127.0.0.1:8545", ws: "ws://127.0.0.1:8546", ipc: null}
       },
@@ -820,7 +796,6 @@ describe("setFrom", function () {
           1: {myContract: "0xc1"},
           3: {myContract: "0xc3"}
         },
-        initialContracts: null,
         api: {events: null, functions: null},
         connection: {http: "http://127.0.0.1:8545", ws: "ws://127.0.0.1:8546", ipc: null}
       },
@@ -844,7 +819,6 @@ describe("setFrom", function () {
           1: {myContract: "0xc1"},
           3: {myContract: "0xc3"}
         },
-        initialContracts: null,
         api: {events: null, functions: null},
         connection: {http: "http://127.0.0.1:8545", ws: "ws://127.0.0.1:8546", ipc: null}
       },
@@ -868,7 +842,6 @@ describe("setFrom", function () {
           1: {myContract: "0xc1"},
           3: {myContract: "0xc3"}
         },
-        initialContracts: null,
         api: {events: null, functions: null},
         connection: {http: "http://127.0.0.1:8545", ws: "ws://127.0.0.1:8546", ipc: null}
       },
@@ -892,7 +865,6 @@ describe("setFrom", function () {
           1: {myContract: "0xc1"},
           3: {myContract: "0xc3"}
         },
-        initialContracts: null,
         api: {events: null, functions: null},
         connection: {http: "http://127.0.0.1:8545", ws: "ws://127.0.0.1:8546", ipc: null}
       },
@@ -916,7 +888,6 @@ describe("setFrom", function () {
           1: {myContract: "0xc1"},
           3: {myContract: "0xc3"}
         },
-        initialContracts: null,
         api: {events: null, functions: null},
         connection: {http: "http://127.0.0.1:8545", ws: "ws://127.0.0.1:8546", ipc: null}
       },
@@ -928,19 +899,73 @@ describe("setFrom", function () {
     });
   });
 
+  describe("retryConnect", function () {
+    var test = function (t) {
+      var connect = ethcon.connect;
+      after(function () {
+        ethcon.connect = connect;
+      });
+      it(t.description, function (done) {
+        ethcon.connect = function (options, callback) {
+          var connection = {
+            http: options.http,
+            ws: options.ws,
+            ipc: options.ipc
+          };
+          if (!callback) return connection;
+          callback(connection);
+        };
+        ethcon.retryConnect(null, t.params.options, function (connection) {
+          t.assertions(connection);
+          ethcon.resetState();
+          done();
+        });
+      });
+    };
+    test({
+      description: "first retry: call connect",
+      params: {
+        options: {
+          http: "http://127.0.0.1:8545",
+          ws: "ws://127.0.0.1:8546",
+          ipc: null
+        }
+      },
+      assertions: function (connection) {
+        assert.deepEqual(connection, {
+          http: "http://127.0.0.1:8545",
+          ws: "ws://127.0.0.1:8546",
+          ipc: null
+        });
+      }
+    });
+    test({
+      description: "second retry: fail",
+      params: {
+        options: {
+          attempts: 1,
+          http: "http://127.0.0.1:8545",
+          ws: "ws://127.0.0.1:8546",
+          ipc: null
+        }
+      },
+      assertions: function (connection) {
+        assert.isNull(connection);
+      }
+    });
+  });
+
   describe("asyncConnect", function () {
     var test = function (t) {
       var blockNumber = ethcon.rpc.blockNumber;
       var setNetworkID = ethcon.setNetworkID;
       var setCoinbase = ethcon.setCoinbase;
       var setGasPrice = ethcon.setGasPrice;
-      var updateContracts = ethcon.updateContracts;
       after(function () {
         ethcon.rpc.blockNumber = blockNumber;
         ethcon.setNetworkID = setNetworkID;
         ethcon.setCoinbase = setCoinbase;
         ethcon.setGasPrice = setGasPrice;
-        ethcon.updateContracts = updateContracts;
       });
       it(t.description, function (done) {
         ethcon.rpc.blockNumber = function (callback) {
@@ -959,9 +984,6 @@ describe("setFrom", function () {
         ethcon.setGasPrice = function (callback) {
           ethcon.rpc.gasPrice = parseInt(t.blockchain.gasPrice, 16);
           if (callback) callback(null);
-        };
-        ethcon.updateContracts = function () {
-          ethcon.state.initialContracts = clone(ethcon.state.contracts);
         };
         ethcon.state = clone(t.state);
         ethcon.asyncConnect(t.params.options, function (connection) {
@@ -994,7 +1016,6 @@ describe("setFrom", function () {
         connection: null,
         contracts: null,
         from: null,
-        initialContracts: null,
         networkID: null
       },
       assertions: function (state, connection) {
@@ -1011,7 +1032,6 @@ describe("setFrom", function () {
           allContracts: {
             3: {contract1: "0xc1", contract2: "0xc2"}
           },
-          initialContracts: {contract1: "0xc1", contract2: "0xc2"},
           api: {events: null, functions: null},
           connection: expectedConnection
         });
@@ -1051,7 +1071,6 @@ describe("setFrom", function () {
         connection: null,
         contracts: null,
         from: null,
-        initialContracts: null,
         networkID: null
       },
       assertions: function (state, connection) {
@@ -1068,7 +1087,6 @@ describe("setFrom", function () {
           allContracts: {
             3: {contract1: "0xc1", contract2: "0xc2"}
           },
-          initialContracts: {contract1: "0xc1", contract2: "0xc2"},
           api: {
             events: {
               event1: {address: "0xc1", contract: "contract1"},
@@ -1085,6 +1103,93 @@ describe("setFrom", function () {
         assert.deepEqual(connection, expectedConnection);
       }
     });
+    test({
+      description: "asynchronous connection sequence without http option",
+      params: {
+        options: {
+          http: null,
+          ws: "ws://127.0.0.1:8546"
+        }
+      },
+      blockchain: {
+        blockNumber: "0x2328",
+        coinbase: "0xb0b",
+        gasPrice: "0x4a817c801",
+        networkID: "3"
+      },
+      state: {
+        allContracts: {
+          3: {contract1: "0xc1", contract2: "0xc2"}
+        },
+        api: {events: null, functions: null},
+        coinbase: null,
+        connection: null,
+        contracts: null,
+        from: null,
+        networkID: null
+      },
+      assertions: function (state, connection) {
+        var expectedConnection = {
+          http: ["https://eth3.augur.net"],
+          ws: "wss://ws.augur.net",
+          ipc: null
+        };
+        assert.deepEqual(state, {
+          from: "0xb0b",
+          coinbase: "0xb0b",
+          networkID: "3",
+          contracts: {contract1: "0xc1", contract2: "0xc2"},
+          allContracts: {
+            3: {contract1: "0xc1", contract2: "0xc2"}
+          },
+          api: {events: null, functions: null},
+          connection: expectedConnection
+        });
+        assert.deepEqual(connection, expectedConnection);
+      }
+    });
+    test({
+      description: "asynchronous connection sequence without http or ws option",
+      params: {
+        options: {http: null, ws: null}
+      },
+      blockchain: {
+        blockNumber: "0x2328",
+        coinbase: "0xb0b",
+        gasPrice: "0x4a817c801",
+        networkID: "3"
+      },
+      state: {
+        allContracts: {
+          3: {contract1: "0xc1", contract2: "0xc2"}
+        },
+        api: {events: null, functions: null},
+        coinbase: null,
+        connection: null,
+        contracts: null,
+        from: null,
+        networkID: null
+      },
+      assertions: function (state, connection) {
+        var expectedConnection = {
+          http: ["https://eth3.augur.net"],
+          ws: "wss://ws.augur.net",
+          ipc: null
+        };
+        assert.deepEqual(state, {
+          from: "0xb0b",
+          coinbase: "0xb0b",
+          networkID: "3",
+          contracts: {contract1: "0xc1", contract2: "0xc2"},
+          allContracts: {
+            3: {contract1: "0xc1", contract2: "0xc2"}
+          },
+          api: {events: null, functions: null},
+          connection: expectedConnection
+        });
+        assert.deepEqual(connection, expectedConnection);
+      }
+    });
   });
 
   describe("syncConnect", function () {
@@ -1093,13 +1198,11 @@ describe("setFrom", function () {
       var setNetworkID = ethcon.setNetworkID;
       var setCoinbase = ethcon.setCoinbase;
       var setGasPrice = ethcon.setGasPrice;
-      var updateContracts = ethcon.updateContracts;
       after(function () {
         ethcon.rpc.blockNumber = blockNumber;
         ethcon.setNetworkID = setNetworkID;
         ethcon.setCoinbase = setCoinbase;
         ethcon.setGasPrice = setGasPrice;
-        ethcon.updateContracts = updateContracts;
       });
       it(t.description, function () {
         ethcon.rpc.blockNumber = function (callback) {
@@ -1118,9 +1221,6 @@ describe("setFrom", function () {
         ethcon.setGasPrice = function (callback) {
           ethcon.rpc.gasPrice = parseInt(t.blockchain.gasPrice, 16);
           if (callback) callback(null);
-        };
-        ethcon.updateContracts = function () {
-          ethcon.state.initialContracts = clone(ethcon.state.contracts);
         };
         ethcon.state = clone(t.state);
         var connection = ethcon.syncConnect(t.params.options);
@@ -1148,7 +1248,6 @@ describe("setFrom", function () {
         connection: null,
         contracts: null,
         from: null,
-        initialContracts: null,
         networkID: null
       },
       assertions: function (state, connection) {
@@ -1165,7 +1264,6 @@ describe("setFrom", function () {
           allContracts: {
             3: {contract1: "0xc1", contract2: "0xc2"}
           },
-          initialContracts: {contract1: "0xc1", contract2: "0xc2"},
           api: {events: null, functions: null},
           connection: expectedConnection
         });
@@ -1202,7 +1300,6 @@ describe("setFrom", function () {
         connection: null,
         contracts: null,
         from: null,
-        initialContracts: null,
         networkID: null
       },
       assertions: function (state, connection) {
@@ -1219,7 +1316,6 @@ describe("setFrom", function () {
           allContracts: {
             3: {contract1: "0xc1", contract2: "0xc2"}
           },
-          initialContracts: {contract1: "0xc1", contract2: "0xc2"},
           api: {
             events: {
               event1: {address: "0xc1", contract: "contract1"},
@@ -1267,7 +1363,6 @@ describe("setFrom", function () {
         networkID: null,
         contracts: null,
         allContracts: null,
-        initialContracts: null,
         api: {events: null, functions: null},
         connection: null
       },
@@ -1281,7 +1376,6 @@ describe("setFrom", function () {
           connection: null,
           contracts: null,
           from: null,
-          initialContracts: null,
           networkID: null
         });
         assert.strictEqual(rpc.nodes.local, "http://127.0.0.1:8545");
@@ -1322,7 +1416,6 @@ describe("setFrom", function () {
         networkID: null,
         contracts: null,
         allContracts: null,
-        initialContracts: null,
         api: {events: null, functions: null},
         connection: null
       },
@@ -1346,7 +1439,6 @@ describe("setFrom", function () {
           connection: null,
           contracts: null,
           from: null,
-          initialContracts: null,
           networkID: null
         });
         assert.strictEqual(rpc.nodes.local, "http://127.0.0.1:8545");
@@ -1387,7 +1479,6 @@ describe("setFrom", function () {
         networkID: null,
         contracts: null,
         allContracts: null,
-        initialContracts: null,
         api: {events: null, functions: null},
         connection: null
       },
@@ -1411,7 +1502,6 @@ describe("setFrom", function () {
           connection: null,
           contracts: null,
           from: null,
-          initialContracts: null,
           networkID: null
         });
         assert.strictEqual(rpc.nodes.local, "http://127.0.0.1:8545");
@@ -1452,7 +1542,6 @@ describe("setFrom", function () {
         networkID: null,
         contracts: null,
         allContracts: null,
-        initialContracts: null,
         api: {events: null, functions: null},
         connection: null
       },
@@ -1476,7 +1565,6 @@ describe("setFrom", function () {
           connection: null,
           contracts: null,
           from: null,
-          initialContracts: null,
           networkID: null
         });
         assert.strictEqual(rpc.nodes.local, "http://127.0.0.1:8545");
@@ -1518,7 +1606,6 @@ describe("setFrom", function () {
         networkID: null,
         contracts: null,
         allContracts: null,
-        initialContracts: null,
         api: {events: null, functions: null},
         connection: null
       },
@@ -1542,7 +1629,6 @@ describe("setFrom", function () {
           connection: null,
           contracts: null,
           from: null,
-          initialContracts: null,
           networkID: null
         });
         assert.isNull(rpc.nodes.local);
@@ -1584,7 +1670,6 @@ describe("setFrom", function () {
         networkID: null,
         contracts: null,
         allContracts: null,
-        initialContracts: null,
         api: {events: null, functions: null},
         connection: null
       },
@@ -1608,7 +1693,6 @@ describe("setFrom", function () {
           connection: null,
           contracts: null,
           from: null,
-          initialContracts: null,
           networkID: null
         });
         assert.strictEqual(rpc.nodes.local, "http://127.0.0.1:8545");
