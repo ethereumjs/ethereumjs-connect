@@ -131,7 +131,7 @@ module.exports = {
     } else {
       this.rpc.coinbase(function (coinbase) {
         if (!coinbase || coinbase.error || coinbase === "0x") {
-          return callback("[ethereumjs-connect] setCoinbase: coinbase not found");
+          return callback(new Error("[ethereumjs-connect] setCoinbase: coinbase not found"));
         }
         self.state.coinbase = coinbase;
         self.state.from = self.state.from || coinbase;
