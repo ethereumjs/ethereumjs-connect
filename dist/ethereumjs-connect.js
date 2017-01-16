@@ -6965,10 +6965,7 @@ module.exports = {
   },
 
   configure: function (options) {
-    if (!options.contracts) {
-      throw new Error("[ethereumjs-connect] options.contracts is required");
-    }
-    this.state.allContracts = options.contracts;
+    this.state.allContracts = options.contracts || {};
     if (options.api) this.state.api = clone(options.api);
 
     // if this is the first attempt to connect, connect using the
