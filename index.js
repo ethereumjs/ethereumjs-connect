@@ -42,7 +42,7 @@ module.exports = {
   },
 
   resetState: function () {
-    this.rpc.reset();
+    this.rpc.reset(true);
     this.state = {
       from: null,
       coinbase: null,
@@ -243,7 +243,7 @@ module.exports = {
 
     // if this is the first attempt to connect, connect using the
     // parameters provided by the user exactly
-    if ((options.http || options.ipc || options.ws) && !options.attempts) {
+    if ((options.http || options.ipc || options.ws) && (!options.attempts || options.noFallback)) {
       this.rpc.ipcpath = options.ipc || null;
       this.rpc.nodes.local = options.http;
       this.rpc.nodes.hosted = [];
@@ -251,9 +251,8 @@ module.exports = {
       this.rpc.rpcStatus.ws = 0;
       this.rpc.rpcStatus.ipc = 0;
 
-    // if this is the second attempt to connect, fall back to the
-    // default hosted nodes
-    } else if (!options.noFallback) {
+    // if this is the second attempt to connect, fall back to the default hosted nodes
+    } else {
       if (this.debug) {
         console.debug("Connecting to fallback node...");
       }
