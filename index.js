@@ -15,14 +15,6 @@ function isFunction(f) {
   return Object.prototype.toString.call(f) === "[object Function]";
 }
 
-function getKeyFromValue(o, value) {
-  for (var key in o) {
-    if (o.hasOwnProperty(key)) {
-      if (o[key] === value) return key;
-    }
-  }
-}
-
 module.exports = {
 
   version: "2.0.0",
@@ -36,7 +28,6 @@ module.exports = {
     networkID: null,
     contracts: null,
     allContracts: null,
-    initialContracts: null,
     api: {events: null, functions: null},
     connection: null
   },
@@ -49,7 +40,6 @@ module.exports = {
       networkID: null,
       contracts: null,
       allContracts: null,
-      initialContracts: null,
       api: {events: null, functions: null},
       connection: null
     };
@@ -142,30 +132,6 @@ module.exports = {
     }
   },
 
-  updateContracts: function () {
-    var key;
-    if (JSON.stringify(this.state.initialContracts) !== JSON.stringify(this.state.contracts)) {
-      for (var method in this.state.api.functions) {
-        if (!this.state.api.functions.hasOwnProperty(method)) continue;
-        if (!this.state.api.functions[method].method) {
-          for (var m in this.state.api.functions[method]) {
-            if (!this.state.api.functions[method].hasOwnProperty(m)) continue;
-            key = getKeyFromValue(this.state.initialContracts, this.state.api.functions[method][m].to);
-            if (key) {
-              this.state.api.functions[method][m].to = this.state.contracts[key];
-            }
-          }
-        } else {
-          key = getKeyFromValue(this.state.initialContracts, this.state.api.functions[method].to);
-          if (key) {
-            this.state.api.functions[method].to = this.state.contracts[key];
-          }
-        }
-      }
-    }
-    this.state.initialContracts = clone(this.state.contracts);
-  },
-
   retryConnect: function (err, options, callback) {
     if (this.debug) {
       console.warn("[ethereumjs-connect] Couldn't connect to Ethereum", err, JSON.stringify(options, null, 2));
@@ -206,11 +172,7 @@ module.exports = {
         self.setupEventsAPI();
         next();
       },
-      this.setGasPrice.bind(this),
-      function (next) {
-        self.updateContracts();
-        next();
-      }
+      this.setGasPrice.bind(this)
     ], function (err) {
       if (err) return self.retryConnect(err, options, callback);
       self.state.connection = {
@@ -233,7 +195,6 @@ module.exports = {
       this.setupFunctionsAPI();
       this.setupEventsAPI();
       this.setGasPrice();
-      this.updateContracts();
       this.state.connection = {
         http: this.rpc.nodes.local || this.rpc.nodes.hosted,
         ws: this.rpc.wsUrl,
