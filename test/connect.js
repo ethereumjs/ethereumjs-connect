@@ -928,7 +928,316 @@ describe("setFrom", function () {
     });
   });
 
-  
+  describe("asyncConnect", function () {
+    var test = function (t) {
+      var blockNumber = ethcon.rpc.blockNumber;
+      var setNetworkID = ethcon.setNetworkID;
+      var setCoinbase = ethcon.setCoinbase;
+      var setGasPrice = ethcon.setGasPrice;
+      var updateContracts = ethcon.updateContracts;
+      after(function () {
+        ethcon.rpc.blockNumber = blockNumber;
+        ethcon.setNetworkID = setNetworkID;
+        ethcon.setCoinbase = setCoinbase;
+        ethcon.setGasPrice = setGasPrice;
+        ethcon.updateContracts = updateContracts;
+      });
+      it(t.description, function (done) {
+        ethcon.rpc.blockNumber = function (callback) {
+          if (!callback) return t.blockchain.blockNumber;
+          callback(t.blockchain.blockNumber);
+        };
+        ethcon.setNetworkID = function (callback) {
+          ethcon.state.networkID = t.blockchain.networkID;
+          if (callback) callback(null);
+        };
+        ethcon.setCoinbase = function (callback) {
+          ethcon.state.coinbase = t.blockchain.coinbase;
+          ethcon.state.from = ethcon.state.from || t.blockchain.coinbase;
+          if (callback) callback(null);
+        };
+        ethcon.setGasPrice = function (callback) {
+          ethcon.rpc.gasPrice = parseInt(t.blockchain.gasPrice, 16);
+          if (callback) callback(null);
+        };
+        ethcon.updateContracts = function () {
+          ethcon.state.initialContracts = clone(ethcon.state.contracts);
+        };
+        ethcon.state = clone(t.state);
+        ethcon.asyncConnect(t.params.options, function (connection) {
+          t.assertions(ethcon.state, connection);
+          ethcon.resetState();
+          done();
+        });
+      });
+    };
+    test({
+      description: "asynchronous connection sequence without api",
+      params: {
+        options: {
+          http: "http://127.0.0.1:8545",
+          ws: "ws://127.0.0.1:8546"
+        }
+      },
+      blockchain: {
+        blockNumber: "0x2328",
+        coinbase: "0xb0b",
+        gasPrice: "0x4a817c801",
+        networkID: "3"
+      },
+      state: {
+        allContracts: {
+          3: {contract1: "0xc1", contract2: "0xc2"}
+        },
+        api: {events: null, functions: null},
+        coinbase: null,
+        connection: null,
+        contracts: null,
+        from: null,
+        initialContracts: null,
+        networkID: null
+      },
+      assertions: function (state, connection) {
+        var expectedConnection = {
+          http: ["https://eth3.augur.net"],
+          ws: "wss://ws.augur.net",
+          ipc: null
+        };
+        assert.deepEqual(state, {
+          from: "0xb0b",
+          coinbase: "0xb0b",
+          networkID: "3",
+          contracts: {contract1: "0xc1", contract2: "0xc2"},
+          allContracts: {
+            3: {contract1: "0xc1", contract2: "0xc2"}
+          },
+          initialContracts: {contract1: "0xc1", contract2: "0xc2"},
+          api: {events: null, functions: null},
+          connection: expectedConnection
+        });
+        assert.deepEqual(connection, expectedConnection);
+      }
+    });
+    test({
+      description: "asynchronous connection sequence with api",
+      params: {
+        options: {
+          http: "http://127.0.0.1:8545",
+          ws: "ws://127.0.0.1:8546"
+        }
+      },
+      blockchain: {
+        blockNumber: "0x2328",
+        coinbase: "0xb0b",
+        gasPrice: "0x4a817c801",
+        networkID: "3"
+      },
+      state: {
+        allContracts: {
+          3: {contract1: "0xc1", contract2: "0xc2"}
+        },
+        api: {
+          events: {
+            event1: {contract: "contract1"},
+            event2: {contract: "contract1"},
+            event3: {contract: "contract2"}
+          },
+          functions: {
+            contract1: {method1: {}, method2: {}},
+            contract2: {method1: {}}
+          }
+        },
+        coinbase: null,
+        connection: null,
+        contracts: null,
+        from: null,
+        initialContracts: null,
+        networkID: null
+      },
+      assertions: function (state, connection) {
+        var expectedConnection = {
+          http: ["https://eth3.augur.net"],
+          ws: "wss://ws.augur.net",
+          ipc: null
+        };
+        assert.deepEqual(state, {
+          from: "0xb0b",
+          coinbase: "0xb0b",
+          networkID: "3",
+          contracts: {contract1: "0xc1", contract2: "0xc2"},
+          allContracts: {
+            3: {contract1: "0xc1", contract2: "0xc2"}
+          },
+          initialContracts: {contract1: "0xc1", contract2: "0xc2"},
+          api: {
+            events: {
+              event1: {address: "0xc1", contract: "contract1"},
+              event2: {address: "0xc1", contract: "contract1"},
+              event3: {address: "0xc2", contract: "contract2"}
+            },
+            functions: {
+              contract1: {method1: {from: "0xb0b", to: "0xc1"}, method2: {from: "0xb0b", to: "0xc1"}},
+              contract2: {method1: {from: "0xb0b", to: "0xc2"}}
+            }
+          },
+          connection: expectedConnection
+        });
+        assert.deepEqual(connection, expectedConnection);
+      }
+    });
+  });
+
+  describe("syncConnect", function () {
+    var test = function (t) {
+      var blockNumber = ethcon.rpc.blockNumber;
+      var setNetworkID = ethcon.setNetworkID;
+      var setCoinbase = ethcon.setCoinbase;
+      var setGasPrice = ethcon.setGasPrice;
+      var updateContracts = ethcon.updateContracts;
+      after(function () {
+        ethcon.rpc.blockNumber = blockNumber;
+        ethcon.setNetworkID = setNetworkID;
+        ethcon.setCoinbase = setCoinbase;
+        ethcon.setGasPrice = setGasPrice;
+        ethcon.updateContracts = updateContracts;
+      });
+      it(t.description, function () {
+        ethcon.rpc.blockNumber = function (callback) {
+          if (!callback) return t.blockchain.blockNumber;
+          callback(t.blockchain.blockNumber);
+        };
+        ethcon.setNetworkID = function (callback) {
+          ethcon.state.networkID = t.blockchain.networkID;
+          if (callback) callback(null);
+        };
+        ethcon.setCoinbase = function (callback) {
+          ethcon.state.coinbase = t.blockchain.coinbase;
+          ethcon.state.from = ethcon.state.from || t.blockchain.coinbase;
+          if (callback) callback(null);
+        };
+        ethcon.setGasPrice = function (callback) {
+          ethcon.rpc.gasPrice = parseInt(t.blockchain.gasPrice, 16);
+          if (callback) callback(null);
+        };
+        ethcon.updateContracts = function () {
+          ethcon.state.initialContracts = clone(ethcon.state.contracts);
+        };
+        ethcon.state = clone(t.state);
+        var connection = ethcon.syncConnect(t.params.options);
+        t.assertions(ethcon.state, connection);
+        ethcon.resetState();
+      });
+    };
+    test({
+      description: "synchronous connection sequence without api",
+      params: {
+        options: {}
+      },
+      blockchain: {
+        blockNumber: "0x2328",
+        coinbase: "0xb0b",
+        gasPrice: "0x4a817c801",
+        networkID: "3"
+      },
+      state: {
+        allContracts: {
+          3: {contract1: "0xc1", contract2: "0xc2"}
+        },
+        api: {events: null, functions: null},
+        coinbase: null,
+        connection: null,
+        contracts: null,
+        from: null,
+        initialContracts: null,
+        networkID: null
+      },
+      assertions: function (state, connection) {
+        var expectedConnection = {
+          http: ["https://eth3.augur.net"],
+          ws: "wss://ws.augur.net",
+          ipc: null
+        };
+        assert.deepEqual(state, {
+          from: "0xb0b",
+          coinbase: "0xb0b",
+          networkID: "3",
+          contracts: {contract1: "0xc1", contract2: "0xc2"},
+          allContracts: {
+            3: {contract1: "0xc1", contract2: "0xc2"}
+          },
+          initialContracts: {contract1: "0xc1", contract2: "0xc2"},
+          api: {events: null, functions: null},
+          connection: expectedConnection
+        });
+        assert.deepEqual(connection, expectedConnection);
+      }
+    });
+    test({
+      description: "synchronous connection sequence with api",
+      params: {
+        options: {}
+      },
+      blockchain: {
+        blockNumber: "0x2328",
+        coinbase: "0xb0b",
+        gasPrice: "0x4a817c801",
+        networkID: "3"
+      },
+      state: {
+        allContracts: {
+          3: {contract1: "0xc1", contract2: "0xc2"}
+        },
+        api: {
+          events: {
+            event1: {contract: "contract1"},
+            event2: {contract: "contract1"},
+            event3: {contract: "contract2"}
+          },
+          functions: {
+            contract1: {method1: {}, method2: {}},
+            contract2: {method1: {}}
+          }
+        },
+        coinbase: null,
+        connection: null,
+        contracts: null,
+        from: null,
+        initialContracts: null,
+        networkID: null
+      },
+      assertions: function (state, connection) {
+        var expectedConnection = {
+          http: ["https://eth3.augur.net"],
+          ws: "wss://ws.augur.net",
+          ipc: null
+        };
+        assert.deepEqual(state, {
+          from: "0xb0b",
+          coinbase: "0xb0b",
+          networkID: "3",
+          contracts: {contract1: "0xc1", contract2: "0xc2"},
+          allContracts: {
+            3: {contract1: "0xc1", contract2: "0xc2"}
+          },
+          initialContracts: {contract1: "0xc1", contract2: "0xc2"},
+          api: {
+            events: {
+              event1: {address: "0xc1", contract: "contract1"},
+              event2: {address: "0xc1", contract: "contract1"},
+              event3: {address: "0xc2", contract: "contract2"}
+            },
+            functions: {
+              contract1: {method1: {from: "0xb0b", to: "0xc1"}, method2: {from: "0xb0b", to: "0xc1"}},
+              contract2: {method1: {from: "0xb0b", to: "0xc2"}}
+            }
+          },
+          connection: expectedConnection
+        });
+        assert.deepEqual(connection, expectedConnection);
+      }
+    });
+  });
+
   describe("configure", function () {
     var test = function (t) {
       it(t.description, function () {
@@ -1308,6 +1617,131 @@ describe("setFrom", function () {
         assert.strictEqual(rpc.ipcpath, "/home/jack/.ethereum/geth.ipc");
         assert.strictEqual(rpc.rpcStatus.ws, 0);
         assert.strictEqual(rpc.rpcStatus.ipc, 0);
+      }
+    });
+  });
+
+  describe("connect", function () {
+    var test = function (t) {
+      var syncConnect = ethcon.syncConnect;
+      var asyncConnect = ethcon.asyncConnect;
+      after(function () {
+        ethcon.syncConnect = syncConnect;
+        ethcon.asyncConnect = asyncConnect;
+      });
+      describe(t.description, function () {
+        it("sync", function () {
+          ethcon.syncConnect = function (options) {
+            return {
+              http: options.http,
+              ws: options.ws,
+              ipc: options.ipc
+            };
+          };
+          t.assertions(ethcon.connect(t.params.options));
+          ethcon.resetState();
+        });
+        it("async", function (done) {
+          ethcon.asyncConnect = function (options, callback) {
+            callback({
+              http: options.http,
+              ws: options.ws,
+              ipc: options.ipc
+            });
+          };
+          ethcon.connect(t.params.options, function (connection) {
+            t.assertions(connection);
+            ethcon.resetState();
+            done();
+          });
+        });
+      });
+    };
+    test({
+      description: "no endpoints specified",
+      params: {
+        options: {
+          contracts: {}
+        }
+      },
+      assertions: function (connection) {
+        assert.deepEqual(connection, {
+          http: undefined,
+          ws: undefined,
+          ipc: undefined
+        });
+      }
+    });
+    test({
+      description: "http only",
+      params: {
+        options: {
+          http: "http://127.0.0.1:8545",
+          ws: null,
+          ipc: null,
+          contracts: {}
+        }
+      },
+      assertions: function (connection) {
+        assert.deepEqual(connection, {
+          http: "http://127.0.0.1:8545",
+          ws: null,
+          ipc: null
+        });
+      }
+    });
+    test({
+      description: "http and websockets",
+      params: {
+        options: {
+          http: "http://127.0.0.1:8545",
+          ws: "ws://127.0.0.1:8546",
+          ipc: null,
+          contracts: {}
+        }
+      },
+      assertions: function (connection) {
+        assert.deepEqual(connection, {
+          http: "http://127.0.0.1:8545",
+          ws: "ws://127.0.0.1:8546",
+          ipc: null
+        });
+      }
+    });
+    test({
+      description: "http and ipc",
+      params: {
+        options: {
+          http: "http://127.0.0.1:8545",
+          ws: null,
+          ipc: "/home/jack/.ethereum/geth.ipc",
+          contracts: {}
+        }
+      },
+      assertions: function (connection) {
+        assert.deepEqual(connection, {
+          http: "http://127.0.0.1:8545",
+          ws: null,
+          ipc: "/home/jack/.ethereum/geth.ipc"
+        });
+      }
+    });
+    test({
+      description: "http, websockets, and ipc",
+      params: {
+        options: {
+          http: "http://127.0.0.1:8545",
+          ws: "ws://127.0.0.1:8546",
+          ipc: "/home/jack/.ethereum/geth.ipc",
+          contracts: {}
+        }
+      },
+      assertions: function (connection) {
+        assert.deepEqual(connection, {
+          http: "http://127.0.0.1:8545",
+          ws: "ws://127.0.0.1:8546",
+          ipc: "/home/jack/.ethereum/geth.ipc"
+        });
       }
     });
   });
