@@ -110,11 +110,13 @@ module.exports = {
 
   setFrom: function (account) {
     this.state.from = this.state.from || account;
-    for (var contract in this.state.api.functions) {
-      if (!this.state.api.functions.hasOwnProperty(contract)) continue;
-      for (var method in this.state.api.functions[contract]) {
-        if (!this.state.api.functions[contract].hasOwnProperty(method)) continue;
-        this.state.api.functions[contract][method].from = account || this.state.from;
+    if (this.state.api.functions) {
+      for (var contract in this.state.api.functions) {
+        if (!this.state.api.functions.hasOwnProperty(contract)) continue;
+        for (var method in this.state.api.functions[contract]) {
+          if (!this.state.api.functions[contract].hasOwnProperty(method)) continue;
+          this.state.api.functions[contract][method].from = account || this.state.from;
+        }
       }
     }
   },
@@ -135,7 +137,7 @@ module.exports = {
         }
         self.state.coinbase = coinbase;
         self.state.from = self.state.from || coinbase;
-        return callback(null);
+        callback(null);
       });
     }
   },
@@ -193,13 +195,22 @@ module.exports = {
         });
       },
       this.setNetworkID.bind(this),
-      this.setContracts.bind(this),
+      function (next) {
+        self.setContracts();
+        next();
+      },
       this.setCoinbase.bind(this),
-      this.setFrom.bind(this),
-      this.setupFunctionsAPI.bind(this),
-      this.setupEventsAPI.bind(this),
+      function (next) {
+        self.setFrom();
+        self.setupFunctionsAPI();
+        self.setupEventsAPI();
+        next();
+      },
       this.setGasPrice.bind(this),
-      this.updateContracts.bind(this)
+      function (next) {
+        self.updateContracts();
+        next();
+      }
     ], function (err) {
       if (err) return self.retryConnect(err, options, callback);
       self.state.connection = {
@@ -267,6 +278,6 @@ module.exports = {
   connect: function (options, callback) {
     this.configure(options || {});
     if (!isFunction(callback)) return this.syncConnect(options);
-    this.asyncConnect(options, callback);
+    this.asyncConnect(options || {}, callback);
   }
 };
