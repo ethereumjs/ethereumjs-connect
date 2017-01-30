@@ -209,6 +209,11 @@ module.exports = {
   configure: function (options) {
     this.state.allContracts = options.contracts || {};
     if (options.api) this.state.api = clone(options.api);
+    if (options.noFallback) {
+      this.rpc.disableHostedNodeFallback();
+    } else {
+      this.rpc.enableHostedNodeFallback();
+    }
 
     // if this is the first attempt to connect, connect using the
     // parameters provided by the user exactly
