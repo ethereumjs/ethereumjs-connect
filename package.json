@@ -1,6 +1,6 @@
 {
   "name": "ethereumjs-connect",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "Basic Ethereum connection tasks",
   "main": "index.js",
   "scripts": {
