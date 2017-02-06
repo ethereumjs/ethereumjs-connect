@@ -1020,8 +1020,8 @@ describe("setFrom", function () {
       },
       assertions: function (state, connection) {
         var expectedConnection = {
-          http: ["https://eth3.augur.net"],
-          ws: "wss://ws.augur.net",
+          http: ["https://eth9000.augur.net"],
+          ws: "wss://ws9000.augur.net",
           ipc: null
         };
         assert.deepEqual(state, {
@@ -1075,8 +1075,8 @@ describe("setFrom", function () {
       },
       assertions: function (state, connection) {
         var expectedConnection = {
-          http: ["https://eth3.augur.net"],
-          ws: "wss://ws.augur.net",
+          http: ["https://eth9000.augur.net"],
+          ws: "wss://ws9000.augur.net",
           ipc: null
         };
         assert.deepEqual(state, {
@@ -1130,8 +1130,8 @@ describe("setFrom", function () {
       },
       assertions: function (state, connection) {
         var expectedConnection = {
-          http: ["https://eth3.augur.net"],
-          ws: "wss://ws.augur.net",
+          http: ["https://eth9000.augur.net"],
+          ws: "wss://ws9000.augur.net",
           ipc: null
         };
         assert.deepEqual(state, {
@@ -1172,8 +1172,8 @@ describe("setFrom", function () {
       },
       assertions: function (state, connection) {
         var expectedConnection = {
-          http: ["https://eth3.augur.net"],
-          ws: "wss://ws.augur.net",
+          http: ["https://eth9000.augur.net"],
+          ws: "wss://ws9000.augur.net",
           ipc: null
         };
         assert.deepEqual(state, {
@@ -1252,8 +1252,8 @@ describe("setFrom", function () {
       },
       assertions: function (state, connection) {
         var expectedConnection = {
-          http: ["https://eth3.augur.net"],
-          ws: "wss://ws.augur.net",
+          http: ["https://eth9000.augur.net"],
+          ws: "wss://ws9000.augur.net",
           ipc: null
         };
         assert.deepEqual(state, {
@@ -1304,8 +1304,8 @@ describe("setFrom", function () {
       },
       assertions: function (state, connection) {
         var expectedConnection = {
-          http: ["https://eth3.augur.net"],
-          ws: "wss://ws.augur.net",
+          http: ["https://eth9000.augur.net"],
+          ws: "wss://ws9000.augur.net",
           ipc: null
         };
         assert.deepEqual(state, {
@@ -1632,8 +1632,8 @@ describe("setFrom", function () {
           networkID: null
         });
         assert.isNull(rpc.nodes.local);
-        assert.deepEqual(rpc.nodes.hosted, ["https://eth3.augur.net"]);
-        assert.strictEqual(rpc.wsUrl, "wss://ws.augur.net");
+        assert.deepEqual(rpc.nodes.hosted, ["https://eth9000.augur.net"]);
+        assert.strictEqual(rpc.wsUrl, "wss://ws9000.augur.net");
         assert.isNull(rpc.ipcpath);
         assert.strictEqual(rpc.rpcStatus.ws, 0);
         assert.strictEqual(rpc.rpcStatus.ipc, 0);

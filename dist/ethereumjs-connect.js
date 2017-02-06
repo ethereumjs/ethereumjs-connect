@@ -16346,7 +16346,7 @@ function isFunction(f) {
 
 module.exports = {
 
-  version: "2.0.1",
+  version: "2.1.1",
 
   debug: false,
   rpc: rpc,
@@ -24208,8 +24208,8 @@ function wait(delay) {
   return;
 }
 
-var HOSTED_NODES = ["https://eth3.augur.net"];
-var HOSTED_WEBSOCKET = "wss://ws.augur.net";
+var HOSTED_NODES = ["https://eth9000.augur.net"];
+var HOSTED_WEBSOCKET = "wss://ws9000.augur.net";
 
 var noop = function () {};
 
