@@ -30,7 +30,7 @@ connector.connect({http: "http://localhost:8545", ws: "ws://localhost:8546"});
 
 // Connect to a local Ethereum node with IPC support
 var ipcpath = require("path").join(process.env.HOME, ".ethereum", "geth.ipc");
-connector.connect({http: "http://localhost:8545", ipcpath: ipcpath});
+connector.connect({http: "http://localhost:8545", ipc: ipcpath});
 ```
 If the last argument provided to `connector.connect` is a function, it will connect asynchronously:
 ```javascript
