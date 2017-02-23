@@ -24,7 +24,6 @@ describe("resetState", function () {
       from: null,
       coinbase: null,
       networkID: null,
-      blockNumber: null,
       contracts: null,
       allContracts: null,
       api: {events: null, functions: null},
@@ -35,7 +34,6 @@ describe("resetState", function () {
         from: null,
         coinbase: null,
         networkID: null,
-        blockNumber: null,
         contracts: null,
         allContracts: null,
         api: {events: null, functions: null},
@@ -49,7 +47,6 @@ describe("resetState", function () {
       from: "0xb0b",
       coinbase: "0xb0b",
       networkID: "3",
-      blockNumber: 9000,
       contracts: null,
       allContracts: {
         1: {myContract: "0xc1"},
@@ -63,7 +60,6 @@ describe("resetState", function () {
         from: null,
         coinbase: null,
         networkID: null,
-        blockNumber: null,
         contracts: null,
         allContracts: null,
         api: {events: null, functions: null},
@@ -373,8 +369,12 @@ describe("setGasPrice", function () {
           if (!callback) return t.blockchain.gasPrice;
           callback(t.blockchain.gasPrice);
         };
-        ethcon.setGasPrice();
-        t.assertions(null, ethcon.rpc, ethcon.state);
+        try {
+          ethcon.setGasPrice();
+          t.assertions(null, ethcon.rpc, ethcon.state);
+        } catch (exc) {
+          t.assertions(exc, ethcon.rpc, ethcon.state);
+        }
         ethcon.resetState();
       });
       it("async", function (done) {
@@ -459,6 +459,50 @@ describe("setGasPrice", function () {
       });
     }
   });
+  test({
+    description: "rpc.getGasPrice returns null",
+    blockchain: {
+      gasPrice: null
+    },
+    state: {
+      from: "0xb0b",
+      coinbase: "0xb0b",
+      networkID: "3",
+      contracts: null,
+      allContracts: {
+        1: {myContract: "0xc1"},
+        3: {myContract: "0xc3"}
+      },
+      api: {events: null, functions: null},
+      connection: {http: "http://127.0.0.1:8545", ws: "ws://127.0.0.1:8546", ipc: null}
+    },
+    assertions: function (err) {
+      assert.strictEqual(err.constructor, Error);
+      assert.strictEqual(err.message, "setGasPrice failed");
+    }
+  });
+  test({
+    description: "rpc.getGasPrice returns an error",
+    blockchain: {
+      gasPrice: {error: "epic fail"}
+    },
+    state: {
+      from: "0xb0b",
+      coinbase: "0xb0b",
+      networkID: "3",
+      contracts: null,
+      allContracts: {
+        1: {myContract: "0xc1"},
+        3: {myContract: "0xc3"}
+      },
+      api: {events: null, functions: null},
+      connection: {http: "http://127.0.0.1:8545", ws: "ws://127.0.0.1:8546", ipc: null}
+    },
+    assertions: function (err) {
+      assert.strictEqual(err.constructor, Error);
+      assert.strictEqual(err.message, "epic fail");
+    }
+  });
 });
 
 describe("setNetworkID", function () {
@@ -474,8 +518,12 @@ describe("setNetworkID", function () {
           callback(t.blockchain.networkID);
         };
         ethcon.state = clone(t.state);
-        ethcon.setNetworkID();
-        t.assertions(null, ethcon.state);
+        try {
+          ethcon.setNetworkID();
+          t.assertions(null, ethcon.state);
+        } catch (exc) {
+          t.assertions(exc, ethcon.state);
+        }
         ethcon.resetState();
       });
       it("async", function (done) {
@@ -536,9 +584,53 @@ describe("setNetworkID", function () {
       assert.strictEqual(state.networkID, "3");
     }
   });
+  test({
+    description: "rpc.version returns null",
+    blockchain: {
+      networkID: null
+    },
+    state: {
+      from: "0xb0b",
+      coinbase: "0xb0b",
+      networkID: "1",
+      contracts: null,
+      allContracts: {
+        1: {myContract: "0xc1"},
+        3: {myContract: "0xc3"}
+      },
+      api: {events: null, functions: null},
+      connection: {http: "http://127.0.0.1:8545", ws: "ws://127.0.0.1:8546", ipc: null}
+    },
+    assertions: function (err) {
+      assert.strictEqual(err.constructor, Error);
+      assert.strictEqual(err.message, "setNetworkID failed");
+    }
+  });
+  test({
+    description: "rpc.version returns an error",
+    blockchain: {
+      networkID: {error: "epic fail"}
+    },
+    state: {
+      from: "0xb0b",
+      coinbase: "0xb0b",
+      networkID: "1",
+      contracts: null,
+      allContracts: {
+        1: {myContract: "0xc1"},
+        3: {myContract: "0xc3"}
+      },
+      api: {events: null, functions: null},
+      connection: {http: "http://127.0.0.1:8545", ws: "ws://127.0.0.1:8546", ipc: null}
+    },
+    assertions: function (err) {
+      assert.strictEqual(err.constructor, Error);
+      assert.strictEqual(err.message, "epic fail");
+    }
+  });
 });
 
-describe("setBlockNumber", function () {
+describe("setLatestBlock", function () {
   var test = function (t) {
     var rpcBlockNumber = ethcon.rpc.blockNumber;
     after(function () {
@@ -548,22 +640,42 @@ describe("setBlockNumber", function () {
     describe(t.description, function () {
       it("sync", function () {
         ethcon.rpc.blockNumber = function (callback) {
-          if (!callback) return parseInt(t.blockchain.blockNumber, 16);
-          callback(t.blockchain.blockNumber);
+          if (t.blockchain.block && t.blockchain.block.number && t.blockchain.block.number.error) {
+            if (!callback) return t.blockchain.block.number;
+            return callback(t.blockchain.block.number);
+          }
+          if (!callback) return parseInt(t.blockchain.block.number, 16);
+          callback(t.blockchain.block.number);
+        };
+        ethcon.rpc.getBlock = function (blockNumber, full, callback) {
+          if (!callback) return t.blockchain.block;
+          callback(t.blockchain.block);
         };
         ethcon.rpc.block = t.state.rpc.block;
-        ethcon.setBlockNumber();
-        t.assertions(null, ethcon.state);
+        try {
+          ethcon.setLatestBlock();
+          t.assertions(null, ethcon.rpc.block);
+        } catch (exc) {
+          t.assertions(exc, ethcon.rpc.block);
+        }
         ethcon.resetState();
       });
       it("async", function (done) {
         ethcon.rpc.blockNumber = function (callback) {
-          if (!callback) return parseInt(t.blockchain.blockNumber, 16);
-          callback(t.blockchain.blockNumber);
+          if (t.blockchain.block && t.blockchain.block.number && t.blockchain.block.number.error) {
+            if (!callback) return t.blockchain.block.number;
+            return callback(t.blockchain.block.number);
+          }
+          if (!callback) return parseInt(t.blockchain.block.number, 16);
+          callback(t.blockchain.block.number);
+        };
+        ethcon.rpc.getBlock = function (blockNumber, full, callback) {
+          if (!callback) return t.blockchain.block;
+          callback(t.blockchain.block);
         };
         ethcon.rpc.block = t.state.rpc.block;
-        ethcon.setBlockNumber(function (err) {
-          t.assertions(err, ethcon.state);
+        ethcon.setLatestBlock(function (err) {
+          t.assertions(err, ethcon.rpc.block);
           ethcon.resetState();
           done();
         });
@@ -573,40 +685,80 @@ describe("setBlockNumber", function () {
   test({
     description: "null rpc.block",
     blockchain: {
-      blockNumber: "0x64"
+      block: {number: "0x64", timestamp: "0x2710"}
     },
     state: {
       rpc: {block: null}
     },
-    assertions: function (err, state) {
+    assertions: function (err, block) {
       assert.isNull(err);
-      assert.strictEqual(state.blockNumber, 100);
+      assert.strictEqual(block.number, 100);
     }
   });
   test({
-    description: "null rpc.block.number",
+    description: "null rpc.block.number and rpc.block.timestamp",
     blockchain: {
-      blockNumber: "0x64"
+      block: {number: "0x64", timestamp: "0x2710"}
     },
     state: {
-      rpc: {block: {number: null}}
+      rpc: {block: {number: null, timestamp: null}}
     },
-    assertions: function (err, state) {
+    assertions: function (err, block) {
       assert.isNull(err);
-      assert.strictEqual(state.blockNumber, 100);
+      assert.strictEqual(block.number, 100);
     }
   });
   test({
-    description: "non-null rpc.block.number",
+    description: "non-null rpc.block.number, null rpc.block.timestamp",
     blockchain: {
-      blockNumber: "0x64"
+      block: {number: "0x64", timestamp: "0x2710"}
     },
     state: {
-      rpc: {block: {number: 99}}
+      rpc: {block: {number: 99, timestamp: null}}
     },
-    assertions: function (err, state) {
+    assertions: function (err, block) {
       assert.isNull(err);
-      assert.strictEqual(state.blockNumber, 99);
+      assert.strictEqual(block.number, 100);
+    }
+  });
+  test({
+    description: "non-null rpc.block.number and rpc.block.timestamp",
+    blockchain: {
+      block: {number: "0x64", timestamp: "0x2710"}
+    },
+    state: {
+      rpc: {block: {number: 99, timestamp: 9999}}
+    },
+    assertions: function (err, block) {
+      assert.isNull(err);
+      assert.strictEqual(block.number, 99);
+      assert.strictEqual(block.timestamp, 9999);
+    }
+  });
+  test({
+    description: "rpc.blockNumber returns null",
+    blockchain: {
+      block: {number: null, timestamp: "0x2710"}
+    },
+    state: {
+      rpc: {block: null}
+    },
+    assertions: function (err) {
+      assert.strictEqual(err.constructor, Error);
+      assert.strictEqual(err.message, "setLatestBlock failed");
+    }
+  });
+  test({
+    description: "rpc.blockNumber returns an error",
+    blockchain: {
+      block: {number: {error: "epic fail"}, timestamp: "0x2710"}
+    },
+    state: {
+      rpc: {block: null}
+    },
+    assertions: function (err) {
+      assert.strictEqual(err.constructor, Error);
+      assert.strictEqual(err.message, "epic fail");
     }
   });
 });
@@ -946,7 +1098,8 @@ describe("setFrom", function () {
         connection: {http: "http://127.0.0.1:8545", ws: "ws://127.0.0.1:8546", ipc: null}
       },
       assertions: function (err, state) {
-        assert.deepEqual(err, new Error("[ethereumjs-connect] setCoinbase: coinbase not found"));
+        assert.strictEqual(err.constructor, Error);
+        assert.strictEqual(err.message, "0x");
         assert.strictEqual(state.coinbase, "0xb0b");
         assert.strictEqual(state.from, "0xd00d");
       }
@@ -969,7 +1122,8 @@ describe("setFrom", function () {
         connection: {http: "http://127.0.0.1:8545", ws: "ws://127.0.0.1:8546", ipc: null}
       },
       assertions: function (err, state) {
-        assert.deepEqual(err, new Error("[ethereumjs-connect] setCoinbase: coinbase not found"));
+        assert.strictEqual(err.constructor, Error);
+        assert.strictEqual(err.message, "setCoinbase failed");
         assert.strictEqual(state.coinbase, "0xb0b");
         assert.strictEqual(state.from, "0xd00d");
       }
@@ -1034,25 +1188,19 @@ describe("setFrom", function () {
 
   describe("asyncConnect", function () {
     var test = function (t) {
-      var blockNumber = ethcon.rpc.blockNumber;
       var setNetworkID = ethcon.setNetworkID;
-      var setBlockNumber = ethcon.setBlockNumber;
+      var setLatestBlock = ethcon.setLatestBlock;
       var setCoinbase = ethcon.setCoinbase;
       var setGasPrice = ethcon.setGasPrice;
       after(function () {
-        ethcon.rpc.blockNumber = blockNumber;
         ethcon.setNetworkID = setNetworkID;
-        ethcon.setBlockNumber = setBlockNumber;
+        ethcon.setLatestBlock = setLatestBlock;
         ethcon.setCoinbase = setCoinbase;
         ethcon.setGasPrice = setGasPrice;
       });
       it(t.description, function (done) {
-        ethcon.rpc.blockNumber = function (callback) {
-          if (!callback) return parseInt(t.blockchain.blockNumber, 16);
-          callback(t.blockchain.blockNumber);
-        };
-        ethcon.rpc.setBlockNumber = function (callback) {
-          ethcon.state.blockNumber = parseInt(t.blockchain.blockNumber, 16);
+        ethcon.rpc.setLatestBlock = function (callback) {
+          ethcon.rpc.block = t.rpc.block;
           if (callback) callback(null);
         };
         ethcon.setNetworkID = function (callback) {
@@ -1069,6 +1217,7 @@ describe("setFrom", function () {
           if (callback) callback(null);
         };
         ethcon.state = clone(t.state);
+        ethcon.rpc.block = t.rpc.block;
         ethcon.asyncConnect(t.params.options, function (connection) {
           t.assertions(ethcon.state, connection);
           ethcon.resetState();
@@ -1085,7 +1234,6 @@ describe("setFrom", function () {
         }
       },
       blockchain: {
-        blockNumber: "0x2328",
         coinbase: "0xb0b",
         gasPrice: "0x4a817c801",
         networkID: "3"
@@ -1101,6 +1249,9 @@ describe("setFrom", function () {
         from: null,
         networkID: null
       },
+      rpc: {
+        block: {number: 9000, timestamp: 10000}
+      },
       assertions: function (state, connection) {
         var expectedConnection = {
           http: ["https://eth9000.augur.net"],
@@ -1111,7 +1262,6 @@ describe("setFrom", function () {
           from: "0xb0b",
           coinbase: "0xb0b",
           networkID: "3",
-          blockNumber: 9000,
           contracts: {contract1: "0xc1", contract2: "0xc2"},
           allContracts: {
             3: {contract1: "0xc1", contract2: "0xc2"}
@@ -1131,7 +1281,6 @@ describe("setFrom", function () {
         }
       },
       blockchain: {
-        blockNumber: "0x2328",
         coinbase: "0xb0b",
         gasPrice: "0x4a817c801",
         networkID: "3"
@@ -1151,12 +1300,14 @@ describe("setFrom", function () {
             contract2: {method1: {}}
           }
         },
-        blockNumber: null,
         coinbase: null,
         connection: null,
         contracts: null,
         from: null,
         networkID: null
+      },
+      rpc: {
+        block: {number: 9000, timestamp: 10000}
       },
       assertions: function (state, connection) {
         var expectedConnection = {
@@ -1168,7 +1319,6 @@ describe("setFrom", function () {
           from: "0xb0b",
           coinbase: "0xb0b",
           networkID: "3",
-          blockNumber: 9000,
           contracts: {contract1: "0xc1", contract2: "0xc2"},
           allContracts: {
             3: {contract1: "0xc1", contract2: "0xc2"}
@@ -1198,7 +1348,6 @@ describe("setFrom", function () {
         }
       },
       blockchain: {
-        blockNumber: "0x2328",
         coinbase: "0xb0b",
         gasPrice: "0x4a817c801",
         networkID: "3"
@@ -1208,12 +1357,14 @@ describe("setFrom", function () {
           3: {contract1: "0xc1", contract2: "0xc2"}
         },
         api: {events: null, functions: null},
-        blockNumber: null,
         coinbase: null,
         connection: null,
         contracts: null,
         from: null,
         networkID: null
+      },
+      rpc: {
+        block: {number: 9000, timestamp: 10000}
       },
       assertions: function (state, connection) {
         var expectedConnection = {
@@ -1225,7 +1376,6 @@ describe("setFrom", function () {
           from: "0xb0b",
           coinbase: "0xb0b",
           networkID: "3",
-          blockNumber: 9000,
           contracts: {contract1: "0xc1", contract2: "0xc2"},
           allContracts: {
             3: {contract1: "0xc1", contract2: "0xc2"}
@@ -1242,7 +1392,6 @@ describe("setFrom", function () {
         options: {http: null, ws: null}
       },
       blockchain: {
-        blockNumber: "0x2328",
         coinbase: "0xb0b",
         gasPrice: "0x4a817c801",
         networkID: "3"
@@ -1252,12 +1401,14 @@ describe("setFrom", function () {
           3: {contract1: "0xc1", contract2: "0xc2"}
         },
         api: {events: null, functions: null},
-        blockNumber: null,
         coinbase: null,
         connection: null,
         contracts: null,
         from: null,
         networkID: null
+      },
+      rpc: {
+        block: {number: 9000, timestamp: 10000}
       },
       assertions: function (state, connection) {
         var expectedConnection = {
@@ -1269,7 +1420,6 @@ describe("setFrom", function () {
           from: "0xb0b",
           coinbase: "0xb0b",
           networkID: "3",
-          blockNumber: 9000,
           contracts: {contract1: "0xc1", contract2: "0xc2"},
           allContracts: {
             3: {contract1: "0xc1", contract2: "0xc2"}
@@ -1284,25 +1434,19 @@ describe("setFrom", function () {
 
   describe("syncConnect", function () {
     var test = function (t) {
-      var blockNumber = ethcon.rpc.blockNumber;
       var setNetworkID = ethcon.setNetworkID;
-      var setBlockNumber = ethcon.setBlockNumber;
+      var setLatestBlock = ethcon.setLatestBlock;
       var setCoinbase = ethcon.setCoinbase;
       var setGasPrice = ethcon.setGasPrice;
       after(function () {
-        ethcon.rpc.blockNumber = blockNumber;
         ethcon.setNetworkID = setNetworkID;
-        ethcon.setBlockNumber = setBlockNumber;
+        ethcon.setLatestBlock = setLatestBlock;
         ethcon.setCoinbase = setCoinbase;
         ethcon.setGasPrice = setGasPrice;
       });
       it(t.description, function () {
-        ethcon.rpc.blockNumber = function (callback) {
-          if (!callback) return parseInt(t.blockchain.blockNumber, 16);
-          callback(t.blockchain.blockNumber);
-        };
-        ethcon.rpc.setBlockNumber = function (callback) {
-          ethcon.state.blockNumber = parseInt(t.blockchain.blockNumber, 16);
+        ethcon.rpc.setLatestBlock = function (callback) {
+          ethcon.rpc.block = t.rpc.block;
           if (callback) callback(null);
         };
         ethcon.setNetworkID = function (callback) {
@@ -1319,6 +1463,7 @@ describe("setFrom", function () {
           if (callback) callback(null);
         };
         ethcon.state = clone(t.state);
+        ethcon.rpc.block = t.rpc.block;
         var connection = ethcon.syncConnect(t.params.options);
         t.assertions(ethcon.state, connection);
         ethcon.resetState();
@@ -1330,7 +1475,6 @@ describe("setFrom", function () {
         options: {}
       },
       blockchain: {
-        blockNumber: "0x2328",
         coinbase: "0xb0b",
         gasPrice: "0x4a817c801",
         networkID: "3"
@@ -1340,12 +1484,14 @@ describe("setFrom", function () {
           3: {contract1: "0xc1", contract2: "0xc2"}
         },
         api: {events: null, functions: null},
-        blockNumber: null,
         coinbase: null,
         connection: null,
         contracts: null,
         from: null,
         networkID: null
+      },
+      rpc: {
+        block: {number: 9000, timestamp: 10000}
       },
       assertions: function (state, connection) {
         var expectedConnection = {
@@ -1357,7 +1503,6 @@ describe("setFrom", function () {
           from: "0xb0b",
           coinbase: "0xb0b",
           networkID: "3",
-          blockNumber: 9000,
           contracts: {contract1: "0xc1", contract2: "0xc2"},
           allContracts: {
             3: {contract1: "0xc1", contract2: "0xc2"}
@@ -1374,7 +1519,6 @@ describe("setFrom", function () {
         options: {}
       },
       blockchain: {
-        blockNumber: "0x2328",
         coinbase: "0xb0b",
         gasPrice: "0x4a817c801",
         networkID: "3"
@@ -1394,12 +1538,14 @@ describe("setFrom", function () {
             contract2: {method1: {}}
           }
         },
-        blockNumber: null,
         coinbase: null,
         connection: null,
         contracts: null,
         from: null,
         networkID: null
+      },
+      rpc: {
+        block: {number: 9000, timestamp: 10000}
       },
       assertions: function (state, connection) {
         var expectedConnection = {
@@ -1411,7 +1557,6 @@ describe("setFrom", function () {
           from: "0xb0b",
           coinbase: "0xb0b",
           networkID: "3",
-          blockNumber: 9000,
           contracts: {contract1: "0xc1", contract2: "0xc2"},
           allContracts: {
             3: {contract1: "0xc1", contract2: "0xc2"}
@@ -1461,7 +1606,6 @@ describe("setFrom", function () {
         from: null,
         coinbase: null,
         networkID: null,
-        blockNumber: null,
         contracts: null,
         allContracts: null,
         api: {events: null, functions: null},
@@ -1473,7 +1617,6 @@ describe("setFrom", function () {
             3: {contract1: "0xc1", contract2: "0xc2"}
           },
           api: {events: null, functions: null},
-          blockNumber: null,
           coinbase: null,
           connection: null,
           contracts: null,
@@ -1515,7 +1658,6 @@ describe("setFrom", function () {
       state: {
         from: null,
         coinbase: null,
-        blockNumber: null,
         networkID: null,
         contracts: null,
         allContracts: null,
@@ -1538,7 +1680,6 @@ describe("setFrom", function () {
               contract2: {method1: {}}
             }
           },
-          blockNumber: null,
           coinbase: null,
           connection: null,
           contracts: null,
@@ -1581,7 +1722,6 @@ describe("setFrom", function () {
         from: null,
         coinbase: null,
         networkID: null,
-        blockNumber: null,
         contracts: null,
         allContracts: null,
         api: {events: null, functions: null},
@@ -1603,7 +1743,6 @@ describe("setFrom", function () {
               contract2: {method1: {}}
             }
           },
-          blockNumber: null,
           coinbase: null,
           connection: null,
           contracts: null,
@@ -1646,7 +1785,6 @@ describe("setFrom", function () {
         from: null,
         coinbase: null,
         networkID: null,
-        blockNumber: null,
         contracts: null,
         allContracts: null,
         api: {events: null, functions: null},
@@ -1668,7 +1806,6 @@ describe("setFrom", function () {
               contract2: {method1: {}}
             }
           },
-          blockNumber: null,
           coinbase: null,
           connection: null,
           contracts: null,
@@ -1712,7 +1849,6 @@ describe("setFrom", function () {
         from: null,
         coinbase: null,
         networkID: null,
-        blockNumber: null,
         contracts: null,
         allContracts: null,
         api: {events: null, functions: null},
@@ -1734,7 +1870,6 @@ describe("setFrom", function () {
               contract2: {method1: {}}
             }
           },
-          blockNumber: null,
           coinbase: null,
           connection: null,
           contracts: null,
@@ -1778,7 +1913,6 @@ describe("setFrom", function () {
         from: null,
         coinbase: null,
         networkID: null,
-        blockNumber: null,
         contracts: null,
         allContracts: null,
         api: {events: null, functions: null},
@@ -1800,7 +1934,6 @@ describe("setFrom", function () {
               contract2: {method1: {}}
             }
           },
-          blockNumber: null,
           coinbase: null,
           connection: null,
           contracts: null,

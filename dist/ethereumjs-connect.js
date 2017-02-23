@@ -16346,7 +16346,7 @@ function isFunction(f) {
 
 module.exports = {
 
-  version: "2.2.0",
+  version: "2.3.0",
 
   debug: false,
   rpc: rpc,
@@ -16355,7 +16355,6 @@ module.exports = {
     from: null,
     coinbase: null,
     networkID: null,
-    blockNumber: null,
     contracts: null,
     allContracts: null,
     api: {events: null, functions: null},
@@ -16368,7 +16367,6 @@ module.exports = {
       from: null,
       coinbase: null,
       networkID: null,
-      blockNumber: null,
       contracts: null,
       allContracts: null,
       api: {events: null, functions: null},
@@ -16404,10 +16402,15 @@ module.exports = {
   setGasPrice: function (callback) {
     var self = this;
     if (!isFunction(callback)) {
-      this.rpc.gasPrice = parseInt(this.rpc.getGasPrice(), 16);
+      var gasPrice = this.rpc.getGasPrice();
+      console.log('GAS PRICE:', gasPrice);
+      if (!gasPrice) throw new Error("setGasPrice failed");
+      if (gasPrice.error) throw new Error(gasPrice.error);
+      this.rpc.gasPrice = parseInt(gasPrice, 16);
     } else {
       this.rpc.getGasPrice(function (gasPrice) {
-        if (!gasPrice || gasPrice.error) return callback(gasPrice);
+        if (!gasPrice) return callback(new Error("setGasPrice failed"));
+        if (gasPrice.error) return callback(new Error(gasPrice.error));
         self.rpc.gasPrice = parseInt(gasPrice, 16);
         callback(null);
       });
@@ -16417,32 +16420,43 @@ module.exports = {
   setNetworkID: function (callback) {
     var self = this;
     if (!isFunction(callback)) {
-      this.state.networkID = this.rpc.version();
+      var version = this.rpc.version();
+      if (version === null || version === undefined) throw new Error("setNetworkID failed");
+      if (version.error) throw new Error(version.error);
+      this.state.networkID = version;
     } else {
       this.rpc.version(function (version) {
-        if (version === null || version === undefined || version.error) {
-          return callback(version);
-        }
+        if (version === null || version === undefined) return callback(new Error("setNetworkID failed"));
+        if (version.error) return callback(new Error(version.error));
         self.state.networkID = version;
         callback(null);
       });
     }
   },
 
-  setBlockNumber: function (callback) {
+  setLatestBlock: function (callback) {
     var self = this;
-    if (this.rpc.block !== null && this.rpc.block.number) {
-      this.state.blockNumber = this.rpc.block.number;
+    if (this.rpc.block !== null && this.rpc.block.number && this.rpc.block.timestamp) {
       if (isFunction(callback)) callback(null);
     } else {
       if (!isFunction(callback)) {
-        this.rpc.block = {number: this.rpc.blockNumber()};
-        this.state.blockNumber = this.rpc.block.number;
+        var blockNumber = this.rpc.blockNumber();
+        if (!blockNumber) throw new Error("setLatestBlock failed");
+        if (blockNumber.error) throw new Error(blockNumber.error);
+        var block = this.rpc.getBlock(blockNumber, false);
+        if (!block) throw new Error("setLatestBlock failed");
+        if (block.error) throw new Error(block.error);
+        this.rpc.onNewBlock(block);
       } else {
         this.rpc.blockNumber(function (blockNumber) {
-          self.rpc.block = {number: parseInt(blockNumber, 16)};
-          self.state.blockNumber = self.rpc.block.number;
-          callback(null);
+          if (!blockNumber) return callback(new Error("setLatestBlock failed"));
+          if (blockNumber.error) return callback(new Error(blockNumber.error));
+          self.rpc.getBlock(blockNumber, false, function (block) {
+            if (!block) return callback(new Error("setLatestBlock failed"));
+            if (block.error) return callback(new Error(block.error));
+            self.rpc.onNewBlock(block);
+            callback(null);
+          });
         });
       }
     }
@@ -16465,16 +16479,14 @@ module.exports = {
     var self = this;
     if (!isFunction(callback)) {
       var coinbase = this.rpc.coinbase();
-      if (!coinbase || coinbase.error || coinbase === "0x") {
-        throw new Error("[ethereumjs-connect] setCoinbase: coinbase not found");
-      }
+      if (!coinbase) throw new Error("setCoinbase failed");
+      if (coinbase.error || coinbase === "0x") throw new Error(coinbase);
       this.state.coinbase = coinbase;
       this.state.from = this.state.from || coinbase;
     } else {
       this.rpc.coinbase(function (coinbase) {
-        if (!coinbase || coinbase.error || coinbase === "0x") {
-          return callback(new Error("[ethereumjs-connect] setCoinbase: coinbase not found"));
-        }
+        if (!coinbase) return callback(new Error("setCoinbase failed"));
+        if (coinbase.error || coinbase === "0x") return callback(new Error(coinbase));
         self.state.coinbase = coinbase;
         self.state.from = self.state.from || coinbase;
         callback(null);
@@ -16511,7 +16523,7 @@ module.exports = {
         });
       },
       this.setNetworkID.bind(this),
-      this.setBlockNumber.bind(this),
+      this.setLatestBlock.bind(this),
       function (next) {
         self.setContracts();
         next();
@@ -16540,7 +16552,7 @@ module.exports = {
     try {
       this.rpc.blockNumber(noop);
       this.setNetworkID();
-      this.setBlockNumber();
+      this.setLatestBlock();
       this.setContracts();
       this.setCoinbase();
       this.setFrom();
