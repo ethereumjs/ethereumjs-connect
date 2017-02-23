@@ -24,6 +24,7 @@ describe("resetState", function () {
       from: null,
       coinbase: null,
       networkID: null,
+      blockNumber: null,
       contracts: null,
       allContracts: null,
       api: {events: null, functions: null},
@@ -34,6 +35,7 @@ describe("resetState", function () {
         from: null,
         coinbase: null,
         networkID: null,
+        blockNumber: null,
         contracts: null,
         allContracts: null,
         api: {events: null, functions: null},
@@ -47,6 +49,7 @@ describe("resetState", function () {
       from: "0xb0b",
       coinbase: "0xb0b",
       networkID: "3",
+      blockNumber: 9000,
       contracts: null,
       allContracts: {
         1: {myContract: "0xc1"},
@@ -60,6 +63,7 @@ describe("resetState", function () {
         from: null,
         coinbase: null,
         networkID: null,
+        blockNumber: null,
         contracts: null,
         allContracts: null,
         api: {events: null, functions: null},
@@ -534,6 +538,79 @@ describe("setNetworkID", function () {
   });
 });
 
+describe("setBlockNumber", function () {
+  var test = function (t) {
+    var rpcBlockNumber = ethcon.rpc.blockNumber;
+    after(function () {
+      ethcon.rpc.blockNumber = rpcBlockNumber;
+      ethcon.rpc.block = null;
+    });
+    describe(t.description, function () {
+      it("sync", function () {
+        ethcon.rpc.blockNumber = function (callback) {
+          if (!callback) return parseInt(t.blockchain.blockNumber, 16);
+          callback(t.blockchain.blockNumber);
+        };
+        ethcon.rpc.block = t.state.rpc.block;
+        ethcon.setBlockNumber();
+        t.assertions(null, ethcon.state);
+        ethcon.resetState();
+      });
+      it("async", function (done) {
+        ethcon.rpc.blockNumber = function (callback) {
+          if (!callback) return parseInt(t.blockchain.blockNumber, 16);
+          callback(t.blockchain.blockNumber);
+        };
+        ethcon.rpc.block = t.state.rpc.block;
+        ethcon.setBlockNumber(function (err) {
+          t.assertions(err, ethcon.state);
+          ethcon.resetState();
+          done();
+        });
+      });
+    });
+  };
+  test({
+    description: "null rpc.block",
+    blockchain: {
+      blockNumber: "0x64"
+    },
+    state: {
+      rpc: {block: null}
+    },
+    assertions: function (err, state) {
+      assert.isNull(err);
+      assert.strictEqual(state.blockNumber, 100);
+    }
+  });
+  test({
+    description: "null rpc.block.number",
+    blockchain: {
+      blockNumber: "0x64"
+    },
+    state: {
+      rpc: {block: {number: null}}
+    },
+    assertions: function (err, state) {
+      assert.isNull(err);
+      assert.strictEqual(state.blockNumber, 100);
+    }
+  });
+  test({
+    description: "non-null rpc.block.number",
+    blockchain: {
+      blockNumber: "0x64"
+    },
+    state: {
+      rpc: {block: {number: 99}}
+    },
+    assertions: function (err, state) {
+      assert.isNull(err);
+      assert.strictEqual(state.blockNumber, 99);
+    }
+  });
+});
+
 describe("setFrom", function () {
   var test = function (t) {
     it(t.description, function () {
@@ -959,18 +1036,24 @@ describe("setFrom", function () {
     var test = function (t) {
       var blockNumber = ethcon.rpc.blockNumber;
       var setNetworkID = ethcon.setNetworkID;
+      var setBlockNumber = ethcon.setBlockNumber;
       var setCoinbase = ethcon.setCoinbase;
       var setGasPrice = ethcon.setGasPrice;
       after(function () {
         ethcon.rpc.blockNumber = blockNumber;
         ethcon.setNetworkID = setNetworkID;
+        ethcon.setBlockNumber = setBlockNumber;
         ethcon.setCoinbase = setCoinbase;
         ethcon.setGasPrice = setGasPrice;
       });
       it(t.description, function (done) {
         ethcon.rpc.blockNumber = function (callback) {
-          if (!callback) return t.blockchain.blockNumber;
+          if (!callback) return parseInt(t.blockchain.blockNumber, 16);
           callback(t.blockchain.blockNumber);
+        };
+        ethcon.rpc.setBlockNumber = function (callback) {
+          ethcon.state.blockNumber = parseInt(t.blockchain.blockNumber, 16);
+          if (callback) callback(null);
         };
         ethcon.setNetworkID = function (callback) {
           ethcon.state.networkID = t.blockchain.networkID;
@@ -1028,6 +1111,7 @@ describe("setFrom", function () {
           from: "0xb0b",
           coinbase: "0xb0b",
           networkID: "3",
+          blockNumber: 9000,
           contracts: {contract1: "0xc1", contract2: "0xc2"},
           allContracts: {
             3: {contract1: "0xc1", contract2: "0xc2"}
@@ -1067,6 +1151,7 @@ describe("setFrom", function () {
             contract2: {method1: {}}
           }
         },
+        blockNumber: null,
         coinbase: null,
         connection: null,
         contracts: null,
@@ -1083,6 +1168,7 @@ describe("setFrom", function () {
           from: "0xb0b",
           coinbase: "0xb0b",
           networkID: "3",
+          blockNumber: 9000,
           contracts: {contract1: "0xc1", contract2: "0xc2"},
           allContracts: {
             3: {contract1: "0xc1", contract2: "0xc2"}
@@ -1122,6 +1208,7 @@ describe("setFrom", function () {
           3: {contract1: "0xc1", contract2: "0xc2"}
         },
         api: {events: null, functions: null},
+        blockNumber: null,
         coinbase: null,
         connection: null,
         contracts: null,
@@ -1138,6 +1225,7 @@ describe("setFrom", function () {
           from: "0xb0b",
           coinbase: "0xb0b",
           networkID: "3",
+          blockNumber: 9000,
           contracts: {contract1: "0xc1", contract2: "0xc2"},
           allContracts: {
             3: {contract1: "0xc1", contract2: "0xc2"}
@@ -1164,6 +1252,7 @@ describe("setFrom", function () {
           3: {contract1: "0xc1", contract2: "0xc2"}
         },
         api: {events: null, functions: null},
+        blockNumber: null,
         coinbase: null,
         connection: null,
         contracts: null,
@@ -1180,6 +1269,7 @@ describe("setFrom", function () {
           from: "0xb0b",
           coinbase: "0xb0b",
           networkID: "3",
+          blockNumber: 9000,
           contracts: {contract1: "0xc1", contract2: "0xc2"},
           allContracts: {
             3: {contract1: "0xc1", contract2: "0xc2"}
@@ -1196,18 +1286,24 @@ describe("setFrom", function () {
     var test = function (t) {
       var blockNumber = ethcon.rpc.blockNumber;
       var setNetworkID = ethcon.setNetworkID;
+      var setBlockNumber = ethcon.setBlockNumber;
       var setCoinbase = ethcon.setCoinbase;
       var setGasPrice = ethcon.setGasPrice;
       after(function () {
         ethcon.rpc.blockNumber = blockNumber;
         ethcon.setNetworkID = setNetworkID;
+        ethcon.setBlockNumber = setBlockNumber;
         ethcon.setCoinbase = setCoinbase;
         ethcon.setGasPrice = setGasPrice;
       });
       it(t.description, function () {
         ethcon.rpc.blockNumber = function (callback) {
-          if (!callback) return t.blockchain.blockNumber;
+          if (!callback) return parseInt(t.blockchain.blockNumber, 16);
           callback(t.blockchain.blockNumber);
+        };
+        ethcon.rpc.setBlockNumber = function (callback) {
+          ethcon.state.blockNumber = parseInt(t.blockchain.blockNumber, 16);
+          if (callback) callback(null);
         };
         ethcon.setNetworkID = function (callback) {
           ethcon.state.networkID = t.blockchain.networkID;
@@ -1244,6 +1340,7 @@ describe("setFrom", function () {
           3: {contract1: "0xc1", contract2: "0xc2"}
         },
         api: {events: null, functions: null},
+        blockNumber: null,
         coinbase: null,
         connection: null,
         contracts: null,
@@ -1260,6 +1357,7 @@ describe("setFrom", function () {
           from: "0xb0b",
           coinbase: "0xb0b",
           networkID: "3",
+          blockNumber: 9000,
           contracts: {contract1: "0xc1", contract2: "0xc2"},
           allContracts: {
             3: {contract1: "0xc1", contract2: "0xc2"}
@@ -1296,6 +1394,7 @@ describe("setFrom", function () {
             contract2: {method1: {}}
           }
         },
+        blockNumber: null,
         coinbase: null,
         connection: null,
         contracts: null,
@@ -1312,6 +1411,7 @@ describe("setFrom", function () {
           from: "0xb0b",
           coinbase: "0xb0b",
           networkID: "3",
+          blockNumber: 9000,
           contracts: {contract1: "0xc1", contract2: "0xc2"},
           allContracts: {
             3: {contract1: "0xc1", contract2: "0xc2"}
@@ -1361,6 +1461,7 @@ describe("setFrom", function () {
         from: null,
         coinbase: null,
         networkID: null,
+        blockNumber: null,
         contracts: null,
         allContracts: null,
         api: {events: null, functions: null},
@@ -1372,6 +1473,7 @@ describe("setFrom", function () {
             3: {contract1: "0xc1", contract2: "0xc2"}
           },
           api: {events: null, functions: null},
+          blockNumber: null,
           coinbase: null,
           connection: null,
           contracts: null,
@@ -1413,6 +1515,7 @@ describe("setFrom", function () {
       state: {
         from: null,
         coinbase: null,
+        blockNumber: null,
         networkID: null,
         contracts: null,
         allContracts: null,
@@ -1435,6 +1538,7 @@ describe("setFrom", function () {
               contract2: {method1: {}}
             }
           },
+          blockNumber: null,
           coinbase: null,
           connection: null,
           contracts: null,
@@ -1477,6 +1581,7 @@ describe("setFrom", function () {
         from: null,
         coinbase: null,
         networkID: null,
+        blockNumber: null,
         contracts: null,
         allContracts: null,
         api: {events: null, functions: null},
@@ -1498,6 +1603,7 @@ describe("setFrom", function () {
               contract2: {method1: {}}
             }
           },
+          blockNumber: null,
           coinbase: null,
           connection: null,
           contracts: null,
@@ -1540,6 +1646,7 @@ describe("setFrom", function () {
         from: null,
         coinbase: null,
         networkID: null,
+        blockNumber: null,
         contracts: null,
         allContracts: null,
         api: {events: null, functions: null},
@@ -1561,6 +1668,7 @@ describe("setFrom", function () {
               contract2: {method1: {}}
             }
           },
+          blockNumber: null,
           coinbase: null,
           connection: null,
           contracts: null,
@@ -1604,6 +1712,7 @@ describe("setFrom", function () {
         from: null,
         coinbase: null,
         networkID: null,
+        blockNumber: null,
         contracts: null,
         allContracts: null,
         api: {events: null, functions: null},
@@ -1625,6 +1734,7 @@ describe("setFrom", function () {
               contract2: {method1: {}}
             }
           },
+          blockNumber: null,
           coinbase: null,
           connection: null,
           contracts: null,
@@ -1668,6 +1778,7 @@ describe("setFrom", function () {
         from: null,
         coinbase: null,
         networkID: null,
+        blockNumber: null,
         contracts: null,
         allContracts: null,
         api: {events: null, functions: null},
@@ -1689,6 +1800,7 @@ describe("setFrom", function () {
               contract2: {method1: {}}
             }
           },
+          blockNumber: null,
           coinbase: null,
           connection: null,
           contracts: null,

@@ -17,7 +17,7 @@ function isFunction(f) {
 
 module.exports = {
 
-  version: "2.1.2",
+  version: "2.2.0",
 
   debug: false,
   rpc: rpc,
@@ -26,6 +26,7 @@ module.exports = {
     from: null,
     coinbase: null,
     networkID: null,
+    blockNumber: null,
     contracts: null,
     allContracts: null,
     api: {events: null, functions: null},
@@ -38,6 +39,7 @@ module.exports = {
       from: null,
       coinbase: null,
       networkID: null,
+      blockNumber: null,
       contracts: null,
       allContracts: null,
       api: {events: null, functions: null},
@@ -95,6 +97,25 @@ module.exports = {
         self.state.networkID = version;
         callback(null);
       });
+    }
+  },
+
+  setBlockNumber: function (callback) {
+    var self = this;
+    if (this.rpc.block !== null && this.rpc.block.number) {
+      this.state.blockNumber = this.rpc.block.number;
+      if (isFunction(callback)) callback(null);
+    } else {
+      if (!isFunction(callback)) {
+        this.rpc.block = {number: this.rpc.blockNumber()};
+        this.state.blockNumber = this.rpc.block.number;
+      } else {
+        this.rpc.blockNumber(function (blockNumber) {
+          self.rpc.block = {number: parseInt(blockNumber, 16)};
+          self.state.blockNumber = self.rpc.block.number;
+          callback(null);
+        });
+      }
     }
   },
 
@@ -161,6 +182,7 @@ module.exports = {
         });
       },
       this.setNetworkID.bind(this),
+      this.setBlockNumber.bind(this),
       function (next) {
         self.setContracts();
         next();
@@ -189,6 +211,7 @@ module.exports = {
     try {
       this.rpc.blockNumber(noop);
       this.setNetworkID();
+      this.setBlockNumber();
       this.setContracts();
       this.setCoinbase();
       this.setFrom();
