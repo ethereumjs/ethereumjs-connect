@@ -17,7 +17,7 @@ function isFunction(f) {
 
 module.exports = {
 
-  version: "2.3.0",
+  version: "2.3.1",
 
   debug: false,
   rpc: rpc,
@@ -74,7 +74,6 @@ module.exports = {
     var self = this;
     if (!isFunction(callback)) {
       var gasPrice = this.rpc.getGasPrice();
-      console.log('GAS PRICE:', gasPrice);
       if (!gasPrice) throw new Error("setGasPrice failed");
       if (gasPrice.error) throw new Error(gasPrice.error);
       this.rpc.gasPrice = parseInt(gasPrice, 16);
