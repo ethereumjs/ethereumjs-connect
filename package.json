@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha",
-    "lint": "jshint index.js test/*.js",
+    "lint": "jshint index.js test/",
     "link": "npm link ethrpc"
   },
   "repository": {
@@ -35,10 +35,11 @@
     "chai": "^3.4.1",
     "coveralls": "^2.11.6",
     "del": "^2.2.0",
+    "ethereumjs-stub-rpc-server": "2.0.3",
     "gulp": "^3.9.0",
     "istanbul": "^0.4.1",
-    "jshint": "^2.9.2",
-    "mocha": "^2.3.4",
+    "jshint": "^2.9.4",
+    "mocha": "^3.2.0",
     "uglify-js": "^2.6.1"
   }
 }
