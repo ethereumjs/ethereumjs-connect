@@ -94,11 +94,13 @@ module.exports = {
       if (version === null || version === undefined) throw new Error("setNetworkID failed");
       if (version.error) throw new Error(version.error);
       this.state.networkID = version;
+      this.rpc.networkID = version;
     } else {
       this.rpc.version(function (version) {
         if (version === null || version === undefined) return callback(new Error("setNetworkID failed"));
         if (version.error) return callback(new Error(version.error));
         self.state.networkID = version;
+        self.rpc.networkID = version;
         callback(null);
       });
     }
