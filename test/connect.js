@@ -950,7 +950,7 @@ describe("setCoinbase", function () {
     }
   });
   test({
-    description: "error if blockchain coinbase is 0x, coinbase and from unchanged",
+    description: "no error if blockchain coinbase is 0x, coinbase and from unchanged",
     blockchain: {
       coinbase: "0x"
     },
@@ -967,14 +967,13 @@ describe("setCoinbase", function () {
       connection: { http: "http://127.0.0.1:8545", ws: "ws://127.0.0.1:8546", ipc: null }
     },
     assertions: function (err, state) {
-      assert.strictEqual(err.constructor, Error);
-      assert.strictEqual(err.message, "0x");
+      assert.isNull(err);
       assert.strictEqual(state.coinbase, "0xb0b");
       assert.strictEqual(state.from, "0xd00d");
     }
   });
   test({
-    description: "error if blockchain coinbase is null, coinbase and from unchanged",
+    description: "no error if blockchain coinbase is null, coinbase and from unchanged",
     blockchain: {
       coinbase: null
     },
@@ -991,8 +990,7 @@ describe("setCoinbase", function () {
       connection: { http: "http://127.0.0.1:8545", ws: "ws://127.0.0.1:8546", ipc: null }
     },
     assertions: function (err, state) {
-      assert.strictEqual(err.constructor, Error);
-      assert.strictEqual(err.message, "setCoinbase failed");
+      assert.isNull(err);
       assert.strictEqual(state.coinbase, "0xb0b");
       assert.strictEqual(state.from, "0xd00d");
     }

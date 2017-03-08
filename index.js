@@ -133,14 +133,15 @@ module.exports = {
     var self = this;
     if (!isFunction(callback)) {
       var coinbase = this.rpc.coinbase();
-      if (!coinbase) throw new Error("setCoinbase failed");
-      if (coinbase.error || coinbase === "0x") throw new Error(coinbase);
+      if (!coinbase) return;
+      if (coinbase.error || coinbase === "0x") return;
       this.state.coinbase = coinbase;
       this.state.from = this.state.from || coinbase;
     } else {
       this.rpc.coinbase(function (coinbase) {
-        if (!coinbase) return callback(new Error("setCoinbase failed"));
-        if (coinbase.error || coinbase === "0x") return callback(new Error(coinbase));
+        // this is a best effort, if coinbase isn't available then just move on
+        if (!coinbase) return callback(null);
+        if (coinbase.error || coinbase === "0x") return callback(null);
         self.state.coinbase = coinbase;
         self.state.from = self.state.from || coinbase;
         callback(null);
