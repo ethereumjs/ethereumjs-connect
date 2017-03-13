@@ -1559,6 +1559,8 @@ describe("sync connect", function () {
   });
 
   it("sync connection sequence with api", function () {
+    this.timeout(10000);
+
     var expectedState = {
       from: "0xb0b",
       coinbase: "0xb0b",
