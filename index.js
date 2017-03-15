@@ -17,7 +17,7 @@ function isFunction(f) {
 
 module.exports = {
 
-  version: "3.0.1",
+  version: "3.0.2",
 
   debug: false,
   rpc: rpc,
