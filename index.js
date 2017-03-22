@@ -12,12 +12,12 @@ var rpc = require("ethrpc");
 function noop() {}
 
 function isFunction(f) {
-  return Object.prototype.toString.call(f) === "[object Function]";
+  return typeof f === "function";
 }
 
 module.exports = {
 
-  version: "3.0.2",
+  version: "3.0.3",
 
   debug: false,
   rpc: rpc,
