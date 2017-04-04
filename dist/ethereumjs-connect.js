@@ -16346,7 +16346,7 @@ function isFunction(f) {
 
 module.exports = {
 
-  version: "3.0.6",
+  version: "3.0.7",
 
   debug: false,
   rpc: rpc,
@@ -25803,7 +25803,13 @@ module.exports={
 
 },{}],129:[function(require,module,exports){
 (function (Buffer){
-var _typeof8 = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+var _typeof9 = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var _typeof8 = typeof Symbol === "function" && _typeof9(Symbol.iterator) === "symbol" ? function (obj) {
+  return typeof obj === "undefined" ? "undefined" : _typeof9(obj);
+} : function (obj) {
+  return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj === "undefined" ? "undefined" : _typeof9(obj);
+};
 
 var _typeof7 = typeof Symbol === "function" && _typeof8(Symbol.iterator) === "symbol" ? function (obj) {
   return typeof obj === "undefined" ? "undefined" : _typeof8(obj);
@@ -37172,7 +37178,7 @@ module.exports = {
   },
 
   /**
-   * @param {{from:string, to:string, gas:number, gasPrice:number, value:number, data:string, nonce:number, minBlock:number|string}} transaction
+   * @param {{from:string, to:string, gas:number, gasPrice:number, value:number, data:string, nonce:number}} transaction
    */
   sendTransaction: function (transaction, callback) {
     validateTransaction(transaction);
@@ -37575,7 +37581,7 @@ module.exports = {
    * @param {Object} packaged Packaged transaction.
    * @param {string} address The sender's Ethereum address.
    * @param {function=} callback Callback function (optional).
-   * @return {Object} Packaged transaction with nonce set.
+   * @return {Object|void} Packaged transaction with nonce set.
    */
   setRawTransactionNonce: function (packaged, address, callback) {
     var transactionCount, self = this;
@@ -37606,7 +37612,7 @@ module.exports = {
    * Set the gas price for a raw transaction.
    * @param {Object} packaged Packaged transaction.
    * @param {function=} callback Callback function (optional).
-   * @return {Object} Packaged transaction with gasPrice set.
+   * @return {Object|void} Packaged transaction with gasPrice set.
    */
   setRawTransactionGasPrice: function (packaged, callback) {
     var gasPrice;
@@ -37659,7 +37665,7 @@ module.exports = {
    * @param {string} address The sender's Ethereum address.
    * @param {buffer} privateKey The sender's plaintext private key.
    * @param {function=} callback Callback function (optional).
-   * @return {string} Signed transaction.
+   * @return {string|void} Signed transaction.
    */
   packageAndSignRawTransaction: function (payload, address, privateKey, callback) {
     var packaged, self = this;
@@ -37702,7 +37708,7 @@ module.exports = {
    * @param {string} address The sender's Ethereum address.
    * @param {buffer} privateKey The sender's plaintext private key.
    * @param {function=} callback Callback function (optional).
-   * @return {string} Transaction hash (if successful).
+   * @return {string|void} Transaction hash (if successful).
    */
   packageAndSubmitRawTransaction: function (payload, address, privateKey, callback) {
     var response, err, self = this;
@@ -38234,7 +38240,6 @@ function validateTransaction(transaction) {
   if (transaction.data !== undefined && transaction.data !== null && typeof transaction.data !== "string") throw new Error("data must be a string");
   if (!/^0x[0-9a-zA-Z]*$/.test(transaction.data)) throw new Error("data must be a hex encoded string with a leader `0x`");
   transaction.nonce = validateNumber(transaction.nonce, "nonce");
-  transaction.minBlock = validateAndDefaultBlockNumber(transaction.minBlock);
 }
 
 function ethereumEncodePrimitive(primitive) {
