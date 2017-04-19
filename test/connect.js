@@ -171,7 +171,6 @@ function connectTest(transportType, transportAddress) {
         contracts: {},
         api: {}
       });
-      vitals.rpc.resetState();
       done();
     });
   });
@@ -193,7 +192,6 @@ function connectTest(transportType, transportAddress) {
       };
       connect(connectOptions, function (err, vitals) {
         t.assertions(vitals);
-        vitals.rpc.resetState();
         done();
       });
     });
@@ -222,7 +220,6 @@ function connectTest(transportType, transportAddress) {
         contracts: { contract1: "0xc1", contract2: "0xc2" },
         api: {}
       });
-      vitals.rpc.resetState();
     }
   });
   test({
@@ -267,7 +264,6 @@ function connectTest(transportType, transportAddress) {
           }
         }
       });
-      vitals.rpc.resetState();
     }
   });
 }
@@ -317,7 +313,6 @@ describe("sync connect", function () {
     };
 
     vitals = immutableDelete(immutableDelete(connect(connectOptions), "blockNumber"), "gasPrice");
-    vitals.rpc.resetState();
 
     // since this is running against a real blockchain, some of the things don't test well
     assert.match(vitals.api.functions.contract1.method1.from, /^0x[0-9a-zA-Z]{40}$/);
