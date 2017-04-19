@@ -26,7 +26,7 @@
   "dependencies": {
     "async": "1.5.2",
     "clone": "1.0.2",
-    "ethrpc": "3.1.4"
+    "ethrpc": "4.0.0"
   },
   "devDependencies": {
     "babel-cli": "^6.22.2",
@@ -38,8 +38,10 @@
     "coveralls": "^2.11.6",
     "eslint": "^3.17.1",
     "ethereumjs-stub-rpc-server": "2.0.3",
+    "immutable-delete": "^1.0.1",
     "istanbul": "^0.4.1",
     "mocha": "^3.2.0",
+    "proxyquire": "^1.7.11",
     "uglify-js": "^2.6.1",
     "utf-8-validate": "^3.0.1"
   }

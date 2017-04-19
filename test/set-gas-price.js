@@ -28,9 +28,11 @@ describe("set-gas-price", function () {
   test({
     description: "set current gas price",
     rpc: {
-      gasPrice: function (callback) {
-        if (!callback) return "0x1234";
-        callback("0x1234");
+      eth: {
+        gasPrice: function (callback) {
+          if (!callback) return "0x1234";
+          callback("0x1234");
+        }
       }
     },
     assertions: function (err, gasPrice) {
@@ -40,9 +42,11 @@ describe("set-gas-price", function () {
   test({
     description: "gasPrice is undefined",
     rpc: {
-      gasPrice: function (callback) {
-        if (!callback) return undefined;
-        callback(undefined);
+      eth: {
+        gasPrice: function (callback) {
+          if (!callback) return undefined;
+          callback(undefined);
+        }
       }
     },
     assertions: function (err, gasPrice) {
@@ -53,9 +57,11 @@ describe("set-gas-price", function () {
   test({
     description: "gasPrice is null",
     rpc: {
-      gasPrice: function (callback) {
-        if (!callback) return null;
-        callback(null);
+      eth: {
+        gasPrice: function (callback) {
+          if (!callback) return null;
+          callback(null);
+        }
       }
     },
     assertions: function (err, gasPrice) {

@@ -2,42 +2,38 @@
 
 "use strict";
 
-var assert = require("chai").assert;
-var ethcon = require("../src");
-var StubServer = require("ethereumjs-stub-rpc-server");
 var os = require("os");
+var assert = require("chai").assert;
+var immutableDelete = require("immutable-delete");
+var proxyquire = require("proxyquire").noPreserveCache();
+var StubServer = require("ethereumjs-stub-rpc-server");
+var connect = require("../src/connect");
 
 describe("connect", function () {
   var test = function (t) {
-    var syncConnect = ethcon.syncConnect;
-    var asyncConnect = ethcon.asyncConnect;
-    after(function () {
-      ethcon.syncConnect = syncConnect;
-      ethcon.asyncConnect = asyncConnect;
-    });
     describe(t.description, function () {
       it("sync", function () {
-        ethcon.syncConnect = function (options) {
-          return {
-            http: options.http,
-            ws: options.ws,
-            ipc: options.ipc
-          };
-        };
-        t.assertions(ethcon.connect(t.params.options));
-        ethcon.resetState();
+        t.assertions(proxyquire("../src/connect.js", {
+          "./sync-connect": function (rpc, configuration) {
+            return {
+              http: configuration.http,
+              ws: configuration.ws,
+              ipc: configuration.ipc
+            };
+          }
+        })(t.params.options));
       });
       it("async", function (done) {
-        ethcon.asyncConnect = function (options, callback) {
-          callback({
-            http: options.http,
-            ws: options.ws,
-            ipc: options.ipc
-          });
-        };
-        ethcon.connect(t.params.options, function (connection) {
-          t.assertions(connection);
-          ethcon.resetState();
+        proxyquire("../src/connect.js", {
+          "./async-connect": function (rpc, configuration, callback) {
+            callback(null, {
+              http: configuration.http,
+              ws: configuration.ws,
+              ipc: configuration.ipc
+            });
+          }
+        })(t.params.options, function (err, vitals) {
+          t.assertions(vitals);
           done();
         });
       });
@@ -50,8 +46,8 @@ describe("connect", function () {
         contracts: {}
       }
     },
-    assertions: function (connection) {
-      assert.deepEqual(connection, {
+    assertions: function (vitals) {
+      assert.deepEqual(immutableDelete(vitals, "rpc"), {
         http: undefined,
         ws: undefined,
         ipc: undefined
@@ -68,8 +64,8 @@ describe("connect", function () {
         contracts: {}
       }
     },
-    assertions: function (connection) {
-      assert.deepEqual(connection, {
+    assertions: function (vitals) {
+      assert.deepEqual(immutableDelete(vitals, "rpc"), {
         http: "http://127.0.0.1:8545",
         ws: null,
         ipc: null
@@ -86,8 +82,8 @@ describe("connect", function () {
         contracts: {}
       }
     },
-    assertions: function (connection) {
-      assert.deepEqual(connection, {
+    assertions: function (vitals) {
+      assert.deepEqual(immutableDelete(vitals, "rpc"), {
         http: "http://127.0.0.1:8545",
         ws: "ws://127.0.0.1:8546",
         ipc: null
@@ -104,8 +100,8 @@ describe("connect", function () {
         contracts: {}
       }
     },
-    assertions: function (connection) {
-      assert.deepEqual(connection, {
+    assertions: function (vitals) {
+      assert.deepEqual(immutableDelete(vitals, "rpc"), {
         http: "http://127.0.0.1:8545",
         ws: null,
         ipc: "/home/jack/.ethereum/geth.ipc"
@@ -122,8 +118,8 @@ describe("connect", function () {
         contracts: {}
       }
     },
-    assertions: function (connection) {
-      assert.deepEqual(connection, {
+    assertions: function (vitals) {
+      assert.deepEqual(immutableDelete(vitals, "rpc"), {
         http: "http://127.0.0.1:8545",
         ws: "ws://127.0.0.1:8546",
         ipc: "/home/jack/.ethereum/geth.ipc"
@@ -137,7 +133,6 @@ function connectTest(transportType, transportAddress) {
   var server;
   beforeEach(function () {
     server = new StubServer.createStubServer(transportType, transportAddress);
-    ethcon.resetState();
   });
   afterEach(function (done) {
     server.destroy(done);
@@ -163,39 +158,42 @@ function connectTest(transportType, transportAddress) {
     }
     server.addResponder(function (jso) { if (jso.method === "eth_coinbase") return "0x123456789abcdef123456789abcdef"; });
     server.addResponder(function (jso) { if (jso.method === "eth_gasPrice") return "0x123"; });
+    server.addResponder(function (jso) { if (jso.method === "eth_blockNumber") return "0x1"; });
+    server.addResponder(function (jso) { if (jso.method === "eth_getBlockByNumber") return { number: "0x1", parentHash: "0x2", hash: "0x3" }; });
     server.addResponder(function (jso) { if (jso.method === "net_version") return "apple"; });
-    ethcon.connect(connectOptions, function (connected) {
-      assert.isTrue(connected);
-      assert.deepEqual(ethcon.state, {
-        from: "0x123456789abcdef123456789abcdef",
+    connect(connectOptions, function (err, vitals) {
+      assert.isNull(err);
+      assert.deepEqual(immutableDelete(vitals, "rpc"), {
         coinbase: "0x123456789abcdef123456789abcdef",
         networkID: "apple",
+        blockNumber: "0x1",
+        gasPrice: 291,
         contracts: {},
-        allContracts: {},
-        api: {},
-        connection: true
+        api: {}
       });
+      vitals.rpc.resetState();
       done();
     });
   });
 
-  function test(testData) {
-    it("async " + testData.description, function (done) {
+  function test(t) {
+    it("async " + t.description, function (done) {
       var connectOptions;
-      server.addResponder(function (jso) { if (jso.method === "eth_coinbase") return testData.blockchain.coinbase; });
-      server.addResponder(function (jso) { if (jso.method === "eth_gasPrice") return testData.blockchain.gasPrice; });
-      server.addResponder(function (jso) { if (jso.method === "net_version") return testData.blockchain.networkID; });
+      server.addResponder(function (jso) { if (jso.method === "eth_coinbase") return t.blockchain.coinbase; });
+      server.addResponder(function (jso) { if (jso.method === "eth_gasPrice") return t.blockchain.gasPrice; });
+      server.addResponder(function (jso) { if (jso.method === "net_version") return t.blockchain.networkID; });
+      server.addResponder(function (jso) { if (jso.method === "eth_blockNumber") return t.blockchain.blockNumber; });
+      server.addResponder(function (jso) { if (jso.method === "eth_getBlockByNumber") return t.blockchain.currentBlock; });
       connectOptions = {
         http: (transportType === "HTTP") ? transportAddress : undefined,
         ws: (transportType === "WS") ? transportAddress : undefined,
         ipc: (transportType === "IPC") ? transportAddress : undefined,
-        contracts: testData.contracts,
-        api: testData.api
+        contracts: t.contracts,
+        api: t.api
       };
-      ethcon.connect(connectOptions, function (connected) {
-        assert.isTrue(connected);
-        assert.deepEqual(ethcon.state, testData.expectedState);
-        assert.isNotNull(ethcon.rpc.block);
+      connect(connectOptions, function (err, vitals) {
+        t.assertions(vitals);
+        vitals.rpc.resetState();
         done();
       });
     });
@@ -205,7 +203,9 @@ function connectTest(transportType, transportAddress) {
     blockchain: {
       coinbase: "0xb0b",
       gasPrice: "0x4a817c801",
-      networkID: "3"
+      networkID: "3",
+      blockNumber: "0x1",
+      currentBlock: { number: "0x1", parentHash: "0x2", hash: "0x3" }
     },
     contracts: {
       3: {
@@ -213,14 +213,16 @@ function connectTest(transportType, transportAddress) {
         contract2: "0xc2"
       }
     },
-    expectedState: {
-      from: "0xb0b",
-      coinbase: "0xb0b",
-      networkID: "3",
-      contracts: { contract1: "0xc1", contract2: "0xc2" },
-      allContracts: { 3: { contract1: "0xc1", contract2: "0xc2" } },
-      api: { events: null, functions: null },
-      connection: true
+    assertions: function (vitals) {
+      assert.deepEqual(immutableDelete(vitals, "rpc"), {
+        coinbase: "0xb0b",
+        networkID: "3",
+        blockNumber: "0x1",
+        gasPrice: 20000000001,
+        contracts: { contract1: "0xc1", contract2: "0xc2" },
+        api: {}
+      });
+      vitals.rpc.resetState();
     }
   });
   test({
@@ -228,7 +230,9 @@ function connectTest(transportType, transportAddress) {
     blockchain: {
       coinbase: "0xb0b",
       gasPrice: "0x4a817c801",
-      networkID: "3"
+      networkID: "3",
+      blockNumber: "0x1",
+      currentBlock: { number: "0x1", parentHash: "0x2", hash: "0x3" }
     },
     contracts: {
       3: { contract1: "0xc1", contract2: "0xc2" }
@@ -244,26 +248,26 @@ function connectTest(transportType, transportAddress) {
         contract2: { method1: {} }
       }
     },
-    expectedState: {
-      from: "0xb0b",
-      coinbase: "0xb0b",
-      networkID: "3",
-      contracts: { contract1: "0xc1", contract2: "0xc2" },
-      allContracts: {
-        3: { contract1: "0xc1", contract2: "0xc2" }
-      },
-      api: {
-        events: {
-          event1: { address: "0xc1", contract: "contract1" },
-          event2: { address: "0xc1", contract: "contract1" },
-          event3: { address: "0xc2", contract: "contract2" }
-        },
-        functions: {
-          contract1: { method1: { from: "0xb0b", to: "0xc1" }, method2: { from: "0xb0b", to: "0xc1" } },
-          contract2: { method1: { from: "0xb0b", to: "0xc2" } }
+    assertions: function (vitals) {
+      assert.deepEqual(immutableDelete(vitals, "rpc"), {
+        coinbase: "0xb0b",
+        networkID: "3",
+        blockNumber: "0x1",
+        gasPrice: 20000000001,
+        contracts: { contract1: "0xc1", contract2: "0xc2" },
+        api: {
+          events: {
+            event1: { address: "0xc1", contract: "contract1" },
+            event2: { address: "0xc1", contract: "contract1" },
+            event3: { address: "0xc2", contract: "contract2" }
+          },
+          functions: {
+            contract1: { method1: { from: "0xb0b", to: "0xc1" }, method2: { from: "0xb0b", to: "0xc1" } },
+            contract2: { method1: { from: "0xb0b", to: "0xc2" } }
+          }
         }
-      },
-      connection: true
+      });
+      vitals.rpc.resetState();
     }
   });
 }
@@ -275,21 +279,13 @@ describe("async connect", function () {
 });
 
 describe("sync connect", function () {
-  beforeEach(function () {
-    ethcon.resetState();
-  });
-
   it("sync connection sequence with api", function () {
-    var expectedState, connectOptions, connected;
+    var expectedState, connectOptions, vitals;
     this.timeout(10000);
     expectedState = {
-      from: "0xb0b",
       coinbase: "0xb0b",
       networkID: "3",
       contracts: { contract1: "0xc1", contract2: "0xc2" },
-      allContracts: {
-        3: { contract1: "0xc1", contract2: "0xc2" }
-      },
       api: {
         events: {
           event1: { address: "0xc1", contract: "contract1" },
@@ -300,8 +296,7 @@ describe("sync connect", function () {
           contract1: { method1: { from: "0xb0b", to: "0xc1" }, method2: { from: "0xb0b", to: "0xc1" } },
           contract2: { method1: { from: "0xb0b", to: "0xc2" } }
         }
-      },
-      connection: true
+      }
     };
 
     connectOptions = {
@@ -321,21 +316,19 @@ describe("sync connect", function () {
       noFallback: true
     };
 
-    connected = ethcon.connect(connectOptions);
-    assert.isTrue(connected);
-    // since this is running against a real blockchain, some of the things don't test well
-    assert.match(ethcon.state.api.functions.contract1.method1.from, /^0x[0-9a-zA-Z]{40}$/);
-    ethcon.state.api.functions.contract1.method1.from = "0xb0b";
-    assert.match(ethcon.state.api.functions.contract1.method2.from, /^0x[0-9a-zA-Z]{40}$/);
-    ethcon.state.api.functions.contract1.method2.from = "0xb0b";
-    assert.match(ethcon.state.api.functions.contract2.method1.from, /^0x[0-9a-zA-Z]{40}$/);
-    ethcon.state.api.functions.contract2.method1.from = "0xb0b";
-    assert.match(ethcon.state.coinbase, /^0x[0-9a-zA-Z]{40}$/);
-    ethcon.state.coinbase = "0xb0b";
-    assert.match(ethcon.state.from, /^0x[0-9a-zA-Z]{40}$/);
-    ethcon.state.from = "0xb0b";
+    vitals = immutableDelete(immutableDelete(connect(connectOptions), "blockNumber"), "gasPrice");
+    vitals.rpc.resetState();
 
-    assert.deepEqual(ethcon.state, expectedState);
-    assert.isNotNull(ethcon.rpc.block);
+    // since this is running against a real blockchain, some of the things don't test well
+    assert.match(vitals.api.functions.contract1.method1.from, /^0x[0-9a-zA-Z]{40}$/);
+    vitals.api.functions.contract1.method1.from = "0xb0b";
+    assert.match(vitals.api.functions.contract1.method2.from, /^0x[0-9a-zA-Z]{40}$/);
+    vitals.api.functions.contract1.method2.from = "0xb0b";
+    assert.match(vitals.api.functions.contract2.method1.from, /^0x[0-9a-zA-Z]{40}$/);
+    vitals.api.functions.contract2.method1.from = "0xb0b";
+    assert.match(vitals.coinbase, /^0x[0-9a-zA-Z]{40}$/);
+    vitals.coinbase = "0xb0b";
+
+    assert.deepEqual(immutableDelete(vitals, "rpc"), expectedState);
   });
 });

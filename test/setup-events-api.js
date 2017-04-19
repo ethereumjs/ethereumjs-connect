@@ -3,7 +3,7 @@
 "use strict";
 
 var assert = require("chai").assert;
-var setupEventsAPI = require("../src/setup-events-api")
+var setupEventsAPI = require("../src/setup-events-api");
 
 describe("setup-events-api", function () {
   var test = function (t) {
@@ -22,7 +22,7 @@ describe("setup-events-api", function () {
       contracts: {
         contract1: "0xc1",
         contract2: "0xc2"
-      },
+      }
     },
     assertions: function (eventsAPI) {
       assert.deepEqual(eventsAPI, {

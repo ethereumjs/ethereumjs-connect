@@ -9,7 +9,7 @@ var setContracts = require("./set-contracts");
 var setFrom = require("./set-from");
 var setupEventsAPI = require("./setup-events-api");
 var setupFunctionsAPI = require("./setup-functions-api");
-var createEthrpcConfiguration = require("./configure").createEthrpcConfiguration;
+var createEthrpcConfiguration = require("./create-ethrpc-configuration");
 
 // asynchronous connection sequence
 function asyncConnect(rpc, configuration, callback) {
@@ -20,12 +20,14 @@ function asyncConnect(rpc, configuration, callback) {
       gasPrice: function (next) { setGasPrice(rpc, next); },
       coinbase: function (next) { setCoinbase(rpc, next); }
     }, function (err, vitals) {
+      var eventsAPI, functionsAPI;
       if (err) return callback(err);
       vitals.contracts = setContracts(vitals.networkID, configuration.contracts);
-      vitals.api = {
-        events: setupEventsAPI(configuration.api.events, vitals.contracts),
-        functions: setupFunctionsAPI(setFrom(configuration.api.functions, vitals.coinbase), vitals.contracts)
-      };
+      vitals.api = {};
+      eventsAPI = setupEventsAPI((configuration.api || {}).events, vitals.contracts);
+      functionsAPI = setupFunctionsAPI(setFrom((configuration.api || {}).functions, vitals.coinbase), vitals.contracts);
+      if (eventsAPI) vitals.api.events = eventsAPI;
+      if (functionsAPI) vitals.api.functions = functionsAPI;
       callback(null, vitals);
     });
   });

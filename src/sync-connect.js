@@ -8,13 +8,13 @@ var setContracts = require("./set-contracts");
 var setFrom = require("./set-from");
 var setupEventsAPI = require("./setup-events-api");
 var setupFunctionsAPI = require("./setup-functions-api");
-var createEthrpcConfiguration = require("./configure").createEthrpcConfiguration;
+var createEthrpcConfiguration = require("./create-ethrpc-configuration");
 
 var noop = function () {};
 
 // synchronous connection sequence
 function syncConnect(rpc, configuration) {
-  var vitals = {};
+  var eventsAPI, functionsAPI, vitals = {};
   rpc.connect(createEthrpcConfiguration(configuration));
   rpc.blockNumber(noop);
   vitals.networkID = setNetworkID(rpc);
@@ -22,10 +22,11 @@ function syncConnect(rpc, configuration) {
   vitals.gasPrice = setGasPrice(rpc);
   vitals.coinbase = setCoinbase(rpc);
   vitals.contracts = setContracts(vitals.networkID, configuration.contracts);
-  vitals.api = {
-    events: setupEventsAPI(configuration.api.events, vitals.contracts),
-    functions: setupFunctionsAPI(setFrom(configuration.api.functions, vitals.coinbase), vitals.contracts)
-  };
+  vitals.api = {};
+  eventsAPI = setupEventsAPI((configuration.api || {}).events, vitals.contracts);
+  functionsAPI = setupFunctionsAPI(setFrom((configuration.api || {}).functions, vitals.coinbase), vitals.contracts);
+  if (eventsAPI) vitals.api.events = eventsAPI;
+  if (functionsAPI) vitals.api.functions = functionsAPI;
   return vitals;
 }
 
