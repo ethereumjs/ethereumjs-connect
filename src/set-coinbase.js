@@ -10,8 +10,8 @@ function setCoinbase(rpc, callback) {
     return coinbase;
   }
   rpc.coinbase(function (coinbase) {
-    if (!coinbase) return callback(null);
-    if (coinbase.error || coinbase === "0x") return callback(null);
+    if (!coinbase) return callback(null, null);
+    if (coinbase.error || coinbase === "0x") return callback(null, null);
     callback(null, coinbase);
   });
 }
