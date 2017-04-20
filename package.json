@@ -6,7 +6,7 @@
   "license": "MIT",
   "main": "src/index.js",
   "scripts": {
-    "build": "browserify ./exports.js > ./dist/ethereumjs-connect.js && browserify ./exports.js | ./node_modules/uglify-js/bin/uglifyjs > ./dist/ethereumjs-connect.min.js",
+    "build": "browserify ./exports.js > ./dist/ethereumjs-connect.js && uglifyjs ./dist/ethereumjs-connect.js > ./dist/ethereumjs-connect.min.js",
     "build:tests": "browserify test/create-*.js test/set*.js > test/browser/bundle.js",
     "lint": "eslint src && eslint test/*.js",
     "test": "mocha test/*.js"
