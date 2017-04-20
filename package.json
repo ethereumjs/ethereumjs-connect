@@ -38,7 +38,7 @@
     "chai": "^3.4.1",
     "coveralls": "^2.11.6",
     "eslint": "^3.17.1",
-    "ethereumjs-stub-rpc-server": "2.0.3",
+    "ethereumjs-stub-rpc-server": "2.1.6",
     "immutable-delete": "^1.0.1",
     "istanbul": "^0.4.1",
     "mocha": "^3.2.0",
