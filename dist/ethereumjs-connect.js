@@ -7638,15 +7638,19 @@ module.exports = createEthrpcConfiguration;
 "use strict";
 
 var setFrom = require("./set-from");
+var setupEventsAPI = require("./setup-events-api");
+var setupFunctionsAPI = require("./setup-functions-api");
 var connect = require("./connect");
 
 module.exports = {
   version: "4.0.1",
   setFrom: setFrom,
+  setupEventsAPI: setupEventsAPI,
+  setupFunctionsAPI: setupFunctionsAPI,
   connect: connect
 };
 
-},{"./connect":38,"./set-from":45}],42:[function(require,module,exports){
+},{"./connect":38,"./set-from":45,"./setup-events-api":48,"./setup-functions-api":49}],42:[function(require,module,exports){
 "use strict";
 
 function setBlockNumber(rpc, callback) {
