@@ -1,14 +1,15 @@
 {
   "name": "ethereumjs-connect",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "description": "Basic Ethereum connection tasks",
   "author": "The Augur Developers <team@augur.net>",
   "license": "MIT",
   "main": "src/index.js",
   "scripts": {
-    "build": "babel ./node_modules/ethereumjs-tx --source-root ./node_modules/ethereumjs-tx -d ./node_modules/ethereumjs-tx && browserify ./exports.js > ./dist/ethereumjs-connect.js && browserify ./exports.js | ./node_modules/uglify-js/bin/uglifyjs > ./dist/ethereumjs-connect.min.js && ./node_modules/browserify/bin/cmd.js test/*.js > test/browser/bundle.js",
+    "build": "browserify ./exports.js > ./dist/ethereumjs-connect.js && browserify ./exports.js | ./node_modules/uglify-js/bin/uglifyjs > ./dist/ethereumjs-connect.min.js",
+    "build:tests": "browserify test/create-*.js test/set*.js > test/browser/bundle.js",
     "lint": "eslint src && eslint test/*.js",
-    "test": "mocha"
+    "test": "mocha test/*.js"
   },
   "repository": {
     "type": "git",
@@ -26,7 +27,7 @@
   "dependencies": {
     "async": "1.5.2",
     "clone": "1.0.2",
-    "ethrpc": "4.0.0"
+    "ethrpc": "4.0.1"
   },
   "devDependencies": {
     "babel-cli": "^6.22.2",
@@ -42,6 +43,8 @@
     "istanbul": "^0.4.1",
     "mocha": "^3.2.0",
     "proxyquire": "^1.7.11",
+    "proxyquire-universal": "^1.0.8",
+    "proxyquireify": "^3.2.1",
     "uglify-js": "^2.6.1",
     "utf-8-validate": "^3.0.1"
   }
