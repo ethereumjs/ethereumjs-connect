@@ -274,56 +274,56 @@ describe("async connect", function () {
   describe("IPC", connectTest.bind(null, "IPC", (os.type() === "Windows_NT") ? "\\\\.\\pipe\\TestRPC" : "testrpc.ipc"));
 });
 
-// describe("sync connect", function () {
-//   it("sync connection sequence with api", function () {
-//     var expectedState, connectOptions, vitals;
-//     this.timeout(10000);
-//     expectedState = {
-//       coinbase: "0xb0b",
-//       networkID: "3",
-//       contracts: { contract1: "0xc1", contract2: "0xc2" },
-//       api: {
-//         events: {
-//           event1: { address: "0xc1", contract: "contract1" },
-//           event2: { address: "0xc1", contract: "contract1" },
-//           event3: { address: "0xc2", contract: "contract2" }
-//         },
-//         functions: {
-//           contract1: { method1: { from: "0xb0b", to: "0xc1" }, method2: { from: "0xb0b", to: "0xc1" } },
-//           contract2: { method1: { from: "0xb0b", to: "0xc2" } }
-//         }
-//       }
-//     };
+describe("sync connect", function () {
+  it("sync connection sequence with api", function () {
+    var expectedState, connectOptions, vitals;
+    this.timeout(10000);
+    expectedState = {
+      coinbase: "0xb0b",
+      networkID: "3",
+      contracts: { contract1: "0xc1", contract2: "0xc2" },
+      api: {
+        events: {
+          event1: { address: "0xc1", contract: "contract1" },
+          event2: { address: "0xc1", contract: "contract1" },
+          event3: { address: "0xc2", contract: "contract2" }
+        },
+        functions: {
+          contract1: { method1: { from: "0xb0b", to: "0xc1" }, method2: { from: "0xb0b", to: "0xc1" } },
+          contract2: { method1: { from: "0xb0b", to: "0xc2" } }
+        }
+      }
+    };
 
-//     connectOptions = {
-//       http: "https://eth3.augur.net",
-//       contracts: { 3: { contract1: "0xc1", contract2: "0xc2" } },
-//       api: {
-//         events: {
-//           event1: { contract: "contract1" },
-//           event2: { contract: "contract1" },
-//           event3: { contract: "contract2" }
-//         },
-//         functions: {
-//           contract1: { method1: {}, method2: {} },
-//           contract2: { method1: {} }
-//         }
-//       },
-//       noFallback: true
-//     };
+    connectOptions = {
+      http: "https://eth3.augur.net",
+      contracts: { 3: { contract1: "0xc1", contract2: "0xc2" } },
+      api: {
+        events: {
+          event1: { contract: "contract1" },
+          event2: { contract: "contract1" },
+          event3: { contract: "contract2" }
+        },
+        functions: {
+          contract1: { method1: {}, method2: {} },
+          contract2: { method1: {} }
+        }
+      },
+      noFallback: true
+    };
 
-//     vitals = immutableDelete(immutableDelete(connect(connectOptions), "blockNumber"), "gasPrice");
+    vitals = immutableDelete(immutableDelete(connect(connectOptions), "blockNumber"), "gasPrice");
 
-//     // since this is running against a real blockchain, some of the things don't test well
-//     assert.match(vitals.api.functions.contract1.method1.from, /^0x[0-9a-zA-Z]{40}$/);
-//     vitals.api.functions.contract1.method1.from = "0xb0b";
-//     assert.match(vitals.api.functions.contract1.method2.from, /^0x[0-9a-zA-Z]{40}$/);
-//     vitals.api.functions.contract1.method2.from = "0xb0b";
-//     assert.match(vitals.api.functions.contract2.method1.from, /^0x[0-9a-zA-Z]{40}$/);
-//     vitals.api.functions.contract2.method1.from = "0xb0b";
-//     assert.match(vitals.coinbase, /^0x[0-9a-zA-Z]{40}$/);
-//     vitals.coinbase = "0xb0b";
+    // since this is running against a real blockchain, some of the things don't test well
+    assert.match(vitals.api.functions.contract1.method1.from, /^0x[0-9a-zA-Z]{40}$/);
+    vitals.api.functions.contract1.method1.from = "0xb0b";
+    assert.match(vitals.api.functions.contract1.method2.from, /^0x[0-9a-zA-Z]{40}$/);
+    vitals.api.functions.contract1.method2.from = "0xb0b";
+    assert.match(vitals.api.functions.contract2.method1.from, /^0x[0-9a-zA-Z]{40}$/);
+    vitals.api.functions.contract2.method1.from = "0xb0b";
+    assert.match(vitals.coinbase, /^0x[0-9a-zA-Z]{40}$/);
+    vitals.coinbase = "0xb0b";
 
-//     assert.deepEqual(immutableDelete(vitals, "rpc"), expectedState);
-//   });
-// });
+    assert.deepEqual(immutableDelete(vitals, "rpc"), expectedState);
+  });
+});
