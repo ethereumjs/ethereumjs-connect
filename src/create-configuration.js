@@ -1,10 +1,10 @@
 "use strict";
 
-var clone = require("clone");
+var assign = require("lodash.assign");
 
 // upgrade from old config (single address per type) to new config (array of addresses per type)
 function createConfiguration(options) {
-  var configuration = clone(options);
+  var configuration = assign({}, options);
   configuration.contracts = configuration.contracts || {};
   if (!Array.isArray(configuration.httpAddresses)) configuration.httpAddresses = [];
   if (!Array.isArray(configuration.wsAddresses)) configuration.wsAddresses = [];

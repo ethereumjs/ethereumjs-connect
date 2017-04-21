@@ -9,15 +9,15 @@ function connect(options, callback) {
   var vitals, configuration = createConfiguration(options || {});
   if (typeof callback !== "function") {
     try {
-      vitals = syncConnect(rpc, configuration);
-      vitals.rpc = rpc;
+      vitals = syncConnect(configuration.rpc || rpc, configuration);
+      vitals.rpc = configuration.rpc || rpc;
       return vitals;
     } catch (exc) {
       return exc;
     }
   }
-  asyncConnect(rpc, configuration, function (err, vitals) {
-    vitals.rpc = rpc;
+  asyncConnect(configuration.rpc || rpc, configuration, function (err, vitals) {
+    vitals.rpc = configuration.rpc || rpc;
     callback(err, vitals);
   });
 }
