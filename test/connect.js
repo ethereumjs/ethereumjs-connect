@@ -135,7 +135,7 @@ function connectTest(transportType, transportAddress) {
     server = new StubServer.createStubServer(transportType, transportAddress);
   });
   afterEach(function (done) {
-    setTimeout(function () { server.destroy(done); }, 10);
+    server.destroy(done);
   });
 
   it("connects with array options", function (done) {
