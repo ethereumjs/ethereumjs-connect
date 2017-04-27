@@ -3651,171 +3651,7 @@ function blitBuffer (src, dst, offset, length) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"base64-js":4,"ieee754":13,"isarray":16}],10:[function(require,module,exports){
-(function (Buffer){
-var clone = (function() {
-'use strict';
-
-/**
- * Clones (copies) an Object using deep copying.
- *
- * This function supports circular references by default, but if you are certain
- * there are no circular references in your object, you can save some CPU time
- * by calling clone(obj, false).
- *
- * Caution: if `circular` is false and `parent` contains circular references,
- * your program may enter an infinite loop and crash.
- *
- * @param `parent` - the object to be cloned
- * @param `circular` - set to true if the object to be cloned may contain
- *    circular references. (optional - true by default)
- * @param `depth` - set to a number if the object is only to be cloned to
- *    a particular depth. (optional - defaults to Infinity)
- * @param `prototype` - sets the prototype to be used when cloning an object.
- *    (optional - defaults to parent prototype).
-*/
-function clone(parent, circular, depth, prototype) {
-  var filter;
-  if (typeof circular === 'object') {
-    depth = circular.depth;
-    prototype = circular.prototype;
-    filter = circular.filter;
-    circular = circular.circular
-  }
-  // maintain two arrays for circular references, where corresponding parents
-  // and children have the same index
-  var allParents = [];
-  var allChildren = [];
-
-  var useBuffer = typeof Buffer != 'undefined';
-
-  if (typeof circular == 'undefined')
-    circular = true;
-
-  if (typeof depth == 'undefined')
-    depth = Infinity;
-
-  // recurse this function so we don't reset allParents and allChildren
-  function _clone(parent, depth) {
-    // cloning null always returns null
-    if (parent === null)
-      return null;
-
-    if (depth == 0)
-      return parent;
-
-    var child;
-    var proto;
-    if (typeof parent != 'object') {
-      return parent;
-    }
-
-    if (clone.__isArray(parent)) {
-      child = [];
-    } else if (clone.__isRegExp(parent)) {
-      child = new RegExp(parent.source, __getRegExpFlags(parent));
-      if (parent.lastIndex) child.lastIndex = parent.lastIndex;
-    } else if (clone.__isDate(parent)) {
-      child = new Date(parent.getTime());
-    } else if (useBuffer && Buffer.isBuffer(parent)) {
-      child = new Buffer(parent.length);
-      parent.copy(child);
-      return child;
-    } else {
-      if (typeof prototype == 'undefined') {
-        proto = Object.getPrototypeOf(parent);
-        child = Object.create(proto);
-      }
-      else {
-        child = Object.create(prototype);
-        proto = prototype;
-      }
-    }
-
-    if (circular) {
-      var index = allParents.indexOf(parent);
-
-      if (index != -1) {
-        return allChildren[index];
-      }
-      allParents.push(parent);
-      allChildren.push(child);
-    }
-
-    for (var i in parent) {
-      var attrs;
-      if (proto) {
-        attrs = Object.getOwnPropertyDescriptor(proto, i);
-      }
-
-      if (attrs && attrs.set == null) {
-        continue;
-      }
-      child[i] = _clone(parent[i], depth - 1);
-    }
-
-    return child;
-  }
-
-  return _clone(parent, depth);
-}
-
-/**
- * Simple flat clone using prototype, accepts only objects, usefull for property
- * override on FLAT configuration object (no nested props).
- *
- * USE WITH CAUTION! This may not behave as you wish if you do not know how this
- * works.
- */
-clone.clonePrototype = function clonePrototype(parent) {
-  if (parent === null)
-    return null;
-
-  var c = function () {};
-  c.prototype = parent;
-  return new c();
-};
-
-// private utility functions
-
-function __objToStr(o) {
-  return Object.prototype.toString.call(o);
-};
-clone.__objToStr = __objToStr;
-
-function __isDate(o) {
-  return typeof o === 'object' && __objToStr(o) === '[object Date]';
-};
-clone.__isDate = __isDate;
-
-function __isArray(o) {
-  return typeof o === 'object' && __objToStr(o) === '[object Array]';
-};
-clone.__isArray = __isArray;
-
-function __isRegExp(o) {
-  return typeof o === 'object' && __objToStr(o) === '[object RegExp]';
-};
-clone.__isRegExp = __isRegExp;
-
-function __getRegExpFlags(re) {
-  var flags = '';
-  if (re.global) flags += 'g';
-  if (re.ignoreCase) flags += 'i';
-  if (re.multiline) flags += 'm';
-  return flags;
-};
-clone.__getRegExpFlags = __getRegExpFlags;
-
-return clone;
-})();
-
-if (typeof module === 'object' && module.exports) {
-  module.exports = clone;
-}
-
-}).call(this,require("buffer").Buffer)
-},{"buffer":9}],11:[function(require,module,exports){
+},{"base64-js":4,"ieee754":12,"isarray":15}],10:[function(require,module,exports){
 (function (Buffer){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -3926,7 +3762,7 @@ function objectToString(o) {
 }
 
 }).call(this,{"isBuffer":require("../../is-buffer/index.js")})
-},{"../../is-buffer/index.js":15}],12:[function(require,module,exports){
+},{"../../is-buffer/index.js":14}],11:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -4230,7 +4066,7 @@ function isUndefined(arg) {
   return arg === void 0;
 }
 
-},{}],13:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = nBytes * 8 - mLen - 1
@@ -4316,7 +4152,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],14:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -4341,7 +4177,7 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],15:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 /*!
  * Determine if an object is a Buffer
  *
@@ -4364,12 +4200,651 @@ function isSlowBuffer (obj) {
   return typeof obj.readFloatLE === 'function' && typeof obj.slice === 'function' && isBuffer(obj.slice(0, 0))
 }
 
-},{}],16:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 var toString = {}.toString;
 
 module.exports = Array.isArray || function (arr) {
   return toString.call(arr) == '[object Array]';
 };
+
+},{}],16:[function(require,module,exports){
+/**
+ * lodash (Custom Build) <https://lodash.com/>
+ * Build: `lodash modularize exports="npm" -o ./`
+ * Copyright jQuery Foundation and other contributors <https://jquery.org/>
+ * Released under MIT license <https://lodash.com/license>
+ * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
+ * Copyright Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ */
+
+/** Used as references for various `Number` constants. */
+var MAX_SAFE_INTEGER = 9007199254740991;
+
+/** `Object#toString` result references. */
+var argsTag = '[object Arguments]',
+    funcTag = '[object Function]',
+    genTag = '[object GeneratorFunction]';
+
+/** Used to detect unsigned integer values. */
+var reIsUint = /^(?:0|[1-9]\d*)$/;
+
+/**
+ * A faster alternative to `Function#apply`, this function invokes `func`
+ * with the `this` binding of `thisArg` and the arguments of `args`.
+ *
+ * @private
+ * @param {Function} func The function to invoke.
+ * @param {*} thisArg The `this` binding of `func`.
+ * @param {Array} args The arguments to invoke `func` with.
+ * @returns {*} Returns the result of `func`.
+ */
+function apply(func, thisArg, args) {
+  switch (args.length) {
+    case 0: return func.call(thisArg);
+    case 1: return func.call(thisArg, args[0]);
+    case 2: return func.call(thisArg, args[0], args[1]);
+    case 3: return func.call(thisArg, args[0], args[1], args[2]);
+  }
+  return func.apply(thisArg, args);
+}
+
+/**
+ * The base implementation of `_.times` without support for iteratee shorthands
+ * or max array length checks.
+ *
+ * @private
+ * @param {number} n The number of times to invoke `iteratee`.
+ * @param {Function} iteratee The function invoked per iteration.
+ * @returns {Array} Returns the array of results.
+ */
+function baseTimes(n, iteratee) {
+  var index = -1,
+      result = Array(n);
+
+  while (++index < n) {
+    result[index] = iteratee(index);
+  }
+  return result;
+}
+
+/**
+ * Creates a unary function that invokes `func` with its argument transformed.
+ *
+ * @private
+ * @param {Function} func The function to wrap.
+ * @param {Function} transform The argument transform.
+ * @returns {Function} Returns the new function.
+ */
+function overArg(func, transform) {
+  return function(arg) {
+    return func(transform(arg));
+  };
+}
+
+/** Used for built-in method references. */
+var objectProto = Object.prototype;
+
+/** Used to check objects for own properties. */
+var hasOwnProperty = objectProto.hasOwnProperty;
+
+/**
+ * Used to resolve the
+ * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
+ * of values.
+ */
+var objectToString = objectProto.toString;
+
+/** Built-in value references. */
+var propertyIsEnumerable = objectProto.propertyIsEnumerable;
+
+/* Built-in method references for those with the same name as other `lodash` methods. */
+var nativeKeys = overArg(Object.keys, Object),
+    nativeMax = Math.max;
+
+/** Detect if properties shadowing those on `Object.prototype` are non-enumerable. */
+var nonEnumShadows = !propertyIsEnumerable.call({ 'valueOf': 1 }, 'valueOf');
+
+/**
+ * Creates an array of the enumerable property names of the array-like `value`.
+ *
+ * @private
+ * @param {*} value The value to query.
+ * @param {boolean} inherited Specify returning inherited property names.
+ * @returns {Array} Returns the array of property names.
+ */
+function arrayLikeKeys(value, inherited) {
+  // Safari 8.1 makes `arguments.callee` enumerable in strict mode.
+  // Safari 9 makes `arguments.length` enumerable in strict mode.
+  var result = (isArray(value) || isArguments(value))
+    ? baseTimes(value.length, String)
+    : [];
+
+  var length = result.length,
+      skipIndexes = !!length;
+
+  for (var key in value) {
+    if ((inherited || hasOwnProperty.call(value, key)) &&
+        !(skipIndexes && (key == 'length' || isIndex(key, length)))) {
+      result.push(key);
+    }
+  }
+  return result;
+}
+
+/**
+ * Assigns `value` to `key` of `object` if the existing value is not equivalent
+ * using [`SameValueZero`](http://ecma-international.org/ecma-262/7.0/#sec-samevaluezero)
+ * for equality comparisons.
+ *
+ * @private
+ * @param {Object} object The object to modify.
+ * @param {string} key The key of the property to assign.
+ * @param {*} value The value to assign.
+ */
+function assignValue(object, key, value) {
+  var objValue = object[key];
+  if (!(hasOwnProperty.call(object, key) && eq(objValue, value)) ||
+      (value === undefined && !(key in object))) {
+    object[key] = value;
+  }
+}
+
+/**
+ * The base implementation of `_.keys` which doesn't treat sparse arrays as dense.
+ *
+ * @private
+ * @param {Object} object The object to query.
+ * @returns {Array} Returns the array of property names.
+ */
+function baseKeys(object) {
+  if (!isPrototype(object)) {
+    return nativeKeys(object);
+  }
+  var result = [];
+  for (var key in Object(object)) {
+    if (hasOwnProperty.call(object, key) && key != 'constructor') {
+      result.push(key);
+    }
+  }
+  return result;
+}
+
+/**
+ * The base implementation of `_.rest` which doesn't validate or coerce arguments.
+ *
+ * @private
+ * @param {Function} func The function to apply a rest parameter to.
+ * @param {number} [start=func.length-1] The start position of the rest parameter.
+ * @returns {Function} Returns the new function.
+ */
+function baseRest(func, start) {
+  start = nativeMax(start === undefined ? (func.length - 1) : start, 0);
+  return function() {
+    var args = arguments,
+        index = -1,
+        length = nativeMax(args.length - start, 0),
+        array = Array(length);
+
+    while (++index < length) {
+      array[index] = args[start + index];
+    }
+    index = -1;
+    var otherArgs = Array(start + 1);
+    while (++index < start) {
+      otherArgs[index] = args[index];
+    }
+    otherArgs[start] = array;
+    return apply(func, this, otherArgs);
+  };
+}
+
+/**
+ * Copies properties of `source` to `object`.
+ *
+ * @private
+ * @param {Object} source The object to copy properties from.
+ * @param {Array} props The property identifiers to copy.
+ * @param {Object} [object={}] The object to copy properties to.
+ * @param {Function} [customizer] The function to customize copied values.
+ * @returns {Object} Returns `object`.
+ */
+function copyObject(source, props, object, customizer) {
+  object || (object = {});
+
+  var index = -1,
+      length = props.length;
+
+  while (++index < length) {
+    var key = props[index];
+
+    var newValue = customizer
+      ? customizer(object[key], source[key], key, object, source)
+      : undefined;
+
+    assignValue(object, key, newValue === undefined ? source[key] : newValue);
+  }
+  return object;
+}
+
+/**
+ * Creates a function like `_.assign`.
+ *
+ * @private
+ * @param {Function} assigner The function to assign values.
+ * @returns {Function} Returns the new assigner function.
+ */
+function createAssigner(assigner) {
+  return baseRest(function(object, sources) {
+    var index = -1,
+        length = sources.length,
+        customizer = length > 1 ? sources[length - 1] : undefined,
+        guard = length > 2 ? sources[2] : undefined;
+
+    customizer = (assigner.length > 3 && typeof customizer == 'function')
+      ? (length--, customizer)
+      : undefined;
+
+    if (guard && isIterateeCall(sources[0], sources[1], guard)) {
+      customizer = length < 3 ? undefined : customizer;
+      length = 1;
+    }
+    object = Object(object);
+    while (++index < length) {
+      var source = sources[index];
+      if (source) {
+        assigner(object, source, index, customizer);
+      }
+    }
+    return object;
+  });
+}
+
+/**
+ * Checks if `value` is a valid array-like index.
+ *
+ * @private
+ * @param {*} value The value to check.
+ * @param {number} [length=MAX_SAFE_INTEGER] The upper bounds of a valid index.
+ * @returns {boolean} Returns `true` if `value` is a valid index, else `false`.
+ */
+function isIndex(value, length) {
+  length = length == null ? MAX_SAFE_INTEGER : length;
+  return !!length &&
+    (typeof value == 'number' || reIsUint.test(value)) &&
+    (value > -1 && value % 1 == 0 && value < length);
+}
+
+/**
+ * Checks if the given arguments are from an iteratee call.
+ *
+ * @private
+ * @param {*} value The potential iteratee value argument.
+ * @param {*} index The potential iteratee index or key argument.
+ * @param {*} object The potential iteratee object argument.
+ * @returns {boolean} Returns `true` if the arguments are from an iteratee call,
+ *  else `false`.
+ */
+function isIterateeCall(value, index, object) {
+  if (!isObject(object)) {
+    return false;
+  }
+  var type = typeof index;
+  if (type == 'number'
+        ? (isArrayLike(object) && isIndex(index, object.length))
+        : (type == 'string' && index in object)
+      ) {
+    return eq(object[index], value);
+  }
+  return false;
+}
+
+/**
+ * Checks if `value` is likely a prototype object.
+ *
+ * @private
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is a prototype, else `false`.
+ */
+function isPrototype(value) {
+  var Ctor = value && value.constructor,
+      proto = (typeof Ctor == 'function' && Ctor.prototype) || objectProto;
+
+  return value === proto;
+}
+
+/**
+ * Performs a
+ * [`SameValueZero`](http://ecma-international.org/ecma-262/7.0/#sec-samevaluezero)
+ * comparison between two values to determine if they are equivalent.
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to compare.
+ * @param {*} other The other value to compare.
+ * @returns {boolean} Returns `true` if the values are equivalent, else `false`.
+ * @example
+ *
+ * var object = { 'a': 1 };
+ * var other = { 'a': 1 };
+ *
+ * _.eq(object, object);
+ * // => true
+ *
+ * _.eq(object, other);
+ * // => false
+ *
+ * _.eq('a', 'a');
+ * // => true
+ *
+ * _.eq('a', Object('a'));
+ * // => false
+ *
+ * _.eq(NaN, NaN);
+ * // => true
+ */
+function eq(value, other) {
+  return value === other || (value !== value && other !== other);
+}
+
+/**
+ * Checks if `value` is likely an `arguments` object.
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is an `arguments` object,
+ *  else `false`.
+ * @example
+ *
+ * _.isArguments(function() { return arguments; }());
+ * // => true
+ *
+ * _.isArguments([1, 2, 3]);
+ * // => false
+ */
+function isArguments(value) {
+  // Safari 8.1 makes `arguments.callee` enumerable in strict mode.
+  return isArrayLikeObject(value) && hasOwnProperty.call(value, 'callee') &&
+    (!propertyIsEnumerable.call(value, 'callee') || objectToString.call(value) == argsTag);
+}
+
+/**
+ * Checks if `value` is classified as an `Array` object.
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is an array, else `false`.
+ * @example
+ *
+ * _.isArray([1, 2, 3]);
+ * // => true
+ *
+ * _.isArray(document.body.children);
+ * // => false
+ *
+ * _.isArray('abc');
+ * // => false
+ *
+ * _.isArray(_.noop);
+ * // => false
+ */
+var isArray = Array.isArray;
+
+/**
+ * Checks if `value` is array-like. A value is considered array-like if it's
+ * not a function and has a `value.length` that's an integer greater than or
+ * equal to `0` and less than or equal to `Number.MAX_SAFE_INTEGER`.
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is array-like, else `false`.
+ * @example
+ *
+ * _.isArrayLike([1, 2, 3]);
+ * // => true
+ *
+ * _.isArrayLike(document.body.children);
+ * // => true
+ *
+ * _.isArrayLike('abc');
+ * // => true
+ *
+ * _.isArrayLike(_.noop);
+ * // => false
+ */
+function isArrayLike(value) {
+  return value != null && isLength(value.length) && !isFunction(value);
+}
+
+/**
+ * This method is like `_.isArrayLike` except that it also checks if `value`
+ * is an object.
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is an array-like object,
+ *  else `false`.
+ * @example
+ *
+ * _.isArrayLikeObject([1, 2, 3]);
+ * // => true
+ *
+ * _.isArrayLikeObject(document.body.children);
+ * // => true
+ *
+ * _.isArrayLikeObject('abc');
+ * // => false
+ *
+ * _.isArrayLikeObject(_.noop);
+ * // => false
+ */
+function isArrayLikeObject(value) {
+  return isObjectLike(value) && isArrayLike(value);
+}
+
+/**
+ * Checks if `value` is classified as a `Function` object.
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is a function, else `false`.
+ * @example
+ *
+ * _.isFunction(_);
+ * // => true
+ *
+ * _.isFunction(/abc/);
+ * // => false
+ */
+function isFunction(value) {
+  // The use of `Object#toString` avoids issues with the `typeof` operator
+  // in Safari 8-9 which returns 'object' for typed array and other constructors.
+  var tag = isObject(value) ? objectToString.call(value) : '';
+  return tag == funcTag || tag == genTag;
+}
+
+/**
+ * Checks if `value` is a valid array-like length.
+ *
+ * **Note:** This method is loosely based on
+ * [`ToLength`](http://ecma-international.org/ecma-262/7.0/#sec-tolength).
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is a valid length, else `false`.
+ * @example
+ *
+ * _.isLength(3);
+ * // => true
+ *
+ * _.isLength(Number.MIN_VALUE);
+ * // => false
+ *
+ * _.isLength(Infinity);
+ * // => false
+ *
+ * _.isLength('3');
+ * // => false
+ */
+function isLength(value) {
+  return typeof value == 'number' &&
+    value > -1 && value % 1 == 0 && value <= MAX_SAFE_INTEGER;
+}
+
+/**
+ * Checks if `value` is the
+ * [language type](http://www.ecma-international.org/ecma-262/7.0/#sec-ecmascript-language-types)
+ * of `Object`. (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is an object, else `false`.
+ * @example
+ *
+ * _.isObject({});
+ * // => true
+ *
+ * _.isObject([1, 2, 3]);
+ * // => true
+ *
+ * _.isObject(_.noop);
+ * // => true
+ *
+ * _.isObject(null);
+ * // => false
+ */
+function isObject(value) {
+  var type = typeof value;
+  return !!value && (type == 'object' || type == 'function');
+}
+
+/**
+ * Checks if `value` is object-like. A value is object-like if it's not `null`
+ * and has a `typeof` result of "object".
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
+ * @example
+ *
+ * _.isObjectLike({});
+ * // => true
+ *
+ * _.isObjectLike([1, 2, 3]);
+ * // => true
+ *
+ * _.isObjectLike(_.noop);
+ * // => false
+ *
+ * _.isObjectLike(null);
+ * // => false
+ */
+function isObjectLike(value) {
+  return !!value && typeof value == 'object';
+}
+
+/**
+ * Assigns own enumerable string keyed properties of source objects to the
+ * destination object. Source objects are applied from left to right.
+ * Subsequent sources overwrite property assignments of previous sources.
+ *
+ * **Note:** This method mutates `object` and is loosely based on
+ * [`Object.assign`](https://mdn.io/Object/assign).
+ *
+ * @static
+ * @memberOf _
+ * @since 0.10.0
+ * @category Object
+ * @param {Object} object The destination object.
+ * @param {...Object} [sources] The source objects.
+ * @returns {Object} Returns `object`.
+ * @see _.assignIn
+ * @example
+ *
+ * function Foo() {
+ *   this.a = 1;
+ * }
+ *
+ * function Bar() {
+ *   this.c = 3;
+ * }
+ *
+ * Foo.prototype.b = 2;
+ * Bar.prototype.d = 4;
+ *
+ * _.assign({ 'a': 0 }, new Foo, new Bar);
+ * // => { 'a': 1, 'c': 3 }
+ */
+var assign = createAssigner(function(object, source) {
+  if (nonEnumShadows || isPrototype(source) || isArrayLike(source)) {
+    copyObject(source, keys(source), object);
+    return;
+  }
+  for (var key in source) {
+    if (hasOwnProperty.call(source, key)) {
+      assignValue(object, key, source[key]);
+    }
+  }
+});
+
+/**
+ * Creates an array of the own enumerable property names of `object`.
+ *
+ * **Note:** Non-object values are coerced to objects. See the
+ * [ES spec](http://ecma-international.org/ecma-262/7.0/#sec-object.keys)
+ * for more details.
+ *
+ * @static
+ * @since 0.1.0
+ * @memberOf _
+ * @category Object
+ * @param {Object} object The object to query.
+ * @returns {Array} Returns the array of property names.
+ * @example
+ *
+ * function Foo() {
+ *   this.a = 1;
+ *   this.b = 2;
+ * }
+ *
+ * Foo.prototype.c = 3;
+ *
+ * _.keys(new Foo);
+ * // => ['a', 'b'] (iteration order is not guaranteed)
+ *
+ * _.keys('hi');
+ * // => ['0', '1']
+ */
+function keys(object) {
+  return isArrayLike(object) ? arrayLikeKeys(object) : baseKeys(object);
+}
+
+module.exports = assign;
 
 },{}],17:[function(require,module,exports){
 (function (process){
@@ -4589,6 +5064,10 @@ process.off = noop;
 process.removeListener = noop;
 process.removeAllListeners = noop;
 process.emit = noop;
+process.prependListener = noop;
+process.prependOnceListener = noop;
+
+process.listeners = function (name) { return [] }
 
 process.binding = function (name) {
     throw new Error('process.binding is not supported');
@@ -4679,7 +5158,7 @@ function forEach(xs, f) {
     f(xs[i], i);
   }
 }
-},{"./_stream_readable":22,"./_stream_writable":24,"core-util-is":11,"inherits":14,"process-nextick-args":17}],21:[function(require,module,exports){
+},{"./_stream_readable":22,"./_stream_writable":24,"core-util-is":10,"inherits":13,"process-nextick-args":17}],21:[function(require,module,exports){
 // a passthrough stream.
 // basically just the most minimal sort of Transform stream.
 // Every written chunk gets output as-is.
@@ -4706,7 +5185,7 @@ function PassThrough(options) {
 PassThrough.prototype._transform = function (chunk, encoding, cb) {
   cb(null, chunk);
 };
-},{"./_stream_transform":23,"core-util-is":11,"inherits":14}],22:[function(require,module,exports){
+},{"./_stream_transform":23,"core-util-is":10,"inherits":13}],22:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -5644,7 +6123,7 @@ function indexOf(xs, x) {
   return -1;
 }
 }).call(this,require('_process'))
-},{"./_stream_duplex":20,"./internal/streams/BufferList":25,"./internal/streams/stream":26,"_process":18,"buffer":9,"buffer-shims":8,"core-util-is":11,"events":12,"inherits":14,"isarray":16,"process-nextick-args":17,"string_decoder/":32,"util":5}],23:[function(require,module,exports){
+},{"./_stream_duplex":20,"./internal/streams/BufferList":25,"./internal/streams/stream":26,"_process":18,"buffer":9,"buffer-shims":8,"core-util-is":10,"events":11,"inherits":13,"isarray":15,"process-nextick-args":17,"string_decoder/":32,"util":5}],23:[function(require,module,exports){
 // a transform stream is a readable/writable stream where you do
 // something with the data.  Sometimes it's called a "filter",
 // but that's not a great name for it, since that implies a thing where
@@ -5827,7 +6306,7 @@ function done(stream, er, data) {
 
   return stream.push(null);
 }
-},{"./_stream_duplex":20,"core-util-is":11,"inherits":14}],24:[function(require,module,exports){
+},{"./_stream_duplex":20,"core-util-is":10,"inherits":13}],24:[function(require,module,exports){
 (function (process){
 // A bit simpler than readable streams.
 // Implement an async ._write(chunk, encoding, cb), and it'll handle all
@@ -6374,7 +6853,7 @@ function CorkedRequest(state) {
   };
 }
 }).call(this,require('_process'))
-},{"./_stream_duplex":20,"./internal/streams/stream":26,"_process":18,"buffer":9,"buffer-shims":8,"core-util-is":11,"inherits":14,"process-nextick-args":17,"util-deprecate":33}],25:[function(require,module,exports){
+},{"./_stream_duplex":20,"./internal/streams/stream":26,"_process":18,"buffer":9,"buffer-shims":8,"core-util-is":10,"inherits":13,"process-nextick-args":17,"util-deprecate":33}],25:[function(require,module,exports){
 'use strict';
 
 var Buffer = require('buffer').Buffer;
@@ -6442,7 +6921,7 @@ BufferList.prototype.concat = function (n) {
 },{"buffer":9,"buffer-shims":8}],26:[function(require,module,exports){
 module.exports = require('events').EventEmitter;
 
-},{"events":12}],27:[function(require,module,exports){
+},{"events":11}],27:[function(require,module,exports){
 module.exports = require('./readable').PassThrough
 
 },{"./readable":28}],28:[function(require,module,exports){
@@ -6589,7 +7068,7 @@ Stream.prototype.pipe = function(dest, options) {
   return dest;
 };
 
-},{"events":12,"inherits":14,"readable-stream/duplex.js":19,"readable-stream/passthrough.js":27,"readable-stream/readable.js":28,"readable-stream/transform.js":29,"readable-stream/writable.js":30}],32:[function(require,module,exports){
+},{"events":11,"inherits":13,"readable-stream/duplex.js":19,"readable-stream/passthrough.js":27,"readable-stream/readable.js":28,"readable-stream/transform.js":29,"readable-stream/writable.js":30}],32:[function(require,module,exports){
 'use strict';
 
 var Buffer = require('buffer').Buffer;
@@ -6935,8 +7414,8 @@ function config (name) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],34:[function(require,module,exports){
-arguments[4][14][0].apply(exports,arguments)
-},{"dup":14}],35:[function(require,module,exports){
+arguments[4][13][0].apply(exports,arguments)
+},{"dup":13}],35:[function(require,module,exports){
 module.exports = function isBuffer(arg) {
   return arg && typeof arg === 'object'
     && typeof arg.copy === 'function'
@@ -7583,15 +8062,15 @@ function connect(options, callback) {
   var vitals, configuration = createConfiguration(options || {});
   if (typeof callback !== "function") {
     try {
-      vitals = syncConnect(rpc, configuration);
-      vitals.rpc = rpc;
+      vitals = syncConnect(configuration.rpc || rpc, configuration);
+      vitals.rpc = configuration.rpc || rpc;
       return vitals;
     } catch (exc) {
       return exc;
     }
   }
-  asyncConnect(rpc, configuration, function (err, vitals) {
-    vitals.rpc = rpc;
+  asyncConnect(configuration.rpc || rpc, configuration, function (err, vitals) {
+    vitals.rpc = configuration.rpc || rpc;
     callback(err, vitals);
   });
 }
@@ -7601,11 +8080,11 @@ module.exports = connect;
 },{"./async-connect":37,"./create-configuration":39,"./sync-connect":50,"ethrpc":192}],39:[function(require,module,exports){
 "use strict";
 
-var clone = require("clone");
+var assign = require("lodash.assign");
 
 // upgrade from old config (single address per type) to new config (array of addresses per type)
 function createConfiguration(options) {
-  var configuration = clone(options);
+  var configuration = assign({}, options);
   configuration.contracts = configuration.contracts || {};
   if (!Array.isArray(configuration.httpAddresses)) configuration.httpAddresses = [];
   if (!Array.isArray(configuration.wsAddresses)) configuration.wsAddresses = [];
@@ -7618,7 +8097,7 @@ function createConfiguration(options) {
 
 module.exports = createConfiguration;
 
-},{"clone":10}],40:[function(require,module,exports){
+},{"lodash.assign":16}],40:[function(require,module,exports){
 "use strict";
 
 function createEthrpcConfiguration(configuration) {
@@ -7643,7 +8122,7 @@ var setupFunctionsAPI = require("./setup-functions-api");
 var connect = require("./connect");
 
 module.exports = {
-  version: "4.0.2",
+  version: "4.0.3",
   setFrom: setFrom,
   setupEventsAPI: setupEventsAPI,
   setupFunctionsAPI: setupFunctionsAPI,
@@ -7854,7 +8333,7 @@ module.exports = {
 
   debug: false,
 
-  version: "1.2.0",
+  version: "1.2.1",
 
   constants: {
     ONE: new BigNumber(10).toPower(new BigNumber(18)),
@@ -8144,6 +8623,7 @@ module.exports = {
 
   format_int256: function (s) {
     if (s === undefined || s === null || s === "0x") return s;
+    if (Array.isArray(s)) return s.map(this.format_int256.bind(this));
     if (Buffer.isBuffer(s)) s = s.toString("hex");
     if (s.constructor !== String) s = s.toString(16);
     if (s.slice(0, 1) === "-") s = this.unfork(s);
@@ -8386,79 +8866,6 @@ module.exports = {
     }
     if (prefix) s = this.prefix_hex(s);
     return s;
-  },
-
-  encode_prefix: function (funcname, signature) {
-    signature = signature || "";
-    var summary = funcname + "(";
-    for (var i = 0, len = signature.length; i < len; ++i) {
-      switch (signature[i]) {
-        case 's':
-          summary += "bytes";
-          break;
-        case 'b':
-          summary += "bytes";
-          var j = 1;
-          while (this.is_numeric(signature[i+j])) {
-            summary += signature[i+j].toString();
-            j++;
-          }
-          i += j;
-          break;
-        case 'i':
-          summary += "int256";
-          break;
-        case 'a':
-          summary += "int256[]";
-          break;
-        default:
-          summary += "weird";
-      }
-      if (i !== len - 1) summary += ",";
-    }
-    var prefix = keccak_256(summary + ")").slice(0, 8);
-    while (prefix.slice(0, 1) === '0') {
-      prefix = prefix.slice(1);
-    }
-    return this.pad_left(prefix, 8, true);
-  },
-
-  parse_signature: function (signature) {
-    var types = [];
-    for (var i = 0, len = signature.length; i < len; ++i) {
-      if (this.is_numeric(signature[i])) {
-        types[types.length - 1] += signature[i].toString();
-      } else {
-        if (signature[i] === 's') {
-          types.push("bytes");
-        } else if (signature[i] === 'b') {
-          types.push("bytes");
-        } else if (signature[i] === 'a') {
-          types.push("int256[]");
-        } else {
-          types.push("int256");
-        }
-      }
-    }
-    return types;
-  },
-
-  parse_params: function (params) {
-    if (params !== undefined && params !== null && params !== [] && params !== "") {
-      if (params.constructor === String) {
-        if (params.slice(0,1) === "[" && params.slice(-1) === "]") {
-          params = JSON.parse(params);
-        }
-        if (params.constructor === String) {
-          params = [params];
-        }
-      } else if (params.constructor === Number) {
-        params = [params];
-      }
-    } else {
-      params = [];
-    }
-    return params;
   },
 
   encode_int: function (value) {
@@ -15980,8 +16387,170 @@ CipherBase.prototype._toString = function (value, enc, fin) {
 
 }).call(this,require("buffer").Buffer)
 },{"buffer":9,"inherits":100,"stream":31,"string_decoder":7}],61:[function(require,module,exports){
-arguments[4][10][0].apply(exports,arguments)
-},{"buffer":9,"dup":10}],62:[function(require,module,exports){
+(function (Buffer){
+var clone = (function() {
+'use strict';
+
+/**
+ * Clones (copies) an Object using deep copying.
+ *
+ * This function supports circular references by default, but if you are certain
+ * there are no circular references in your object, you can save some CPU time
+ * by calling clone(obj, false).
+ *
+ * Caution: if `circular` is false and `parent` contains circular references,
+ * your program may enter an infinite loop and crash.
+ *
+ * @param `parent` - the object to be cloned
+ * @param `circular` - set to true if the object to be cloned may contain
+ *    circular references. (optional - true by default)
+ * @param `depth` - set to a number if the object is only to be cloned to
+ *    a particular depth. (optional - defaults to Infinity)
+ * @param `prototype` - sets the prototype to be used when cloning an object.
+ *    (optional - defaults to parent prototype).
+*/
+function clone(parent, circular, depth, prototype) {
+  var filter;
+  if (typeof circular === 'object') {
+    depth = circular.depth;
+    prototype = circular.prototype;
+    filter = circular.filter;
+    circular = circular.circular
+  }
+  // maintain two arrays for circular references, where corresponding parents
+  // and children have the same index
+  var allParents = [];
+  var allChildren = [];
+
+  var useBuffer = typeof Buffer != 'undefined';
+
+  if (typeof circular == 'undefined')
+    circular = true;
+
+  if (typeof depth == 'undefined')
+    depth = Infinity;
+
+  // recurse this function so we don't reset allParents and allChildren
+  function _clone(parent, depth) {
+    // cloning null always returns null
+    if (parent === null)
+      return null;
+
+    if (depth == 0)
+      return parent;
+
+    var child;
+    var proto;
+    if (typeof parent != 'object') {
+      return parent;
+    }
+
+    if (clone.__isArray(parent)) {
+      child = [];
+    } else if (clone.__isRegExp(parent)) {
+      child = new RegExp(parent.source, __getRegExpFlags(parent));
+      if (parent.lastIndex) child.lastIndex = parent.lastIndex;
+    } else if (clone.__isDate(parent)) {
+      child = new Date(parent.getTime());
+    } else if (useBuffer && Buffer.isBuffer(parent)) {
+      child = new Buffer(parent.length);
+      parent.copy(child);
+      return child;
+    } else {
+      if (typeof prototype == 'undefined') {
+        proto = Object.getPrototypeOf(parent);
+        child = Object.create(proto);
+      }
+      else {
+        child = Object.create(prototype);
+        proto = prototype;
+      }
+    }
+
+    if (circular) {
+      var index = allParents.indexOf(parent);
+
+      if (index != -1) {
+        return allChildren[index];
+      }
+      allParents.push(parent);
+      allChildren.push(child);
+    }
+
+    for (var i in parent) {
+      var attrs;
+      if (proto) {
+        attrs = Object.getOwnPropertyDescriptor(proto, i);
+      }
+
+      if (attrs && attrs.set == null) {
+        continue;
+      }
+      child[i] = _clone(parent[i], depth - 1);
+    }
+
+    return child;
+  }
+
+  return _clone(parent, depth);
+}
+
+/**
+ * Simple flat clone using prototype, accepts only objects, usefull for property
+ * override on FLAT configuration object (no nested props).
+ *
+ * USE WITH CAUTION! This may not behave as you wish if you do not know how this
+ * works.
+ */
+clone.clonePrototype = function clonePrototype(parent) {
+  if (parent === null)
+    return null;
+
+  var c = function () {};
+  c.prototype = parent;
+  return new c();
+};
+
+// private utility functions
+
+function __objToStr(o) {
+  return Object.prototype.toString.call(o);
+};
+clone.__objToStr = __objToStr;
+
+function __isDate(o) {
+  return typeof o === 'object' && __objToStr(o) === '[object Date]';
+};
+clone.__isDate = __isDate;
+
+function __isArray(o) {
+  return typeof o === 'object' && __objToStr(o) === '[object Array]';
+};
+clone.__isArray = __isArray;
+
+function __isRegExp(o) {
+  return typeof o === 'object' && __objToStr(o) === '[object RegExp]';
+};
+clone.__isRegExp = __isRegExp;
+
+function __getRegExpFlags(re) {
+  var flags = '';
+  if (re.global) flags += 'g';
+  if (re.ignoreCase) flags += 'i';
+  if (re.multiline) flags += 'm';
+  return flags;
+};
+clone.__getRegExpFlags = __getRegExpFlags;
+
+return clone;
+})();
+
+if (typeof module === 'object' && module.exports) {
+  module.exports = clone;
+}
+
+}).call(this,require("buffer").Buffer)
+},{"buffer":9}],62:[function(require,module,exports){
 (function (Buffer){
 'use strict';
 var inherits = require('inherits')
@@ -29192,8 +29761,8 @@ module.exports = function (originalObject, excludeKey) {
 
 }));
 },{}],100:[function(require,module,exports){
-arguments[4][14][0].apply(exports,arguments)
-},{"dup":14}],101:[function(require,module,exports){
+arguments[4][13][0].apply(exports,arguments)
+},{"dup":13}],101:[function(require,module,exports){
 /**
  * Returns a `Boolean` on whether or not the a `String` starts with '0x'
  * @param {String} str the string input value
@@ -30109,645 +30678,8 @@ module.exports = Keccak
 module.exports = require('browserify-sha3').SHA3Hash
 
 },{"browserify-sha3":59}],110:[function(require,module,exports){
-/**
- * lodash (Custom Build) <https://lodash.com/>
- * Build: `lodash modularize exports="npm" -o ./`
- * Copyright jQuery Foundation and other contributors <https://jquery.org/>
- * Released under MIT license <https://lodash.com/license>
- * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
- * Copyright Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- */
-
-/** Used as references for various `Number` constants. */
-var MAX_SAFE_INTEGER = 9007199254740991;
-
-/** `Object#toString` result references. */
-var argsTag = '[object Arguments]',
-    funcTag = '[object Function]',
-    genTag = '[object GeneratorFunction]';
-
-/** Used to detect unsigned integer values. */
-var reIsUint = /^(?:0|[1-9]\d*)$/;
-
-/**
- * A faster alternative to `Function#apply`, this function invokes `func`
- * with the `this` binding of `thisArg` and the arguments of `args`.
- *
- * @private
- * @param {Function} func The function to invoke.
- * @param {*} thisArg The `this` binding of `func`.
- * @param {Array} args The arguments to invoke `func` with.
- * @returns {*} Returns the result of `func`.
- */
-function apply(func, thisArg, args) {
-  switch (args.length) {
-    case 0: return func.call(thisArg);
-    case 1: return func.call(thisArg, args[0]);
-    case 2: return func.call(thisArg, args[0], args[1]);
-    case 3: return func.call(thisArg, args[0], args[1], args[2]);
-  }
-  return func.apply(thisArg, args);
-}
-
-/**
- * The base implementation of `_.times` without support for iteratee shorthands
- * or max array length checks.
- *
- * @private
- * @param {number} n The number of times to invoke `iteratee`.
- * @param {Function} iteratee The function invoked per iteration.
- * @returns {Array} Returns the array of results.
- */
-function baseTimes(n, iteratee) {
-  var index = -1,
-      result = Array(n);
-
-  while (++index < n) {
-    result[index] = iteratee(index);
-  }
-  return result;
-}
-
-/**
- * Creates a unary function that invokes `func` with its argument transformed.
- *
- * @private
- * @param {Function} func The function to wrap.
- * @param {Function} transform The argument transform.
- * @returns {Function} Returns the new function.
- */
-function overArg(func, transform) {
-  return function(arg) {
-    return func(transform(arg));
-  };
-}
-
-/** Used for built-in method references. */
-var objectProto = Object.prototype;
-
-/** Used to check objects for own properties. */
-var hasOwnProperty = objectProto.hasOwnProperty;
-
-/**
- * Used to resolve the
- * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
- * of values.
- */
-var objectToString = objectProto.toString;
-
-/** Built-in value references. */
-var propertyIsEnumerable = objectProto.propertyIsEnumerable;
-
-/* Built-in method references for those with the same name as other `lodash` methods. */
-var nativeKeys = overArg(Object.keys, Object),
-    nativeMax = Math.max;
-
-/** Detect if properties shadowing those on `Object.prototype` are non-enumerable. */
-var nonEnumShadows = !propertyIsEnumerable.call({ 'valueOf': 1 }, 'valueOf');
-
-/**
- * Creates an array of the enumerable property names of the array-like `value`.
- *
- * @private
- * @param {*} value The value to query.
- * @param {boolean} inherited Specify returning inherited property names.
- * @returns {Array} Returns the array of property names.
- */
-function arrayLikeKeys(value, inherited) {
-  // Safari 8.1 makes `arguments.callee` enumerable in strict mode.
-  // Safari 9 makes `arguments.length` enumerable in strict mode.
-  var result = (isArray(value) || isArguments(value))
-    ? baseTimes(value.length, String)
-    : [];
-
-  var length = result.length,
-      skipIndexes = !!length;
-
-  for (var key in value) {
-    if ((inherited || hasOwnProperty.call(value, key)) &&
-        !(skipIndexes && (key == 'length' || isIndex(key, length)))) {
-      result.push(key);
-    }
-  }
-  return result;
-}
-
-/**
- * Assigns `value` to `key` of `object` if the existing value is not equivalent
- * using [`SameValueZero`](http://ecma-international.org/ecma-262/7.0/#sec-samevaluezero)
- * for equality comparisons.
- *
- * @private
- * @param {Object} object The object to modify.
- * @param {string} key The key of the property to assign.
- * @param {*} value The value to assign.
- */
-function assignValue(object, key, value) {
-  var objValue = object[key];
-  if (!(hasOwnProperty.call(object, key) && eq(objValue, value)) ||
-      (value === undefined && !(key in object))) {
-    object[key] = value;
-  }
-}
-
-/**
- * The base implementation of `_.keys` which doesn't treat sparse arrays as dense.
- *
- * @private
- * @param {Object} object The object to query.
- * @returns {Array} Returns the array of property names.
- */
-function baseKeys(object) {
-  if (!isPrototype(object)) {
-    return nativeKeys(object);
-  }
-  var result = [];
-  for (var key in Object(object)) {
-    if (hasOwnProperty.call(object, key) && key != 'constructor') {
-      result.push(key);
-    }
-  }
-  return result;
-}
-
-/**
- * The base implementation of `_.rest` which doesn't validate or coerce arguments.
- *
- * @private
- * @param {Function} func The function to apply a rest parameter to.
- * @param {number} [start=func.length-1] The start position of the rest parameter.
- * @returns {Function} Returns the new function.
- */
-function baseRest(func, start) {
-  start = nativeMax(start === undefined ? (func.length - 1) : start, 0);
-  return function() {
-    var args = arguments,
-        index = -1,
-        length = nativeMax(args.length - start, 0),
-        array = Array(length);
-
-    while (++index < length) {
-      array[index] = args[start + index];
-    }
-    index = -1;
-    var otherArgs = Array(start + 1);
-    while (++index < start) {
-      otherArgs[index] = args[index];
-    }
-    otherArgs[start] = array;
-    return apply(func, this, otherArgs);
-  };
-}
-
-/**
- * Copies properties of `source` to `object`.
- *
- * @private
- * @param {Object} source The object to copy properties from.
- * @param {Array} props The property identifiers to copy.
- * @param {Object} [object={}] The object to copy properties to.
- * @param {Function} [customizer] The function to customize copied values.
- * @returns {Object} Returns `object`.
- */
-function copyObject(source, props, object, customizer) {
-  object || (object = {});
-
-  var index = -1,
-      length = props.length;
-
-  while (++index < length) {
-    var key = props[index];
-
-    var newValue = customizer
-      ? customizer(object[key], source[key], key, object, source)
-      : undefined;
-
-    assignValue(object, key, newValue === undefined ? source[key] : newValue);
-  }
-  return object;
-}
-
-/**
- * Creates a function like `_.assign`.
- *
- * @private
- * @param {Function} assigner The function to assign values.
- * @returns {Function} Returns the new assigner function.
- */
-function createAssigner(assigner) {
-  return baseRest(function(object, sources) {
-    var index = -1,
-        length = sources.length,
-        customizer = length > 1 ? sources[length - 1] : undefined,
-        guard = length > 2 ? sources[2] : undefined;
-
-    customizer = (assigner.length > 3 && typeof customizer == 'function')
-      ? (length--, customizer)
-      : undefined;
-
-    if (guard && isIterateeCall(sources[0], sources[1], guard)) {
-      customizer = length < 3 ? undefined : customizer;
-      length = 1;
-    }
-    object = Object(object);
-    while (++index < length) {
-      var source = sources[index];
-      if (source) {
-        assigner(object, source, index, customizer);
-      }
-    }
-    return object;
-  });
-}
-
-/**
- * Checks if `value` is a valid array-like index.
- *
- * @private
- * @param {*} value The value to check.
- * @param {number} [length=MAX_SAFE_INTEGER] The upper bounds of a valid index.
- * @returns {boolean} Returns `true` if `value` is a valid index, else `false`.
- */
-function isIndex(value, length) {
-  length = length == null ? MAX_SAFE_INTEGER : length;
-  return !!length &&
-    (typeof value == 'number' || reIsUint.test(value)) &&
-    (value > -1 && value % 1 == 0 && value < length);
-}
-
-/**
- * Checks if the given arguments are from an iteratee call.
- *
- * @private
- * @param {*} value The potential iteratee value argument.
- * @param {*} index The potential iteratee index or key argument.
- * @param {*} object The potential iteratee object argument.
- * @returns {boolean} Returns `true` if the arguments are from an iteratee call,
- *  else `false`.
- */
-function isIterateeCall(value, index, object) {
-  if (!isObject(object)) {
-    return false;
-  }
-  var type = typeof index;
-  if (type == 'number'
-        ? (isArrayLike(object) && isIndex(index, object.length))
-        : (type == 'string' && index in object)
-      ) {
-    return eq(object[index], value);
-  }
-  return false;
-}
-
-/**
- * Checks if `value` is likely a prototype object.
- *
- * @private
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is a prototype, else `false`.
- */
-function isPrototype(value) {
-  var Ctor = value && value.constructor,
-      proto = (typeof Ctor == 'function' && Ctor.prototype) || objectProto;
-
-  return value === proto;
-}
-
-/**
- * Performs a
- * [`SameValueZero`](http://ecma-international.org/ecma-262/7.0/#sec-samevaluezero)
- * comparison between two values to determine if they are equivalent.
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category Lang
- * @param {*} value The value to compare.
- * @param {*} other The other value to compare.
- * @returns {boolean} Returns `true` if the values are equivalent, else `false`.
- * @example
- *
- * var object = { 'a': 1 };
- * var other = { 'a': 1 };
- *
- * _.eq(object, object);
- * // => true
- *
- * _.eq(object, other);
- * // => false
- *
- * _.eq('a', 'a');
- * // => true
- *
- * _.eq('a', Object('a'));
- * // => false
- *
- * _.eq(NaN, NaN);
- * // => true
- */
-function eq(value, other) {
-  return value === other || (value !== value && other !== other);
-}
-
-/**
- * Checks if `value` is likely an `arguments` object.
- *
- * @static
- * @memberOf _
- * @since 0.1.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is an `arguments` object,
- *  else `false`.
- * @example
- *
- * _.isArguments(function() { return arguments; }());
- * // => true
- *
- * _.isArguments([1, 2, 3]);
- * // => false
- */
-function isArguments(value) {
-  // Safari 8.1 makes `arguments.callee` enumerable in strict mode.
-  return isArrayLikeObject(value) && hasOwnProperty.call(value, 'callee') &&
-    (!propertyIsEnumerable.call(value, 'callee') || objectToString.call(value) == argsTag);
-}
-
-/**
- * Checks if `value` is classified as an `Array` object.
- *
- * @static
- * @memberOf _
- * @since 0.1.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is an array, else `false`.
- * @example
- *
- * _.isArray([1, 2, 3]);
- * // => true
- *
- * _.isArray(document.body.children);
- * // => false
- *
- * _.isArray('abc');
- * // => false
- *
- * _.isArray(_.noop);
- * // => false
- */
-var isArray = Array.isArray;
-
-/**
- * Checks if `value` is array-like. A value is considered array-like if it's
- * not a function and has a `value.length` that's an integer greater than or
- * equal to `0` and less than or equal to `Number.MAX_SAFE_INTEGER`.
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is array-like, else `false`.
- * @example
- *
- * _.isArrayLike([1, 2, 3]);
- * // => true
- *
- * _.isArrayLike(document.body.children);
- * // => true
- *
- * _.isArrayLike('abc');
- * // => true
- *
- * _.isArrayLike(_.noop);
- * // => false
- */
-function isArrayLike(value) {
-  return value != null && isLength(value.length) && !isFunction(value);
-}
-
-/**
- * This method is like `_.isArrayLike` except that it also checks if `value`
- * is an object.
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is an array-like object,
- *  else `false`.
- * @example
- *
- * _.isArrayLikeObject([1, 2, 3]);
- * // => true
- *
- * _.isArrayLikeObject(document.body.children);
- * // => true
- *
- * _.isArrayLikeObject('abc');
- * // => false
- *
- * _.isArrayLikeObject(_.noop);
- * // => false
- */
-function isArrayLikeObject(value) {
-  return isObjectLike(value) && isArrayLike(value);
-}
-
-/**
- * Checks if `value` is classified as a `Function` object.
- *
- * @static
- * @memberOf _
- * @since 0.1.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is a function, else `false`.
- * @example
- *
- * _.isFunction(_);
- * // => true
- *
- * _.isFunction(/abc/);
- * // => false
- */
-function isFunction(value) {
-  // The use of `Object#toString` avoids issues with the `typeof` operator
-  // in Safari 8-9 which returns 'object' for typed array and other constructors.
-  var tag = isObject(value) ? objectToString.call(value) : '';
-  return tag == funcTag || tag == genTag;
-}
-
-/**
- * Checks if `value` is a valid array-like length.
- *
- * **Note:** This method is loosely based on
- * [`ToLength`](http://ecma-international.org/ecma-262/7.0/#sec-tolength).
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is a valid length, else `false`.
- * @example
- *
- * _.isLength(3);
- * // => true
- *
- * _.isLength(Number.MIN_VALUE);
- * // => false
- *
- * _.isLength(Infinity);
- * // => false
- *
- * _.isLength('3');
- * // => false
- */
-function isLength(value) {
-  return typeof value == 'number' &&
-    value > -1 && value % 1 == 0 && value <= MAX_SAFE_INTEGER;
-}
-
-/**
- * Checks if `value` is the
- * [language type](http://www.ecma-international.org/ecma-262/7.0/#sec-ecmascript-language-types)
- * of `Object`. (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
- *
- * @static
- * @memberOf _
- * @since 0.1.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is an object, else `false`.
- * @example
- *
- * _.isObject({});
- * // => true
- *
- * _.isObject([1, 2, 3]);
- * // => true
- *
- * _.isObject(_.noop);
- * // => true
- *
- * _.isObject(null);
- * // => false
- */
-function isObject(value) {
-  var type = typeof value;
-  return !!value && (type == 'object' || type == 'function');
-}
-
-/**
- * Checks if `value` is object-like. A value is object-like if it's not `null`
- * and has a `typeof` result of "object".
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
- * @example
- *
- * _.isObjectLike({});
- * // => true
- *
- * _.isObjectLike([1, 2, 3]);
- * // => true
- *
- * _.isObjectLike(_.noop);
- * // => false
- *
- * _.isObjectLike(null);
- * // => false
- */
-function isObjectLike(value) {
-  return !!value && typeof value == 'object';
-}
-
-/**
- * Assigns own enumerable string keyed properties of source objects to the
- * destination object. Source objects are applied from left to right.
- * Subsequent sources overwrite property assignments of previous sources.
- *
- * **Note:** This method mutates `object` and is loosely based on
- * [`Object.assign`](https://mdn.io/Object/assign).
- *
- * @static
- * @memberOf _
- * @since 0.10.0
- * @category Object
- * @param {Object} object The destination object.
- * @param {...Object} [sources] The source objects.
- * @returns {Object} Returns `object`.
- * @see _.assignIn
- * @example
- *
- * function Foo() {
- *   this.a = 1;
- * }
- *
- * function Bar() {
- *   this.c = 3;
- * }
- *
- * Foo.prototype.b = 2;
- * Bar.prototype.d = 4;
- *
- * _.assign({ 'a': 0 }, new Foo, new Bar);
- * // => { 'a': 1, 'c': 3 }
- */
-var assign = createAssigner(function(object, source) {
-  if (nonEnumShadows || isPrototype(source) || isArrayLike(source)) {
-    copyObject(source, keys(source), object);
-    return;
-  }
-  for (var key in source) {
-    if (hasOwnProperty.call(source, key)) {
-      assignValue(object, key, source[key]);
-    }
-  }
-});
-
-/**
- * Creates an array of the own enumerable property names of `object`.
- *
- * **Note:** Non-object values are coerced to objects. See the
- * [ES spec](http://ecma-international.org/ecma-262/7.0/#sec-object.keys)
- * for more details.
- *
- * @static
- * @since 0.1.0
- * @memberOf _
- * @category Object
- * @param {Object} object The object to query.
- * @returns {Array} Returns the array of property names.
- * @example
- *
- * function Foo() {
- *   this.a = 1;
- *   this.b = 2;
- * }
- *
- * Foo.prototype.c = 3;
- *
- * _.keys(new Foo);
- * // => ['a', 'b'] (iteration order is not guaranteed)
- *
- * _.keys('hi');
- * // => ['0', '1']
- */
-function keys(object) {
-  return isArrayLike(object) ? arrayLikeKeys(object) : baseKeys(object);
-}
-
-module.exports = assign;
-
-},{}],111:[function(require,module,exports){
+arguments[4][16][0].apply(exports,arguments)
+},{"dup":16}],111:[function(require,module,exports){
 (function (global){
 /**
  * lodash (Custom Build) <https://lodash.com/>
@@ -37870,7 +37802,7 @@ exports.isNumberInInterval = function (number, x, y, message) {
 }
 
 }).call(this,{"isBuffer":require("../../../../ethereumjs-connect/node_modules/is-buffer/index.js")})
-},{"../../../../ethereumjs-connect/node_modules/is-buffer/index.js":15}],139:[function(require,module,exports){
+},{"../../../../ethereumjs-connect/node_modules/is-buffer/index.js":14}],139:[function(require,module,exports){
 (function (Buffer){
 'use strict'
 var bip66 = require('bip66')
@@ -40495,7 +40427,7 @@ function ensureLatestBlock(callback) {
 
 module.exports = ensureLatestBlock;
 
-},{"../block-management/on-new-block":172,"../utils/is-function":251,"../wrappers/eth":267}],170:[function(require,module,exports){
+},{"../block-management/on-new-block":172,"../utils/is-function":252,"../wrappers/eth":268}],170:[function(require,module,exports){
 "use strict";
 
 var eth = require("../wrappers/eth");
@@ -40558,7 +40490,7 @@ function createTransportAdapter(transporter) {
 
 module.exports = createTransportAdapter;
 
-},{"../errors/error-splitting-wrapper":189,"../subscriptions/add-new-heads-subscription":222,"../subscriptions/remove-subscription":225,"../utils/noop":257,"../wrappers/eth":267}],171:[function(require,module,exports){
+},{"../errors/error-splitting-wrapper":189,"../subscriptions/add-new-heads-subscription":223,"../subscriptions/remove-subscription":226,"../utils/noop":258,"../wrappers/eth":268}],171:[function(require,module,exports){
 "use strict";
 
 /**
@@ -40614,7 +40546,7 @@ function onNewBlock(block) {
 
 module.exports = onNewBlock;
 
-},{"../transact/reprocess-transactions":230,"../utils/is-object":255}],173:[function(require,module,exports){
+},{"../transact/reprocess-transactions":231,"../utils/is-object":256}],173:[function(require,module,exports){
 "use strict";
 
 var Notifier = require("./notifier");
@@ -40649,7 +40581,7 @@ PollingBlockNotifier.prototype.constructor = PollingBlockNotifier;
 
 module.exports = PollingBlockNotifier;
 
-},{"../validate/validate-block":261,"./notifier":171}],174:[function(require,module,exports){
+},{"../validate/validate-block":262,"./notifier":171}],174:[function(require,module,exports){
 "use strict";
 
 var Notifier = require("./notifier");
@@ -40703,7 +40635,7 @@ SubscribingBlockNotifier.prototype.constructor = SubscribingBlockNotifier;
 
 module.exports = SubscribingBlockNotifier;
 
-},{"../validate/validate-block":261,"./notifier":171}],175:[function(require,module,exports){
+},{"../validate/validate-block":262,"./notifier":171}],175:[function(require,module,exports){
 "use strict";
 
 var eth_blockNumber = require("../wrappers/eth").blockNumber;
@@ -40741,7 +40673,7 @@ module.exports = function (blocks, mine, callback) {
   };
 };
 
-},{"../constants":178,"../utils/is-function":251,"../wrappers/eth":267,"../wrappers/miner":271}],176:[function(require,module,exports){
+},{"../constants":178,"../utils/is-function":252,"../wrappers/eth":268,"../wrappers/miner":271}],176:[function(require,module,exports){
 "use strict";
 
 var isObject = require("./utils/is-object");
@@ -40763,11 +40695,12 @@ function clearTransactions() {
 
 module.exports = clearTransactions;
 
-},{"./internal-state":193,"./utils/is-object":255}],177:[function(require,module,exports){
+},{"./internal-state":193,"./utils/is-object":256}],177:[function(require,module,exports){
 "use strict";
 
 var net_version = require("./wrappers/net").version;
-var getGasPrice = require("./wrappers/get-gas-price");
+var setGasPrice = require("./wrappers/set-gas-price");
+var setCoinbase = require("./wrappers/set-coinbase");
 var Transporter = require("./transport/transporter");
 var ensureLatestBlock = require("./block-management/ensure-latest-block");
 var createBlockAndLogStreamer = require("./block-management/create-block-and-log-streamer");
@@ -40831,8 +40764,11 @@ function connect(configuration, initialConnectCallback) {
           pollingIntervalMilliseconds: storedConfiguration.pollingIntervalMilliseconds,
           blockRetention: storedConfiguration.blockRetention
         }, dispatch(createTransportAdapter(transporter)), internalState.get("outOfBandErrorHandler"));
-        internalState.get("blockAndLogStreamer").subscribeToOnBlockAdded(function (block) { dispatch(onNewBlock(block)); });
-        dispatch(getGasPrice());
+        internalState.get("blockAndLogStreamer").subscribeToOnBlockAdded(function (block) {
+          dispatch(onNewBlock(block));
+        });
+        dispatch(setGasPrice());
+        dispatch(setCoinbase());
         dispatch(ensureLatestBlock(noop));
         initialConnectCallback(null);
       }));
@@ -40842,7 +40778,7 @@ function connect(configuration, initialConnectCallback) {
 
 module.exports = connect;
 
-},{"./block-management/create-block-and-log-streamer":168,"./block-management/ensure-latest-block":169,"./block-management/ethrpc-transport-adapter":170,"./block-management/on-new-block":172,"./errors":190,"./internal-state":193,"./reset-state":219,"./transport/transporter":247,"./utils/is-function":251,"./utils/noop":257,"./validate/validate-configuration":262,"./wrappers/get-gas-price":268,"./wrappers/net":272}],178:[function(require,module,exports){
+},{"./block-management/create-block-and-log-streamer":168,"./block-management/ensure-latest-block":169,"./block-management/ethrpc-transport-adapter":170,"./block-management/on-new-block":172,"./errors":190,"./internal-state":193,"./reset-state":220,"./transport/transporter":248,"./utils/is-function":252,"./utils/noop":258,"./validate/validate-configuration":263,"./wrappers/net":272,"./wrappers/set-coinbase":279,"./wrappers/set-gas-price":280}],178:[function(require,module,exports){
 "use strict";
 
 var BigNumber = require("bignumber.js");
@@ -40884,7 +40820,9 @@ var packageAndSubmitRawTransaction = require("./raw-transactions/package-and-sub
 var packageAndSignRawTransaction = require("./raw-transactions/package-and-sign-raw-transaction");
 var packageRawTransaction = require("./raw-transactions/package-raw-transaction");
 var signRawTransaction = require("./raw-transactions/sign-raw-transaction");
+var signRawTransactionWithKey = require("./raw-transactions/sign-raw-transaction-with-key");
 var packageRequest = require("./encode-request/package-request");
+var handleRPCError = require("./decode-response/handle-rpc-error");
 var validateAndDefaultBlockNumber = require("./validate/validate-and-default-block-number");
 var validateTransaction = require("./validate/validate-transaction");
 var registerTransactionRelay = require("./transaction-relay/register-transaction-relay");
@@ -40917,18 +40855,14 @@ var clearTransactions = require("./clear-transactions");
 var resetState = require("./reset-state");
 var connect = require("./connect");
 var internalState = require("./internal-state");
+var constants = require("./constants");
 
 var createEthrpc = function (reducer) {
   var store = createStore(reducer, thunkSubscribeEnhancer);
   var dispatch = store.dispatch;
   return {
     errors: errors,
-
-    packageAndSubmitRawTransaction: packageAndSubmitRawTransaction,
-    packageAndSignRawTransaction: packageAndSignRawTransaction,
-    signRawTransaction: signRawTransaction,
-    packageRawTransaction: packageRawTransaction,
-    packageRequest: packageRequest,
+    constants: constants,
 
     setDebugOptions: function (debugOptions) { return dispatch(setDebugOptions(debugOptions)); },
 
@@ -40937,16 +40871,16 @@ var createEthrpc = function (reducer) {
     resetState: function () { return dispatch(resetState()); },
 
     // Redux store state-lookup wrappers
-    getNetworkID: function () { return store.getState().networkID; },
-    getCurrentBlock: function () { return store.getState().currentBlock; },
-    getGasPrice: function () { return store.getState().gasPrice; },
+    getBlockStream: function () { return internalState.get("blockAndLogStreamer"); },
     getConfiguration: function () { return store.getState().configuration; },
-    getTransactions: function () { return store.getState().transactions; },
-    getSubscriptions: function () { return store.getState().subscriptions; },
+    getCurrentBlock: function () { return store.getState().currentBlock; },
     getDebugOptions: function () { return store.getState().debug; },
-    getNoRelay: function () { return store.getState().noRelay; },
+    getGasPrice: function () { return store.getState().gasPrice; },
     getHighestNonce: function () { return store.getState().highestNonce; },
-    getBlockAndLogStreamer: function () { return internalState.get("blockAndLogStreamer"); },
+    getNetworkID: function () { return store.getState().networkID; },
+    getNoRelay: function () { return store.getState().noRelay; },
+    getSubscriptions: function () { return store.getState().subscriptions; },
+    getTransactions: function () { return store.getState().transactions; },
 
     registerTransactionRelay: function (relayer) { return dispatch(registerTransactionRelay(relayer)); },
     unregisterTransactionRelay: function (relayer) { return dispatch(unregisterTransactionRelay(relayer)); },
@@ -41088,6 +41022,18 @@ var createEthrpc = function (reducer) {
      * Convenience wrappers *
      ************************/
 
+    signRawTransaction: signRawTransaction,
+    signRawTransactionWithKey: signRawTransactionWithKey,
+    packageRawTransaction: packageRawTransaction,
+    packageRequest: packageRequest,
+    packageAndSubmitRawTransaction: function (payload, address, privateKeyOrSigner, callback) {
+      return dispatch(packageAndSubmitRawTransaction(payload, address, privateKeyOrSigner, callback));
+    },
+    packageAndSignRawTransaction: function (payload, address, privateKeyOrSigner, callback) {
+      return dispatch(packageAndSignRawTransaction(payload, address, privateKeyOrSigner, callback));
+    },
+
+    handleRPCError: handleRPCError,
     sendEther: function (to, value, from, onSent, onSuccess, onFailed) { return dispatch(sendEther(to, value, from, onSent, onSuccess, onFailed)); },
     publish: function (compiled, callback) { return dispatch(publish(compiled, callback)); },
     ensureLatestBlock: function (callback) { return dispatch(ensureLatestBlock(callback)); },
@@ -41098,13 +41044,13 @@ var createEthrpc = function (reducer) {
 
     callOrSendTransaction: function (payload, callback) { return dispatch(callOrSendTransaction(payload, callback)); },
     callContractFunction: function (payload, callback, wrapper, aux) { return dispatch(callContractFunction(payload, callback, wrapper, aux)); },
-    transact: function (payload, onSent, onSuccess, onFailed) { return dispatch(transact(payload, onSent, onSuccess, onFailed)); }
+    transact: function (payload, privateKeyOrSigner, onSent, onSuccess, onFailed) { return dispatch(transact(payload, privateKeyOrSigner, onSent, onSuccess, onFailed)); }
   };
 };
 
 module.exports = createEthrpc;
 
-},{"./block-management/ensure-latest-block":169,"./block-management/wait-for-next-blocks":175,"./clear-transactions":176,"./connect":177,"./debug/set-debug-options":180,"./encode-request/package-request":186,"./errors/codes":188,"./internal-state":193,"./raw-transactions/package-and-sign-raw-transaction":199,"./raw-transactions/package-and-submit-raw-transaction":200,"./raw-transactions/package-raw-transaction":201,"./raw-transactions/sign-raw-transaction":205,"./reset-state":219,"./transact/call-contract-function":227,"./transact/call-or-send-transaction":228,"./transact/transact":232,"./transaction-relay/exclude-from-transaction-relay":237,"./transaction-relay/include-in-transaction-relay":238,"./transaction-relay/register-transaction-relay":239,"./transaction-relay/unregister-transaction-relay":240,"./utils/is-function":251,"./utils/sha3":258,"./validate/validate-and-default-block-number":260,"./validate/validate-transaction":264,"./wrappers/bind-dispatch":266,"./wrappers/eth":267,"./wrappers/is-unlocked":269,"./wrappers/miner":271,"./wrappers/net":272,"./wrappers/personal":273,"./wrappers/publish":274,"./wrappers/raw":275,"./wrappers/resend-raw-transaction":276,"./wrappers/resend-transaction":277,"./wrappers/send-ether":278,"./wrappers/shh":279,"./wrappers/web3":280,"redux":133,"redux-thunk-subscribe":127}],180:[function(require,module,exports){
+},{"./block-management/ensure-latest-block":169,"./block-management/wait-for-next-blocks":175,"./clear-transactions":176,"./connect":177,"./constants":178,"./debug/set-debug-options":180,"./decode-response/handle-rpc-error":182,"./encode-request/package-request":186,"./errors/codes":188,"./internal-state":193,"./raw-transactions/package-and-sign-raw-transaction":199,"./raw-transactions/package-and-submit-raw-transaction":200,"./raw-transactions/package-raw-transaction":201,"./raw-transactions/sign-raw-transaction":205,"./raw-transactions/sign-raw-transaction-with-key":204,"./reset-state":220,"./transact/call-contract-function":228,"./transact/call-or-send-transaction":229,"./transact/transact":233,"./transaction-relay/exclude-from-transaction-relay":238,"./transaction-relay/include-in-transaction-relay":239,"./transaction-relay/register-transaction-relay":240,"./transaction-relay/unregister-transaction-relay":241,"./utils/is-function":252,"./utils/sha3":259,"./validate/validate-and-default-block-number":261,"./validate/validate-transaction":265,"./wrappers/bind-dispatch":267,"./wrappers/eth":268,"./wrappers/is-unlocked":269,"./wrappers/miner":271,"./wrappers/net":272,"./wrappers/personal":273,"./wrappers/publish":274,"./wrappers/raw":275,"./wrappers/resend-raw-transaction":276,"./wrappers/resend-transaction":277,"./wrappers/send-ether":278,"./wrappers/shh":281,"./wrappers/web3":282,"redux":133,"redux-thunk-subscribe":127}],180:[function(require,module,exports){
 "use strict";
 
 module.exports = function (debugOptions) {
@@ -41146,6 +41092,8 @@ var convertResponseToReturnsType = function (returnsType, response) {
     return null;
   } else if (returnsType === "address" || returnsType === "address[]") {
     return abi.format_address(convertedResponse);
+  } else if (returnsType === "int256" || returnsType === "int256[]") {
+    return abi.format_int256(convertedResponse);
   }
   return convertedResponse;
 };
@@ -41240,7 +41188,7 @@ var parseEthereumResponse = function (origResponse, returns, callback) {
 
 module.exports = parseEthereumResponse;
 
-},{"../errors/codes":188,"../errors/rpc-error":191,"../utils/is-function":251,"../utils/is-object":255,"clone":61}],184:[function(require,module,exports){
+},{"../errors/codes":188,"../errors/rpc-error":191,"../utils/is-function":252,"../utils/is-object":256,"clone":61}],184:[function(require,module,exports){
 "use strict";
 
 var isFunction = require("../utils/is-function");
@@ -41288,7 +41236,7 @@ module.exports = {
   encodeObject: encodeObject
 };
 
-},{"../utils/is-function":251}],185:[function(require,module,exports){
+},{"../utils/is-function":252}],185:[function(require,module,exports){
 "use strict";
 
 var abiEncode = require("./abi-encode");
@@ -41805,7 +41753,7 @@ ethrpc.withCustomReducer = function (customReducer) {
 
 module.exports = ethrpc;
 
-},{"./create-ethrpc":179,"./reducers":213,"./reducers/compose-reducers":207}],193:[function(require,module,exports){
+},{"./create-ethrpc":179,"./reducers":214,"./reducers/compose-reducers":208}],193:[function(require,module,exports){
 "use strict";
 
 var assign = require("lodash.assign");
@@ -41935,7 +41883,7 @@ function packageAndSignRawTransaction(payload, address, privateKeyOrSigner, call
 
 module.exports = packageAndSignRawTransaction;
 
-},{"../errors/codes":188,"../errors/rpc-error":191,"../utils/is-function":251,"./package-raw-transaction":201,"./set-raw-transaction-gas-price":202,"./set-raw-transaction-nonce":203,"./sign-raw-transaction":205}],200:[function(require,module,exports){
+},{"../errors/codes":188,"../errors/rpc-error":191,"../utils/is-function":252,"./package-raw-transaction":201,"./set-raw-transaction-gas-price":202,"./set-raw-transaction-nonce":203,"./sign-raw-transaction":205}],200:[function(require,module,exports){
 "use strict";
 
 var eth_sendRawTransaction = require("../wrappers/eth").sendRawTransaction;
@@ -41988,7 +41936,7 @@ function packageAndSubmitRawTransaction(payload, address, privateKey, callback) 
 
 module.exports = packageAndSubmitRawTransaction;
 
-},{"../errors/codes":188,"../errors/rpc-error":191,"../utils/is-function":251,"../wrappers/eth":267,"./handle-raw-transaction-error":198,"./package-and-sign-raw-transaction":199}],201:[function(require,module,exports){
+},{"../errors/codes":188,"../errors/rpc-error":191,"../utils/is-function":252,"../wrappers/eth":268,"./handle-raw-transaction-error":198,"./package-and-sign-raw-transaction":199}],201:[function(require,module,exports){
 "use strict";
 
 var abi = require("augur-abi");
@@ -42059,7 +42007,7 @@ var setRawTransactionGasPrice = function (packaged, callback) {
 
 module.exports = setRawTransactionGasPrice;
 
-},{"../errors/codes":188,"../errors/rpc-error":191,"../utils/is-function":251,"../wrappers/eth":267}],203:[function(require,module,exports){
+},{"../errors/codes":188,"../errors/rpc-error":191,"../utils/is-function":252,"../wrappers/eth":268}],203:[function(require,module,exports){
 "use strict";
 
 var eth = require("../wrappers/eth");
@@ -42096,7 +42044,7 @@ function setRawTransactionNonce(packaged, address, callback) {
 
 module.exports = setRawTransactionNonce;
 
-},{"../utils/is-function":251,"../wrappers/eth":267,"./verify-raw-transaction-nonce":206}],204:[function(require,module,exports){
+},{"../utils/is-function":252,"../wrappers/eth":268,"./verify-raw-transaction-nonce":206}],204:[function(require,module,exports){
 "use strict";
 
 var Transaction = require("ethereumjs-tx");
@@ -42125,7 +42073,7 @@ function signRawTransactionWithKey(packaged, privateKey, callback) {
 
 module.exports = signRawTransactionWithKey;
 
-},{"../errors/codes":188,"../errors/rpc-error":191,"../utils/is-function":251,"ethereumjs-tx":86}],205:[function(require,module,exports){
+},{"../errors/codes":188,"../errors/rpc-error":191,"../utils/is-function":252,"ethereumjs-tx":86}],205:[function(require,module,exports){
 "use strict";
 
 var immutableDelete = require("immutable-delete");
@@ -42152,7 +42100,7 @@ function signRawTransaction(packaged, privateKeyOrSigner, callback) {
 
 module.exports = signRawTransaction;
 
-},{"../utils/is-function":251,"./sign-raw-transaction-with-key":204,"immutable-delete":98}],206:[function(require,module,exports){
+},{"../utils/is-function":252,"./sign-raw-transaction-with-key":204,"immutable-delete":98}],206:[function(require,module,exports){
 "use strict";
 
 var abi = require("augur-abi");
@@ -42180,6 +42128,25 @@ module.exports = verifyRawTransactionNonce;
 },{"augur-abi":51}],207:[function(require,module,exports){
 "use strict";
 
+var initialState = require("./initial-state").coinbase;
+
+module.exports = function (coinbase, action) {
+  if (typeof coinbase === "undefined") {
+    return initialState;
+  }
+  switch (action.type) {
+    case "SET_COINBASE":
+      return action.address;
+    case "CLEAR_COINBASE":
+      return initialState;
+    default:
+      return coinbase;
+  }
+};
+
+},{"./initial-state":215}],208:[function(require,module,exports){
+"use strict";
+
 var assign = require("lodash.assign");
 
 /**
@@ -42194,7 +42161,7 @@ function composeReducers(customReducer, reducer) {
 
 module.exports = composeReducers;
 
-},{"lodash.assign":110}],208:[function(require,module,exports){
+},{"lodash.assign":110}],209:[function(require,module,exports){
 "use strict";
 
 var isFunction = require("../utils/is-function");
@@ -42223,7 +42190,7 @@ module.exports = function (configuration, action) {
   }
 };
 
-},{"../utils/is-function":251,"./initial-state":214}],209:[function(require,module,exports){
+},{"../utils/is-function":252,"./initial-state":215}],210:[function(require,module,exports){
 "use strict";
 
 var clone = require("clone");
@@ -42243,7 +42210,7 @@ module.exports = function (currentBlock, action) {
   }
 };
 
-},{"./initial-state":214,"clone":61}],210:[function(require,module,exports){
+},{"./initial-state":215,"clone":61}],211:[function(require,module,exports){
 "use strict";
 
 var assign = require("lodash.assign");
@@ -42263,7 +42230,7 @@ module.exports = function (debug, action) {
   }
 };
 
-},{"./initial-state":214,"lodash.assign":110}],211:[function(require,module,exports){
+},{"./initial-state":215,"lodash.assign":110}],212:[function(require,module,exports){
 "use strict";
 
 var initialState = require("./initial-state").gasPrice;
@@ -42282,7 +42249,7 @@ module.exports = function (gasPrice, action) {
   }
 };
 
-},{"./initial-state":214}],212:[function(require,module,exports){
+},{"./initial-state":215}],213:[function(require,module,exports){
 "use strict";
 
 var initialState = require("./initial-state").highestNonce;
@@ -42305,7 +42272,7 @@ module.exports = function (highestNonce, action) {
   }
 };
 
-},{"./initial-state":214}],213:[function(require,module,exports){
+},{"./initial-state":215}],214:[function(require,module,exports){
 "use strict";
 
 var debugReducer = require("./debug");
@@ -42317,6 +42284,7 @@ var noRelayReducer = require("./no-relay");
 var networkIDReducer = require("./network-id");
 var transactionsReducer = require("./transactions");
 var subscriptionsReducer = require("./subscriptions");
+var coinbaseReducer = require("./coinbase");
 
 function reducer(state, action) {
   return {
@@ -42328,7 +42296,8 @@ function reducer(state, action) {
     noRelay: noRelayReducer(state.noRelay, action),
     networkID: networkIDReducer(state.networkID, action),
     transactions: transactionsReducer(state.transactions, action),
-    subscriptions: subscriptionsReducer(state.subscriptions, action)
+    subscriptions: subscriptionsReducer(state.subscriptions, action),
+    coinbase: coinbaseReducer(state.coinbase, action)
   };
 }
 
@@ -42339,7 +42308,7 @@ module.exports = function (state, action) {
   return reducer(state || {}, action);
 };
 
-},{"./configuration":208,"./current-block":209,"./debug":210,"./gas-price":211,"./highest-nonce":212,"./network-id":215,"./no-relay":216,"./subscriptions":217,"./transactions":218}],214:[function(require,module,exports){
+},{"./coinbase":207,"./configuration":209,"./current-block":210,"./debug":211,"./gas-price":212,"./highest-nonce":213,"./network-id":216,"./no-relay":217,"./subscriptions":218,"./transactions":219}],215:[function(require,module,exports){
 "use strict";
 
 module.exports.debug = {
@@ -42364,8 +42333,9 @@ module.exports.noRelay = {};
 module.exports.networkID = null;
 module.exports.transactions = {};
 module.exports.subscriptions = {};
+module.exports.coinbase = null;
 
-},{}],215:[function(require,module,exports){
+},{}],216:[function(require,module,exports){
 "use strict";
 
 var initialState = require("./initial-state").networkID;
@@ -42384,7 +42354,7 @@ module.exports = function (networkID, action) {
   }
 };
 
-},{"./initial-state":214}],216:[function(require,module,exports){
+},{"./initial-state":215}],217:[function(require,module,exports){
 "use strict";
 
 var assign = require("lodash.assign");
@@ -42411,7 +42381,7 @@ module.exports = function (noRelay, action) {
   }
 };
 
-},{"./initial-state":214,"lodash.assign":110}],217:[function(require,module,exports){
+},{"./initial-state":215,"lodash.assign":110}],218:[function(require,module,exports){
 "use strict";
 
 var assign = require("lodash.assign");
@@ -42441,7 +42411,7 @@ module.exports = function (subscriptions, action) {
   }
 };
 
-},{"./initial-state":214,"immutable-delete":98,"lodash.assign":110}],218:[function(require,module,exports){
+},{"./initial-state":215,"immutable-delete":98,"lodash.assign":110}],219:[function(require,module,exports){
 "use strict";
 
 var assign = require("lodash.assign");
@@ -42525,7 +42495,7 @@ module.exports = function (transactions, action) {
   }
 };
 
-},{"../utils/is-object":255,"./initial-state":214,"immutable-delete":98,"lodash.assign":110}],219:[function(require,module,exports){
+},{"../utils/is-object":256,"./initial-state":215,"immutable-delete":98,"lodash.assign":110}],220:[function(require,module,exports){
 "use strict";
 
 var blockchainMessageHandler = require("./rpc/blockchain-message-handler");
@@ -42586,7 +42556,7 @@ function resetState() {
 
 module.exports = resetState;
 
-},{"./clear-transactions":176,"./internal-state":193,"./rpc/blockchain-message-handler":220,"./subscriptions/store-observer":226,"./utils/is-object":255}],220:[function(require,module,exports){
+},{"./clear-transactions":176,"./internal-state":193,"./rpc/blockchain-message-handler":221,"./subscriptions/store-observer":227,"./utils/is-object":256}],221:[function(require,module,exports){
 "use strict";
 
 var parseEthereumResponse = require("../decode-response/parse-ethereum-response");
@@ -42668,7 +42638,7 @@ function blockchainMessageHandler(error, jso) {
 
 module.exports = blockchainMessageHandler;
 
-},{"../decode-response/parse-ethereum-response":183,"../errors":190,"../internal-state":193,"../utils/is-object":255}],221:[function(require,module,exports){
+},{"../decode-response/parse-ethereum-response":183,"../errors":190,"../internal-state":193,"../utils/is-object":256}],222:[function(require,module,exports){
 "use strict";
 
 var stripReturnsTypeAndInvocation = require("../encode-request/strip-returns-type-and-invocation");
@@ -42728,7 +42698,7 @@ function submitRequestToBlockchain(jso, transportRequirements, callback) {
 
 module.exports = submitRequestToBlockchain;
 
-},{"../encode-request/strip-returns-type-and-invocation":187,"../internal-state":193,"../utils/is-function":251}],222:[function(require,module,exports){
+},{"../encode-request/strip-returns-type-and-invocation":187,"../internal-state":193,"../utils/is-function":252}],223:[function(require,module,exports){
 "use strict";
 
 var addSubscription = require("./add-subscription");
@@ -42745,7 +42715,7 @@ function addNewHeadsSubscription(id, onStateChange) {
 
 module.exports = addNewHeadsSubscription;
 
-},{"./add-subscription":223}],223:[function(require,module,exports){
+},{"./add-subscription":224}],224:[function(require,module,exports){
 "use strict";
 
 var addStoreListener = require("./store-observer").addStoreListener;
@@ -42763,7 +42733,7 @@ function addSubscription(id, reaction, select, onStateChange) {
 
 module.exports = addSubscription;
 
-},{"./store-observer":226}],224:[function(require,module,exports){
+},{"./store-observer":227}],225:[function(require,module,exports){
 "use strict";
 
 var addSubscription = require("./add-subscription");
@@ -42781,7 +42751,7 @@ function addTransactionsSubscription(onStateChange) {
 
 module.exports = addTransactionsSubscription;
 
-},{"./add-subscription":223}],225:[function(require,module,exports){
+},{"./add-subscription":224}],226:[function(require,module,exports){
 "use strict";
 
 var removeStoreListener = require("./store-observer").removeStoreListener;
@@ -42798,7 +42768,7 @@ function removeSubscription(id) {
 
 module.exports = removeSubscription;
 
-},{"./store-observer":226}],226:[function(require,module,exports){
+},{"./store-observer":227}],227:[function(require,module,exports){
 "use strict";
 
 var assign = require("lodash.assign");
@@ -42843,7 +42813,7 @@ module.exports.addStoreListener = addStoreListener;
 module.exports.removeStoreListener = removeStoreListener;
 module.exports.removeAllStoreListeners = removeAllStoreListeners;
 
-},{"../utils/is-function":251,"immutable-delete":98,"lodash.assign":110}],227:[function(require,module,exports){
+},{"../utils/is-function":252,"immutable-delete":98,"lodash.assign":110}],228:[function(require,module,exports){
 "use strict";
 
 var clone = require("clone");
@@ -42866,11 +42836,11 @@ var errors = require("../errors/codes");
  * @property {?string[]} params
  *
  * @param {FirePayload} payload
- * @param {function(object):void} callback - called with the result, possibly run through `wrapper` if applicable
- * @param {function(object,object):void} wrapper - a function to transform the result before it is passed to `callback`.  first parameter is result, second is `aux`
- * @param {object} aux - an optional parameter passed to `wrapper` (second parameter)
+ * @param {function(object):void} callback - called with the result, possibly run through `callbackWrapper` if applicable
+ * @param {function(object,object):void} callbackWrapper - a function to transform the result before it is passed to `callback`.  first parameter is result, second is `extraArgument`
+ * @param {object} extraArgument - an optional parameter passed to `callbackWrapper` (second parameter)
  */
-function callContractFunction(payload, callback, wrapper, aux) {
+function callContractFunction(payload, callback, callbackWrapper, extraArgument) {
   return function (dispatch) {
     var tx, res, err, converted;
     tx = clone(payload);
@@ -42882,7 +42852,7 @@ function callContractFunction(payload, callback, wrapper, aux) {
       err = handleRPCError(tx.method, tx.returns, res);
       if (err && err.error) throw new RPCError(err);
       converted = convertResponseToReturnsType(tx.returns, res);
-      if (isFunction(wrapper)) return wrapper(converted, aux);
+      if (isFunction(callbackWrapper)) return callbackWrapper(converted, extraArgument);
       return converted;
     }
     dispatch(callOrSendTransaction(tx, function (res) {
@@ -42893,7 +42863,7 @@ function callContractFunction(payload, callback, wrapper, aux) {
       err = handleRPCError(tx.method, tx.returns, res);
       if (err && err.error) return callback(err);
       converted = convertResponseToReturnsType(tx.returns, res);
-      if (isFunction(wrapper)) converted = wrapper(converted, aux);
+      if (isFunction(callbackWrapper)) converted = callbackWrapper(converted, extraArgument);
       return callback(converted);
     }));
   };
@@ -42901,12 +42871,13 @@ function callContractFunction(payload, callback, wrapper, aux) {
 
 module.exports = callContractFunction;
 
-},{"../decode-response/convert-response-to-returns-type":181,"../decode-response/handle-rpc-error":182,"../errors/codes":188,"../errors/rpc-error":191,"../transact/call-or-send-transaction":228,"../utils/is-function":251,"clone":61}],228:[function(require,module,exports){
+},{"../decode-response/convert-response-to-returns-type":181,"../decode-response/handle-rpc-error":182,"../errors/codes":188,"../errors/rpc-error":191,"../transact/call-or-send-transaction":229,"../utils/is-function":252,"clone":61}],229:[function(require,module,exports){
 "use strict";
 
 var eth = require("../wrappers/eth");
 var packageRequest = require("../encode-request/package-request");
 var isFunction = require("../utils/is-function");
+var isObject = require("../utils/is-object");
 var errors = require("../errors/codes");
 
 /**
@@ -42923,7 +42894,7 @@ var errors = require("../errors/codes");
  */
 function callOrSendTransaction(payload, callback) {
   return function (dispatch) {
-    if (!payload || payload.constructor !== Object) {
+    if (!isObject(payload)) {
       if (!isFunction(callback)) return errors.TRANSACTION_FAILED;
       return callback(errors.TRANSACTION_FAILED);
     }
@@ -42936,7 +42907,7 @@ function callOrSendTransaction(payload, callback) {
 
 module.exports = callOrSendTransaction;
 
-},{"../encode-request/package-request":186,"../errors/codes":188,"../utils/is-function":251,"../wrappers/eth":267}],229:[function(require,module,exports){
+},{"../encode-request/package-request":186,"../errors/codes":188,"../utils/is-function":252,"../utils/is-object":256,"../wrappers/eth":268}],230:[function(require,module,exports){
 "use strict";
 
 var BigNumber = require("bignumber.js");
@@ -42967,7 +42938,7 @@ function getLoggedReturnValue(txHash, callback) {
 
 module.exports = getLoggedReturnValue;
 
-},{"../errors/codes":188,"../wrappers/eth":267,"bignumber.js":54}],230:[function(require,module,exports){
+},{"../errors/codes":188,"../wrappers/eth":268,"bignumber.js":54}],231:[function(require,module,exports){
 "use strict";
 
 var updateTx = require("./update-tx");
@@ -42986,10 +42957,12 @@ function reprocessTransactions() {
 
 module.exports = reprocessTransactions;
 
-},{"./update-tx":235}],231:[function(require,module,exports){
+},{"./update-tx":236}],232:[function(require,module,exports){
 "use strict";
 
 var abi = require("augur-abi");
+var immutableDelete = require("immutable-delete");
+var packageAndSubmitRawTransaction = require("../raw-transactions/package-and-submit-raw-transaction");
 var callOrSendTransaction = require("../transact/call-or-send-transaction");
 var verifyTxSubmitted = require("../transact/verify-tx-submitted");
 var errors = require("../errors/codes");
@@ -43000,26 +42973,25 @@ var errors = require("../errors/codes");
  *  - call onSuccess when the transaction has REQUIRED_CONFIRMATIONS
  *  - call onFailed if the transaction fails
  */
-function transactAsync(payload, callReturn, onSent, onSuccess, onFailed) {
+function transactAsync(payload, callReturn, privateKeyOrSigner, onSent, onSuccess, onFailed) {
   return function (dispatch, getState) {
-    var returns, state;
-    state = getState();
+    var invoke = (privateKeyOrSigner == null) ? callOrSendTransaction : function (payload, callback) {
+      return packageAndSubmitRawTransaction(payload, payload.from, privateKeyOrSigner, callback);
+    };
+    // var invoke = payload.invoke || callOrSendTransaction;
     payload.send = true;
-    returns = payload.returns;
-    delete payload.returns;
-    dispatch((payload.invoke || callOrSendTransaction)(payload, function (txHash) {
-      if (state.debug.tx) console.log("txHash:", txHash);
-      if (!txHash) return onFailed(errors.NULL_RESPONSE);
+    dispatch(invoke(immutableDelete(payload, "returns"), function (txHash) {
+      if (getState().debug.tx) console.log("txHash:", txHash);
+      if (txHash == null) return onFailed(errors.NULL_RESPONSE);
       if (txHash.error) return onFailed(txHash);
-      payload.returns = returns;
       txHash = abi.format_int256(txHash);
 
       // send the transaction hash and return value back
       // to the client, using the onSent callback
-      onSent({ hash: txHash, txHash: txHash, callReturn: callReturn });
+      onSent({ hash: txHash, callReturn: callReturn });
 
       dispatch(verifyTxSubmitted(payload, txHash, callReturn, onSent, onSuccess, onFailed, function (err) {
-        if (err) {
+        if (err != null) {
           err.hash = txHash;
           return onFailed(err);
         }
@@ -43030,7 +43002,7 @@ function transactAsync(payload, callReturn, onSent, onSuccess, onFailed) {
 
 module.exports = transactAsync;
 
-},{"../errors/codes":188,"../transact/call-or-send-transaction":228,"../transact/verify-tx-submitted":236,"augur-abi":51}],232:[function(require,module,exports){
+},{"../errors/codes":188,"../raw-transactions/package-and-submit-raw-transaction":200,"../transact/call-or-send-transaction":229,"../transact/verify-tx-submitted":237,"augur-abi":51,"immutable-delete":98}],233:[function(require,module,exports){
 /**
  * Send-call-confirm callback sequence
  */
@@ -43040,15 +43012,16 @@ module.exports = transactAsync;
 var sha3 = require("../utils/sha3");
 var transactAsync = require("../transact/transact-async");
 var callContractFunction = require("../transact/call-contract-function");
+var callOrSendTransaction = require("../transact/call-or-send-transaction");
 var isFunction = require("../utils/is-function");
 var noop = require("../utils/noop");
 var errors = require("../errors/codes");
 
-function transact(payload, onSent, onSuccess, onFailed) {
+function transact(payload, privateKeyOrSigner, onSent, onSuccess, onFailed) {
   return function (dispatch, getState) {
-    var onSentCallback, onSuccessCallback, onFailedCallback, debug;
-    debug = getState().debug;
+    var onSentCallback, onSuccessCallback, onFailedCallback, debug = getState().debug;
     if (debug.tx) console.log("payload transact:", payload);
+    if (!isFunction(onSent)) return dispatch(callOrSendTransaction(payload));
     onSentCallback = onSent;
     onSuccessCallback = (isFunction(onSuccess)) ? onSuccess : noop;
     onFailedCallback = function (response) {
@@ -43061,7 +43034,7 @@ function transact(payload, onSent, onSuccess, onFailed) {
     };
     payload.send = false;
     if (payload.mutable || payload.returns === "null") {
-      return dispatch(transactAsync(payload, null, onSentCallback, onSuccessCallback, onFailedCallback));
+      return dispatch(transactAsync(payload, null, privateKeyOrSigner, onSentCallback, onSuccessCallback, onFailedCallback));
     }
     dispatch(callContractFunction(payload, function (callReturn) {
       if (debug.tx) console.log("callReturn:", callReturn);
@@ -43070,14 +43043,14 @@ function transact(payload, onSent, onSuccess, onFailed) {
       } else if (callReturn.error) {
         return onFailedCallback(callReturn);
       }
-      dispatch(transactAsync(payload, callReturn, onSentCallback, onSuccessCallback, onFailedCallback));
+      dispatch(transactAsync(payload, callReturn, privateKeyOrSigner, onSentCallback, onSuccessCallback, onFailedCallback));
     }));
   };
 }
 
 module.exports = transact;
 
-},{"../errors/codes":188,"../transact/call-contract-function":227,"../transact/transact-async":231,"../utils/is-function":251,"../utils/noop":257,"../utils/sha3":258}],233:[function(require,module,exports){
+},{"../errors/codes":188,"../transact/call-contract-function":228,"../transact/call-or-send-transaction":229,"../transact/transact-async":232,"../utils/is-function":252,"../utils/noop":258,"../utils/sha3":259}],234:[function(require,module,exports){
 "use strict";
 
 var abi = require("augur-abi");
@@ -43196,7 +43169,7 @@ function updateMinedTx(txHash) {
 
 module.exports = updateMinedTx;
 
-},{"../constants":178,"../decode-response/convert-response-to-returns-type":181,"../decode-response/handle-rpc-error":182,"../errors/codes":188,"../transact/call-contract-function":227,"../transact/get-logged-return-value":229,"../utils/is-function":251,"../wrappers/eth":267,"augur-abi":51,"bignumber.js":54}],234:[function(require,module,exports){
+},{"../constants":178,"../decode-response/convert-response-to-returns-type":181,"../decode-response/handle-rpc-error":182,"../errors/codes":188,"../transact/call-contract-function":228,"../transact/get-logged-return-value":230,"../utils/is-function":252,"../wrappers/eth":268,"augur-abi":51,"bignumber.js":54}],235:[function(require,module,exports){
 "use strict";
 
 var clone = require("clone");
@@ -43286,7 +43259,7 @@ function updatePendingTx(txHash) {
 
 module.exports = updatePendingTx;
 
-},{"../constants":178,"../errors/codes":188,"../transact/transact":232,"../transact/update-mined-tx":233,"../utils/is-function":251,"../wrappers/eth":267,"clone":61}],235:[function(require,module,exports){
+},{"../constants":178,"../errors/codes":188,"../transact/transact":233,"../transact/update-mined-tx":234,"../utils/is-function":252,"../wrappers/eth":268,"clone":61}],236:[function(require,module,exports){
 "use strict";
 
 var updateMinedTx = require("../transact/update-mined-tx");
@@ -43318,7 +43291,7 @@ function updateTx(txHash) {
 
 module.exports.default = updateTx;
 
-},{"../transact/update-mined-tx":233,"../transact/update-pending-tx":234}],236:[function(require,module,exports){
+},{"../transact/update-mined-tx":234,"../transact/update-pending-tx":235}],237:[function(require,module,exports){
 "use strict";
 
 var updateTx = require("../transact/update-tx");
@@ -43373,7 +43346,7 @@ function verifyTxSubmitted(payload, txHash, callReturn, onSent, onSuccess, onFai
 
 module.exports = verifyTxSubmitted;
 
-},{"../errors/codes":188,"../errors/rpc-error":191,"../transact/update-tx":235,"../utils/is-function":251}],237:[function(require,module,exports){
+},{"../errors/codes":188,"../errors/rpc-error":191,"../transact/update-tx":236,"../utils/is-function":252}],238:[function(require,module,exports){
 "use strict";
 
 function excludeFromTransactionRelay(method) {
@@ -43393,7 +43366,7 @@ function excludeFromTransactionRelay(method) {
 
 module.exports = excludeFromTransactionRelay;
 
-},{}],238:[function(require,module,exports){
+},{}],239:[function(require,module,exports){
 "use strict";
 
 function includeInTransactionRelay(method) {
@@ -43413,7 +43386,7 @@ function includeInTransactionRelay(method) {
 
 module.exports = includeInTransactionRelay;
 
-},{}],239:[function(require,module,exports){
+},{}],240:[function(require,module,exports){
 "use strict";
 
 var addTransactionsSubscription = require("../subscriptions/add-transactions-subscription");
@@ -43426,7 +43399,7 @@ function registerTransactionRelay(transactionRelay) {
         var payload;
         if (transactions[hash] !== oldTransactions[hash]) {
           payload = transactions[hash].payload;
-          if (payload.method && !noRelay[payload.method]) {
+          if (payload && payload.method && !noRelay[payload.method]) {
             transactionRelay({
               hash: hash,
               type: payload.label || payload.method,
@@ -43443,7 +43416,7 @@ function registerTransactionRelay(transactionRelay) {
 
 module.exports = registerTransactionRelay;
 
-},{"../subscriptions/add-transactions-subscription":224}],240:[function(require,module,exports){
+},{"../subscriptions/add-transactions-subscription":225}],241:[function(require,module,exports){
 "use strict";
 
 var removeSubscription = require("../subscriptions/remove-subscription");
@@ -43456,7 +43429,7 @@ function unregisterTransactionRelay() {
 
 module.exports = unregisterTransactionRelay;
 
-},{"../subscriptions/remove-subscription":225}],241:[function(require,module,exports){
+},{"../subscriptions/remove-subscription":226}],242:[function(require,module,exports){
 "use strict";
 
 /**
@@ -43632,7 +43605,7 @@ function reconnect(abstractTransport) {
 
 module.exports = AbstractTransport;
 
-},{}],242:[function(require,module,exports){
+},{}],243:[function(require,module,exports){
 "use strict";
 
 var isUndefined = require("../../utils/is-undefined");
@@ -43688,7 +43661,7 @@ function checkIfComplete(transporter, resultAggregator, onCompleteCallback) {
 
 module.exports = checkIfComplete;
 
-},{"../../utils/is-not-null":253,"../../utils/is-null":254,"../../utils/is-undefined":256}],243:[function(require,module,exports){
+},{"../../utils/is-not-null":254,"../../utils/is-null":255,"../../utils/is-undefined":257}],244:[function(require,module,exports){
 "use strict";
 
 var isNotNull = require("../../utils/is-not-null");
@@ -43723,7 +43696,7 @@ function chooseTransport(internalState, requirements) {
 
 module.exports = chooseTransport;
 
-},{"../../utils/is-not-null":253}],244:[function(require,module,exports){
+},{"../../utils/is-not-null":254}],245:[function(require,module,exports){
 "use strict";
 
 var AbstractTransport = require("./abstract-transport.js");
@@ -43786,7 +43759,7 @@ HttpTransport.prototype.submitRpcRequest = function (rpcObject, errorCallback) {
 
 module.exports = HttpTransport;
 
-},{"../platform/request.js":195,"./abstract-transport.js":241}],245:[function(require,module,exports){
+},{"../platform/request.js":195,"./abstract-transport.js":242}],246:[function(require,module,exports){
 "use strict";
 
 var net = require("net");
@@ -43847,7 +43820,7 @@ IpcTransport.prototype.submitRpcRequest = function (rpcJso, errorCallback) {
 
 module.exports = IpcTransport;
 
-},{"./abstract-transport.js":241,"net":6,"oboe":126}],246:[function(require,module,exports){
+},{"./abstract-transport.js":242,"net":6,"oboe":126}],247:[function(require,module,exports){
 "use strict";
 
 var AbstractTransport = require("./abstract-transport.js");
@@ -43898,7 +43871,7 @@ SyncTransport.prototype.submitRpcRequest = function (/*rpcObject, errorCallback*
 
 module.exports = SyncTransport;
 
-},{"../platform/sync-request.js":196,"./abstract-transport.js":241,"./http-transport.js":244}],247:[function(require,module,exports){
+},{"../platform/sync-request.js":196,"./abstract-transport.js":242,"./http-transport.js":245}],248:[function(require,module,exports){
 "use strict";
 
 var HttpTransport = require("./http-transport");
@@ -44056,7 +44029,7 @@ Transporter.prototype.removeReconnectListener = function (token) {
 
 module.exports = Transporter;
 
-},{"../utils/create-array-with-default-value":250,"./helpers/check-if-complete":242,"./helpers/choose-transport":243,"./http-transport":244,"./ipc-transport":245,"./sync-transport":246,"./web3-transport":248,"./ws-transport":249}],248:[function(require,module,exports){
+},{"../utils/create-array-with-default-value":251,"./helpers/check-if-complete":243,"./helpers/choose-transport":244,"./http-transport":245,"./ipc-transport":246,"./sync-transport":247,"./web3-transport":249,"./ws-transport":250}],249:[function(require,module,exports){
 "use strict";
 
 var AbstractTransport = require("./abstract-transport.js");
@@ -44088,7 +44061,7 @@ Web3Transport.prototype.submitRpcRequest = function (rpcObject, errorCallback) {
 
 module.exports = Web3Transport;
 
-},{"./abstract-transport.js":241}],249:[function(require,module,exports){
+},{"./abstract-transport.js":242}],250:[function(require,module,exports){
 "use strict";
 
 var AbstractTransport = require("./abstract-transport");
@@ -44138,7 +44111,7 @@ WsTransport.prototype.submitRpcRequest = function (rpcJso, errorCallback) {
 
 module.exports = WsTransport;
 
-},{"../platform/web-socket-client":197,"./abstract-transport":241}],250:[function(require,module,exports){
+},{"../platform/web-socket-client":197,"./abstract-transport":242}],251:[function(require,module,exports){
 "use strict";
 
 var createArrayWithDefaultValue = function (size, defaultValue) {
@@ -44149,7 +44122,7 @@ var createArrayWithDefaultValue = function (size, defaultValue) {
 
 module.exports = createArrayWithDefaultValue;
 
-},{}],251:[function(require,module,exports){
+},{}],252:[function(require,module,exports){
 "use strict";
 
 var isFunction = function (f) {
@@ -44158,7 +44131,7 @@ var isFunction = function (f) {
 
 module.exports = isFunction;
 
-},{}],252:[function(require,module,exports){
+},{}],253:[function(require,module,exports){
 "use strict";
 
 var abi = require("augur-abi");
@@ -44174,7 +44147,7 @@ module.exports = function (str) {
   return false;
 };
 
-},{"augur-abi":51}],253:[function(require,module,exports){
+},{"augur-abi":51}],254:[function(require,module,exports){
 "use strict";
 
 var isNotNull = function (value) {
@@ -44183,7 +44156,7 @@ var isNotNull = function (value) {
 
 module.exports = isNotNull;
 
-},{}],254:[function(require,module,exports){
+},{}],255:[function(require,module,exports){
 "use strict";
 
 var isNull = function (value) {
@@ -44192,7 +44165,7 @@ var isNull = function (value) {
 
 module.exports = isNull;
 
-},{}],255:[function(require,module,exports){
+},{}],256:[function(require,module,exports){
 "use strict";
 
 function isObject(item) {
@@ -44201,7 +44174,7 @@ function isObject(item) {
 
 module.exports = isObject;
 
-},{}],256:[function(require,module,exports){
+},{}],257:[function(require,module,exports){
 "use strict";
 
 var isUndefined = function (value) {
@@ -44210,14 +44183,14 @@ var isUndefined = function (value) {
 
 module.exports = isUndefined;
 
-},{}],257:[function(require,module,exports){
+},{}],258:[function(require,module,exports){
 "use strict";
 
 var noop = function () { };
 
 module.exports = noop;
 
-},{}],258:[function(require,module,exports){
+},{}],259:[function(require,module,exports){
 (function (Buffer){
 "use strict";
 
@@ -44240,7 +44213,7 @@ module.exports = function (data, encoding, callback) {
 };
 
 }).call(this,require("buffer").Buffer)
-},{"../utils/is-function":251,"augur-abi":51,"buffer":9,"keccak/js":103}],259:[function(require,module,exports){
+},{"../utils/is-function":252,"augur-abi":51,"buffer":9,"keccak/js":103}],260:[function(require,module,exports){
 "use strict";
 
 var validateAddress = function (address) {
@@ -44265,7 +44238,7 @@ var validateAddress = function (address) {
 
 module.exports = validateAddress;
 
-},{}],260:[function(require,module,exports){
+},{}],261:[function(require,module,exports){
 "use strict";
 
 var validateNumber = require("./validate-number");
@@ -44285,7 +44258,7 @@ var validateAndDefaultBlockNumber = function (blockNumber) {
 
 module.exports = validateAndDefaultBlockNumber;
 
-},{"./validate-number":263}],261:[function(require,module,exports){
+},{"./validate-number":264}],262:[function(require,module,exports){
 "use strict";
 
 var ErrorWithData = require("../errors").ErrorWithData;
@@ -44303,7 +44276,7 @@ function validateBlock(block) {
 
 module.exports = validateBlock;
 
-},{"../errors":190}],262:[function(require,module,exports){
+},{"../errors":190}],263:[function(require,module,exports){
 "use strict";
 
 function validateConfiguration(configuration) {
@@ -44325,7 +44298,7 @@ function validateConfiguration(configuration) {
 
 module.exports = validateConfiguration;
 
-},{}],263:[function(require,module,exports){
+},{}],264:[function(require,module,exports){
 "use strict";
 
 var validateNumber = function (number, parameterName) {
@@ -44339,7 +44312,7 @@ var validateNumber = function (number, parameterName) {
 
 module.exports = validateNumber;
 
-},{}],264:[function(require,module,exports){
+},{}],265:[function(require,module,exports){
 "use strict";
 
 var validateAddress = require("./validate-address");
@@ -44365,7 +44338,7 @@ var validateTransaction = function (transaction) {
 
 module.exports = validateTransaction;
 
-},{"./validate-address":259,"./validate-number":263}],265:[function(require,module,exports){
+},{"./validate-address":260,"./validate-number":264}],266:[function(require,module,exports){
 "use strict";
 
 function bindDispatchToMethod(dispatch, method) {
@@ -44376,7 +44349,7 @@ function bindDispatchToMethod(dispatch, method) {
 
 module.exports = bindDispatchToMethod;
 
-},{}],266:[function(require,module,exports){
+},{}],267:[function(require,module,exports){
 "use strict";
 
 var bindDispatchToMethod = require("./bind-dispatch-to-method");
@@ -44390,7 +44363,7 @@ function bindDispatch(dispatch, namespace) {
 
 module.exports = bindDispatch;
 
-},{"./bind-dispatch-to-method":265}],267:[function(require,module,exports){
+},{"./bind-dispatch-to-method":266}],268:[function(require,module,exports){
 "use strict";
 
 var makeWrapper = require("./make-wrapper");
@@ -44444,25 +44417,7 @@ module.exports = {
   unsubscribe: makeWrapper("eth_unsubscribe")
 };
 
-},{"./make-wrapper":270}],268:[function(require,module,exports){
-"use strict";
-
-var eth_gasPrice = require("./eth").gasPrice;
-var isHex = require("../utils/is-hex");
-
-function getGasPrice() {
-  return function (dispatch) {
-    dispatch(eth_gasPrice(null, function (gasPrice) {
-      if (gasPrice != null && !gasPrice.error && isHex(gasPrice)) {
-        dispatch({ type: "SET_GAS_PRICE", gasPrice: parseInt(gasPrice, 16) });
-      }
-    }));
-  };
-}
-
-module.exports = getGasPrice;
-
-},{"../utils/is-hex":252,"./eth":267}],269:[function(require,module,exports){
+},{"./make-wrapper":270}],269:[function(require,module,exports){
 "use strict";
 
 var eth_sign = require("../wrappers/eth").sign;
@@ -44494,7 +44449,7 @@ function isUnlocked(account, callback) {
 
 module.exports = isUnlocked;
 
-},{"../utils/is-function":251,"../wrappers/eth":267}],270:[function(require,module,exports){
+},{"../utils/is-function":252,"../wrappers/eth":268}],270:[function(require,module,exports){
 "use strict";
 
 var raw = require("./raw");
@@ -44513,7 +44468,7 @@ function makeWrapper(command) {
 
 module.exports = makeWrapper;
 
-},{"../utils/is-function":251,"./raw":275}],271:[function(require,module,exports){
+},{"../utils/is-function":252,"./raw":275}],271:[function(require,module,exports){
 "use strict";
 
 var makeWrapper = require("./make-wrapper");
@@ -44565,7 +44520,7 @@ function publish(compiled, callback) {
 
 module.exports = publish;
 
-},{"../utils/is-function":251,"./eth":267}],275:[function(require,module,exports){
+},{"../utils/is-function":252,"./eth":268}],275:[function(require,module,exports){
 "use strict";
 
 var submitRequestToBlockchain = require("../rpc/submit-request-to-blockchain");
@@ -44581,7 +44536,7 @@ function raw(command, params, callback) {
 
 module.exports = raw;
 
-},{"../encode-request/make-request-payload":185,"../rpc/submit-request-to-blockchain":221,"../utils/is-function":251}],276:[function(require,module,exports){
+},{"../encode-request/make-request-payload":185,"../rpc/submit-request-to-blockchain":222,"../utils/is-function":252}],276:[function(require,module,exports){
 "use strict";
 
 var abi = require("augur-abi");
@@ -44600,7 +44555,7 @@ function resendRawTransaction(transaction, privateKey, gasPrice, gasLimit, callb
 
 module.exports = resendRawTransaction;
 
-},{"../raw-transactions/sign-raw-transaction":205,"../wrappers/eth":267,"augur-abi":51,"clone":61}],277:[function(require,module,exports){
+},{"../raw-transactions/sign-raw-transaction":205,"../wrappers/eth":268,"augur-abi":51,"clone":61}],277:[function(require,module,exports){
 "use strict";
 
 var abi = require("augur-abi");
@@ -44618,15 +44573,16 @@ function resendTransaction(transaction, gasPrice, gasLimit, callback) {
 
 module.exports = resendTransaction;
 
-},{"../wrappers/eth":267,"augur-abi":51,"clone":61}],278:[function(require,module,exports){
+},{"../wrappers/eth":268,"augur-abi":51,"clone":61}],278:[function(require,module,exports){
 "use strict";
 
 var abi = require("augur-abi");
 var transact = require("../transact/transact");
+var isObject = require("../utils/is-object");
 
 function sendEther(to, value, from, onSent, onSuccess, onFailed) {
   return function (dispatch) {
-    if (to && to.constructor === Object) {
+    if (isObject(to)) {
       value = to.value;
       from = to.from;
       onSent = to.onSent;
@@ -44640,13 +44596,50 @@ function sendEther(to, value, from, onSent, onSuccess, onFailed) {
       value: abi.fix(value, "hex"),
       returns: "null",
       gas: "0xcf08"
-    }, onSent, onSuccess, onFailed));
+    }, null, onSent, onSuccess, onFailed));
   };
 }
 
 module.exports = sendEther;
 
-},{"../transact/transact":232,"augur-abi":51}],279:[function(require,module,exports){
+},{"../transact/transact":233,"../utils/is-object":256,"augur-abi":51}],279:[function(require,module,exports){
+"use strict";
+
+var abi = require("augur-abi");
+var eth_coinbase = require("./eth").coinbase;
+var isHex = require("../utils/is-hex");
+
+function setCoinbase() {
+  return function (dispatch) {
+    dispatch(eth_coinbase(null, function (coinbase) {
+      if (coinbase != null && !coinbase.error) {
+        dispatch({ type: "SET_COINBASE", address: abi.format_address(coinbase) });
+      }
+    }));
+  };
+}
+
+module.exports = setCoinbase;
+
+},{"../utils/is-hex":253,"./eth":268,"augur-abi":51}],280:[function(require,module,exports){
+"use strict";
+
+var eth_gasPrice = require("./eth").gasPrice;
+var isHex = require("../utils/is-hex");
+
+function setGasPrice() {
+  return function (dispatch) {
+    dispatch(eth_gasPrice(null, function (gasPrice) {
+      if (gasPrice != null && !gasPrice.error && isHex(gasPrice)) {
+        dispatch({ type: "SET_GAS_PRICE", gasPrice: parseInt(gasPrice, 16) });
+      }
+    }));
+  };
+}
+
+module.exports = setGasPrice;
+
+},{"../utils/is-hex":253,"./eth":268}],281:[function(require,module,exports){
 "use strict";
 
 var makeWrapper = require("./make-wrapper");
@@ -44664,7 +44657,7 @@ module.exports = {
   getMessages: makeWrapper("shh_getMessages")
 };
 
-},{"./make-wrapper":270}],280:[function(require,module,exports){
+},{"./make-wrapper":270}],282:[function(require,module,exports){
 "use strict";
 
 var makeWrapper = require("./make-wrapper");
@@ -44679,4 +44672,4 @@ module.exports = {
   clientVersion: makeWrapper("web3_clientVersion")
 };
 
-},{"../utils/sha3":258,"./make-wrapper":270}]},{},[1]);
+},{"../utils/sha3":259,"./make-wrapper":270}]},{},[1]);
