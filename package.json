@@ -1,6 +1,6 @@
 {
   "name": "ethereumjs-connect",
-  "version": "4.0.3",
+  "version": "4.0.4",
   "description": "Basic Ethereum connection tasks",
   "author": "The Augur Developers <team@augur.net>",
   "license": "MIT",
@@ -27,7 +27,7 @@
   "dependencies": {
     "async": "1.5.2",
     "clone": "1.0.2",
-    "ethrpc": "4.0.6"
+    "ethrpc": "4.0.7"
   },
   "devDependencies": {
     "babel-cli": "^6.22.2",

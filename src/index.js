@@ -6,7 +6,7 @@ var setupFunctionsAPI = require("./setup-functions-api");
 var connect = require("./connect");
 
 module.exports = {
-  version: "4.0.3",
+  version: "4.0.4",
   setFrom: setFrom,
   setupEventsAPI: setupEventsAPI,
   setupFunctionsAPI: setupFunctionsAPI,
