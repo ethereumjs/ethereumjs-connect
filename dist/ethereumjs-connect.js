@@ -8122,7 +8122,7 @@ var setupFunctionsAPI = require("./setup-functions-api");
 var connect = require("./connect");
 
 module.exports = {
-  version: "4.0.4",
+  version: "4.0.5",
   setFrom: setFrom,
   setupEventsAPI: setupEventsAPI,
   setupFunctionsAPI: setupFunctionsAPI,
@@ -40873,6 +40873,7 @@ var createEthrpc = function (reducer) {
     // Redux store state-lookup wrappers
     getBlockStream: function () { return internalState.get("blockAndLogStreamer"); },
     getConfiguration: function () { return store.getState().configuration; },
+    getCoinbase: function () { return store.getState().coinbase; },
     getCurrentBlock: function () { return store.getState().currentBlock; },
     getDebugOptions: function () { return store.getState().debug; },
     getGasPrice: function () { return store.getState().gasPrice; },
@@ -41858,7 +41859,6 @@ function packageAndSignRawTransaction(payload, address, privateKeyOrSigner, call
       return callback(errors.NOT_LOGGED_IN);
     }
     packaged = packageRawTransaction(payload, address, state.currentBlock, state.networkID);
-    if (payload.gasPrice) packaged.gasPrice = payload.gasPrice;
     if (state.debug.broadcast) {
       console.log("[ethrpc] packaged:", JSON.stringify(packaged, null, 2));
     }
@@ -41961,8 +41961,8 @@ function packageRawTransaction(payload, address, networkID, currentBlock) {
   } else {
     packaged.gasLimit = constants.DEFAULT_GAS;
   }
-  if (networkID && parseInt(networkID, 10) < 109) {
-    packaged.chainId = parseInt(networkID, 10);
+  if (networkID && abi.number(networkID) > 0 && abi.number(networkID) < 109) {
+    packaged.chainId = abi.number(networkID);
   }
   if (payload.gasPrice && abi.number(payload.gasPrice) > 0) {
     packaged.gasPrice = abi.hex(payload.gasPrice);
@@ -44531,20 +44531,22 @@ module.exports = raw;
 var abi = require("augur-abi");
 var clone = require("clone");
 var eth = require("../wrappers/eth");
-var signRawTransaction = require("../raw-transactions/sign-raw-transaction");
+var signRawTransactionWithKey = require("../raw-transactions/sign-raw-transaction-with-key");
 
 function resendRawTransaction(transaction, privateKey, gasPrice, gasLimit, callback) {
   return function (dispatch) {
+    var signedTransaction;
     var newTransaction = clone(transaction);
     if (gasPrice) newTransaction.gasPrice = abi.hex(gasPrice);
     if (gasLimit) newTransaction.gasLimit = abi.hex(gasLimit);
-    return dispatch(eth.sendRawTransaction(signRawTransaction(newTransaction, privateKey), callback));
+    signedTransaction = signRawTransactionWithKey(newTransaction, privateKey);
+    return dispatch(eth.sendRawTransaction(signedTransaction, callback));
   };
 }
 
 module.exports = resendRawTransaction;
 
-},{"../raw-transactions/sign-raw-transaction":205,"../wrappers/eth":268,"augur-abi":51,"clone":61}],277:[function(require,module,exports){
+},{"../raw-transactions/sign-raw-transaction-with-key":204,"../wrappers/eth":268,"augur-abi":51,"clone":61}],277:[function(require,module,exports){
 "use strict";
 
 var abi = require("augur-abi");
