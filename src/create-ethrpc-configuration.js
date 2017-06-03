@@ -8,6 +8,7 @@ function createEthrpcConfiguration(configuration) {
   ethrpcConfiguration.httpAddresses = configuration.httpAddresses;
   ethrpcConfiguration.wsAddresses = configuration.wsAddresses;
   ethrpcConfiguration.ipcAddresses = configuration.ipcAddresses;
+  ethrpcConfiguration.networkID = configuration.networkID;
   return ethrpcConfiguration;
 }
 
