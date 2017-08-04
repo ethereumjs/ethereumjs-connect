@@ -280,7 +280,7 @@ describe("sync connect", function () {
     this.timeout(10000);
     expectedState = {
       coinbase: "0xb0b",
-      networkID: "3",
+      networkID: "9000",
       contracts: { contract1: "0xc1", contract2: "0xc2" },
       api: {
         events: {
@@ -296,8 +296,8 @@ describe("sync connect", function () {
     };
 
     connectOptions = {
-      http: "https://eth3.augur.net",
-      contracts: { 3: { contract1: "0xc1", contract2: "0xc2" } },
+      http: "https://eth9000.augur.net",
+      contracts: { 9000: { contract1: "0xc1", contract2: "0xc2" } },
       api: {
         events: {
           event1: { contract: "contract1" },
