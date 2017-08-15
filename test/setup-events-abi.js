@@ -3,18 +3,18 @@
 "use strict";
 
 var assert = require("chai").assert;
-var setupEventsAPI = require("../src/setup-events-api");
+var setupEventsABI = require("../src/setup-events-abi");
 
-describe("setup-events-api", function () {
+describe("setup-events-abi", function () {
   var test = function (t) {
     it(t.description, function () {
-      t.assertions(setupEventsAPI(t.params.eventsAPI, t.params.contracts));
+      t.assertions(setupEventsABI(t.params.eventsABI, t.params.contracts));
     });
   };
   test({
-    description: "set up events API",
+    description: "set up events ABI",
     params: {
-      eventsAPI: {
+      eventsABI: {
         event1: { contract: "contract1" },
         event2: { contract: "contract1" },
         event3: { contract: "contract2" }
@@ -24,8 +24,8 @@ describe("setup-events-api", function () {
         contract2: "0xc2"
       }
     },
-    assertions: function (eventsAPI) {
-      assert.deepEqual(eventsAPI, {
+    assertions: function (eventsABI) {
+      assert.deepEqual(eventsABI, {
         event1: { address: "0xc1", contract: "contract1" },
         event2: { address: "0xc1", contract: "contract1" },
         event3: { address: "0xc2", contract: "contract2" }
@@ -33,9 +33,9 @@ describe("setup-events-api", function () {
     }
   });
   test({
-    description: "modify existing events API",
+    description: "modify existing events ABI",
     params: {
-      eventsAPI: {
+      eventsABI: {
         event1: { address: "0xC1", contract: "contract1" },
         event2: { address: "0xC1", contract: "contract1" },
         event3: { address: "0xC2", contract: "contract2" }
@@ -45,8 +45,8 @@ describe("setup-events-api", function () {
         contract2: "0xc2"
       }
     },
-    assertions: function (eventsAPI) {
-      assert.deepEqual(eventsAPI, {
+    assertions: function (eventsABI) {
+      assert.deepEqual(eventsABI, {
         event1: { address: "0xc1", contract: "contract1" },
         event2: { address: "0xc1", contract: "contract1" },
         event3: { address: "0xc2", contract: "contract2" }

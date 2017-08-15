@@ -1,13 +1,13 @@
 "use strict";
 
-function setFrom(functionsABI, fromAddress) {
+function setupFunctionsABI(functionsABI, contracts) {
   var contract, method;
-  if (!fromAddress || !functionsABI) return functionsABI;
+  if (!contracts || !functionsABI) return functionsABI;
   for (contract in functionsABI) {
     if (functionsABI.hasOwnProperty(contract)) {
       for (method in functionsABI[contract]) {
         if (functionsABI[contract].hasOwnProperty(method)) {
-          functionsABI[contract][method].from = fromAddress;
+          functionsABI[contract][method].to = contracts[contract];
         }
       }
     }
@@ -15,4 +15,4 @@ function setFrom(functionsABI, fromAddress) {
   return functionsABI;
 }
 
-module.exports = setFrom;
+module.exports = setupFunctionsABI;

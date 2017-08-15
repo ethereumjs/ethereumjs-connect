@@ -3,18 +3,18 @@
 "use strict";
 
 var assert = require("chai").assert;
-var setupFunctionsAPI = require("../src/setup-functions-api");
+var setupFunctionsABI = require("../src/setup-functions-abi");
 
-describe("setup-functions-api", function () {
+describe("setup-functions-abi", function () {
   var test = function (t) {
     it(t.description, function () {
-      t.assertions(setupFunctionsAPI(t.params.functionsAPI, t.params.contracts));
+      t.assertions(setupFunctionsABI(t.params.functionsABI, t.params.contracts));
     });
   };
   test({
-    description: "set up functions API",
+    description: "set up functions ABI",
     params: {
-      functionsAPI: {
+      functionsABI: {
         contract1: { method1: {}, method2: {} },
         contract2: { method1: {} }
       },
@@ -23,17 +23,17 @@ describe("setup-functions-api", function () {
         contract2: "0xc2"
       }
     },
-    assertions: function (functionsAPI) {
-      assert.deepEqual(functionsAPI, {
+    assertions: function (functionsABI) {
+      assert.deepEqual(functionsABI, {
         contract1: { method1: { to: "0xc1" }, method2: { to: "0xc1" } },
         contract2: { method1: { to: "0xc2" } }
       });
     }
   });
   test({
-    description: "modify existing functions API",
+    description: "modify existing functions ABI",
     params: {
-      functionsAPI: {
+      functionsABI: {
         contract1: { method1: { to: "0xC1" }, method2: { to: "0xC1" } },
         contract2: { method1: { to: "0xC2" } }
       },
@@ -42,37 +42,37 @@ describe("setup-functions-api", function () {
         contract2: "0xc2"
       }
     },
-    assertions: function (functionsAPI) {
-      assert.deepEqual(functionsAPI, {
+    assertions: function (functionsABI) {
+      assert.deepEqual(functionsABI, {
         contract1: { method1: { to: "0xc1" }, method2: { to: "0xc1" } },
         contract2: { method1: { to: "0xc2" } }
       });
     }
   });
   test({
-    description: "do not update functions API if contracts not provided",
+    description: "do not update functions ABI if contracts not provided",
     params: {
-      functionsAPI: {
+      functionsABI: {
         contract1: { method1: { from: "0xb0b", to: "0xc1" }, method2: { from: "0xb0b", to: "0xc1" } },
         contract2: { method1: { from: "0xb0b", to: "0xc2" } }
       },
       contracts: null
     },
-    assertions: function (functionsAPI) {
-      assert.deepEqual(functionsAPI, {
+    assertions: function (functionsABI) {
+      assert.deepEqual(functionsABI, {
         contract1: { method1: { from: "0xb0b", to: "0xc1" }, method2: { from: "0xb0b", to: "0xc1" } },
         contract2: { method1: { from: "0xb0b", to: "0xc2" } }
       });
     }
   });
   test({
-    description: "do nothing if no functions API provided",
+    description: "do nothing if no functions ABI provided",
     params: {
-      functionsAPI: null,
+      functionsABI: null,
       contracts: "0xb0b"
     },
-    assertions: function (functionsAPI) {
-      assert.isNull(functionsAPI);
+    assertions: function (functionsABI) {
+      assert.isNull(functionsABI);
     }
   });
 });

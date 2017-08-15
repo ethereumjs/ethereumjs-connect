@@ -141,7 +141,7 @@ function connectTest(transportType, transportAddress) {
   it("connects with array options", function (done) {
     var connectOptions = {
       contracts: {},
-      api: {}
+      abi: {}
     };
     switch (transportType) {
       case "HTTP":
@@ -169,7 +169,7 @@ function connectTest(transportType, transportAddress) {
         blockNumber: "0x1",
         gasPrice: 291,
         contracts: {},
-        api: {}
+        abi: {}
       });
       done();
     });
@@ -188,7 +188,7 @@ function connectTest(transportType, transportAddress) {
         ws: (transportType === "WS") ? transportAddress : undefined,
         ipc: (transportType === "IPC") ? transportAddress : undefined,
         contracts: t.contracts,
-        api: t.api
+        abi: t.abi
       };
       connect(connectOptions, function (err, vitals) {
         t.assertions(vitals);
@@ -197,7 +197,7 @@ function connectTest(transportType, transportAddress) {
     });
   }
   test({
-    description: "asynchronous connection sequence without api",
+    description: "asynchronous connection sequence without abi",
     blockchain: {
       coinbase: "0xb0b",
       gasPrice: "0x4a817c801",
@@ -218,12 +218,12 @@ function connectTest(transportType, transportAddress) {
         blockNumber: "0x1",
         gasPrice: 20000000001,
         contracts: { contract1: "0xc1", contract2: "0xc2" },
-        api: {}
+        abi: {}
       });
     }
   });
   test({
-    description: "asynchronous connection sequence with api",
+    description: "asynchronous connection sequence with abi",
     blockchain: {
       coinbase: "0xb0b",
       gasPrice: "0x4a817c801",
@@ -234,7 +234,7 @@ function connectTest(transportType, transportAddress) {
     contracts: {
       3: { contract1: "0xc1", contract2: "0xc2" }
     },
-    api: {
+    abi: {
       events: {
         event1: { contract: "contract1" },
         event2: { contract: "contract1" },
@@ -252,7 +252,7 @@ function connectTest(transportType, transportAddress) {
         blockNumber: "0x1",
         gasPrice: 20000000001,
         contracts: { contract1: "0xc1", contract2: "0xc2" },
-        api: {
+        abi: {
           events: {
             event1: { address: "0xc1", contract: "contract1" },
             event2: { address: "0xc1", contract: "contract1" },
@@ -275,14 +275,14 @@ describe("async connect", function () {
 });
 
 describe("sync connect", function () {
-  it("sync connection sequence with api", function () {
+  it("sync connection sequence with abi", function () {
     var expectedState, connectOptions, vitals;
     this.timeout(10000);
     expectedState = {
       coinbase: "0xb0b",
       networkID: "9000",
       contracts: { contract1: "0xc1", contract2: "0xc2" },
-      api: {
+      abi: {
         events: {
           event1: { address: "0xc1", contract: "contract1" },
           event2: { address: "0xc1", contract: "contract1" },
@@ -298,7 +298,7 @@ describe("sync connect", function () {
     connectOptions = {
       http: "https://eth9000.augur.net",
       contracts: { 9000: { contract1: "0xc1", contract2: "0xc2" } },
-      api: {
+      abi: {
         events: {
           event1: { contract: "contract1" },
           event2: { contract: "contract1" },
@@ -315,12 +315,12 @@ describe("sync connect", function () {
     vitals = immutableDelete(immutableDelete(connect(connectOptions), "blockNumber"), "gasPrice");
 
     // since this is running against a real blockchain, some of the things don't test well
-    assert.match(vitals.api.functions.contract1.method1.from, /^0x[0-9a-zA-Z]{40}$/);
-    vitals.api.functions.contract1.method1.from = "0xb0b";
-    assert.match(vitals.api.functions.contract1.method2.from, /^0x[0-9a-zA-Z]{40}$/);
-    vitals.api.functions.contract1.method2.from = "0xb0b";
-    assert.match(vitals.api.functions.contract2.method1.from, /^0x[0-9a-zA-Z]{40}$/);
-    vitals.api.functions.contract2.method1.from = "0xb0b";
+    assert.match(vitals.abi.functions.contract1.method1.from, /^0x[0-9a-zA-Z]{40}$/);
+    vitals.abi.functions.contract1.method1.from = "0xb0b";
+    assert.match(vitals.abi.functions.contract1.method2.from, /^0x[0-9a-zA-Z]{40}$/);
+    vitals.abi.functions.contract1.method2.from = "0xb0b";
+    assert.match(vitals.abi.functions.contract2.method1.from, /^0x[0-9a-zA-Z]{40}$/);
+    vitals.abi.functions.contract2.method1.from = "0xb0b";
     assert.match(vitals.coinbase, /^0x[0-9a-zA-Z]{40}$/);
     vitals.coinbase = "0xb0b";
 

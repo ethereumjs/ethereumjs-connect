@@ -8643,19 +8643,19 @@ module.exports = setContracts;
 },{}],47:[function(require,module,exports){
 "use strict";
 
-function setFrom(functionsAPI, fromAddress) {
+function setFrom(functionsABI, fromAddress) {
   var contract, method;
-  if (!fromAddress || !functionsAPI) return functionsAPI;
-  for (contract in functionsAPI) {
-    if (functionsAPI.hasOwnProperty(contract)) {
-      for (method in functionsAPI[contract]) {
-        if (functionsAPI[contract].hasOwnProperty(method)) {
-          functionsAPI[contract][method].from = fromAddress;
+  if (!fromAddress || !functionsABI) return functionsABI;
+  for (contract in functionsABI) {
+    if (functionsABI.hasOwnProperty(contract)) {
+      for (method in functionsABI[contract]) {
+        if (functionsABI[contract].hasOwnProperty(method)) {
+          functionsABI[contract][method].from = fromAddress;
         }
       }
     }
   }
-  return functionsAPI;
+  return functionsABI;
 }
 
 module.exports = setFrom;
@@ -8703,38 +8703,38 @@ module.exports = setNetworkID;
 },{}],50:[function(require,module,exports){
 "use strict";
 
-function setupEventsAPI(eventsAPI, contracts) {
+function setupEventsABI(eventsABI, contracts) {
   var event;
-  if (!contracts || !eventsAPI) return eventsAPI;
-  for (event in eventsAPI) {
-    if (eventsAPI.hasOwnProperty(event)) {
-      eventsAPI[event].address = contracts[eventsAPI[event].contract];
+  if (!contracts || !eventsABI) return eventsABI;
+  for (event in eventsABI) {
+    if (eventsABI.hasOwnProperty(event)) {
+      eventsABI[event].address = contracts[eventsABI[event].contract];
     }
   }
-  return eventsAPI;
+  return eventsABI;
 }
 
-module.exports = setupEventsAPI;
+module.exports = setupEventsABI;
 
 },{}],51:[function(require,module,exports){
 "use strict";
 
-function setupFunctionsAPI(functionsAPI, contracts) {
+function setupFunctionsABI(functionsABI, contracts) {
   var contract, method;
-  if (!contracts || !functionsAPI) return functionsAPI;
-  for (contract in functionsAPI) {
-    if (functionsAPI.hasOwnProperty(contract)) {
-      for (method in functionsAPI[contract]) {
-        if (functionsAPI[contract].hasOwnProperty(method)) {
-          functionsAPI[contract][method].to = contracts[contract];
+  if (!contracts || !functionsABI) return functionsABI;
+  for (contract in functionsABI) {
+    if (functionsABI.hasOwnProperty(contract)) {
+      for (method in functionsABI[contract]) {
+        if (functionsABI[contract].hasOwnProperty(method)) {
+          functionsABI[contract][method].to = contracts[contract];
         }
       }
     }
   }
-  return functionsAPI;
+  return functionsABI;
 }
 
-module.exports = setupFunctionsAPI;
+module.exports = setupFunctionsABI;
 
 },{}],52:[function(require,module,exports){
 /* eslint-env mocha */
@@ -9146,65 +9146,65 @@ var setFrom = require("../src/set-from");
 describe("set-from", function () {
   var test = function (t) {
     it(t.description, function () {
-      t.assertions(setFrom(t.params.functionsAPI, t.params.fromAddress));
+      t.assertions(setFrom(t.params.functionsABI, t.params.fromAddress));
     });
   };
   test({
-    description: "set from fields in functions API",
+    description: "set from fields in functions ABI",
     params: {
-      functionsAPI: {
+      functionsABI: {
         contract1: { method1: { to: "0xc1" }, method2: { to: "0xc1" } },
         contract2: { method1: { to: "0xc2" } }
       },
       fromAddress: "0xb0b"
     },
-    assertions: function (functionsAPI) {
-      assert.deepEqual(functionsAPI, {
+    assertions: function (functionsABI) {
+      assert.deepEqual(functionsABI, {
         contract1: { method1: { from: "0xb0b", to: "0xc1" }, method2: { from: "0xb0b", to: "0xc1" } },
         contract2: { method1: { from: "0xb0b", to: "0xc2" } }
       });
     }
   });
   test({
-    description: "change from fields in functions API",
+    description: "change from fields in functions ABI",
     params: {
-      functionsAPI: {
+      functionsABI: {
         contract1: { method1: { from: "0xd00d", to: "0xc1" }, method2: { from: "0xd00d", to: "0xc1" } },
         contract2: { method1: { from: "0xd00d", to: "0xc2" } }
       },
       fromAddress: "0xb0b"
     },
-    assertions: function (functionsAPI) {
-      assert.deepEqual(functionsAPI, {
+    assertions: function (functionsABI) {
+      assert.deepEqual(functionsABI, {
         contract1: { method1: { from: "0xb0b", to: "0xc1" }, method2: { from: "0xb0b", to: "0xc1" } },
         contract2: { method1: { from: "0xb0b", to: "0xc2" } }
       });
     }
   });
   test({
-    description: "do not update functions API if fromAddress not provided",
+    description: "do not update functions ABI if fromAddress not provided",
     params: {
-      functionsAPI: {
+      functionsABI: {
         contract1: { method1: { from: "0xb0b", to: "0xc1" }, method2: { from: "0xb0b", to: "0xc1" } },
         contract2: { method1: { from: "0xb0b", to: "0xc2" } }
       },
       fromAddress: null
     },
-    assertions: function (functionsAPI) {
-      assert.deepEqual(functionsAPI, {
+    assertions: function (functionsABI) {
+      assert.deepEqual(functionsABI, {
         contract1: { method1: { from: "0xb0b", to: "0xc1" }, method2: { from: "0xb0b", to: "0xc1" } },
         contract2: { method1: { from: "0xb0b", to: "0xc2" } }
       });
     }
   });
   test({
-    description: "do nothing if no functions API provided",
+    description: "do nothing if no functions ABI provided",
     params: {
-      functionsAPI: null,
+      functionsABI: null,
       fromAddress: "0xb0b"
     },
-    assertions: function (functionsAPI) {
-      assert.isNull(functionsAPI);
+    assertions: function (functionsABI) {
+      assert.isNull(functionsABI);
     }
   });
 });
@@ -9357,18 +9357,18 @@ describe("set-network-id", function () {
 "use strict";
 
 var assert = require("chai").assert;
-var setupEventsAPI = require("../src/setup-events-api");
+var setupEventsABI = require("../src/setup-events-abi");
 
-describe("setup-events-api", function () {
+describe("setup-events-abi", function () {
   var test = function (t) {
     it(t.description, function () {
-      t.assertions(setupEventsAPI(t.params.eventsAPI, t.params.contracts));
+      t.assertions(setupEventsABI(t.params.eventsABI, t.params.contracts));
     });
   };
   test({
-    description: "set up events API",
+    description: "set up events ABI",
     params: {
-      eventsAPI: {
+      eventsABI: {
         event1: { contract: "contract1" },
         event2: { contract: "contract1" },
         event3: { contract: "contract2" }
@@ -9378,8 +9378,8 @@ describe("setup-events-api", function () {
         contract2: "0xc2"
       }
     },
-    assertions: function (eventsAPI) {
-      assert.deepEqual(eventsAPI, {
+    assertions: function (eventsABI) {
+      assert.deepEqual(eventsABI, {
         event1: { address: "0xc1", contract: "contract1" },
         event2: { address: "0xc1", contract: "contract1" },
         event3: { address: "0xc2", contract: "contract2" }
@@ -9387,9 +9387,9 @@ describe("setup-events-api", function () {
     }
   });
   test({
-    description: "modify existing events API",
+    description: "modify existing events ABI",
     params: {
-      eventsAPI: {
+      eventsABI: {
         event1: { address: "0xC1", contract: "contract1" },
         event2: { address: "0xC1", contract: "contract1" },
         event3: { address: "0xC2", contract: "contract2" }
@@ -9399,8 +9399,8 @@ describe("setup-events-api", function () {
         contract2: "0xc2"
       }
     },
-    assertions: function (eventsAPI) {
-      assert.deepEqual(eventsAPI, {
+    assertions: function (eventsABI) {
+      assert.deepEqual(eventsABI, {
         event1: { address: "0xc1", contract: "contract1" },
         event2: { address: "0xc1", contract: "contract1" },
         event3: { address: "0xc2", contract: "contract2" }
@@ -9409,24 +9409,24 @@ describe("setup-events-api", function () {
   });
 });
 
-},{"../src/setup-events-api":50,"chai":4}],61:[function(require,module,exports){
+},{"../src/setup-events-abi":50,"chai":4}],61:[function(require,module,exports){
 /* eslint-env mocha */
 
 "use strict";
 
 var assert = require("chai").assert;
-var setupFunctionsAPI = require("../src/setup-functions-api");
+var setupFunctionsABI = require("../src/setup-functions-abi");
 
-describe("setup-functions-api", function () {
+describe("setup-functions-abi", function () {
   var test = function (t) {
     it(t.description, function () {
-      t.assertions(setupFunctionsAPI(t.params.functionsAPI, t.params.contracts));
+      t.assertions(setupFunctionsABI(t.params.functionsABI, t.params.contracts));
     });
   };
   test({
-    description: "set up functions API",
+    description: "set up functions ABI",
     params: {
-      functionsAPI: {
+      functionsABI: {
         contract1: { method1: {}, method2: {} },
         contract2: { method1: {} }
       },
@@ -9435,17 +9435,17 @@ describe("setup-functions-api", function () {
         contract2: "0xc2"
       }
     },
-    assertions: function (functionsAPI) {
-      assert.deepEqual(functionsAPI, {
+    assertions: function (functionsABI) {
+      assert.deepEqual(functionsABI, {
         contract1: { method1: { to: "0xc1" }, method2: { to: "0xc1" } },
         contract2: { method1: { to: "0xc2" } }
       });
     }
   });
   test({
-    description: "modify existing functions API",
+    description: "modify existing functions ABI",
     params: {
-      functionsAPI: {
+      functionsABI: {
         contract1: { method1: { to: "0xC1" }, method2: { to: "0xC1" } },
         contract2: { method1: { to: "0xC2" } }
       },
@@ -9454,39 +9454,39 @@ describe("setup-functions-api", function () {
         contract2: "0xc2"
       }
     },
-    assertions: function (functionsAPI) {
-      assert.deepEqual(functionsAPI, {
+    assertions: function (functionsABI) {
+      assert.deepEqual(functionsABI, {
         contract1: { method1: { to: "0xc1" }, method2: { to: "0xc1" } },
         contract2: { method1: { to: "0xc2" } }
       });
     }
   });
   test({
-    description: "do not update functions API if contracts not provided",
+    description: "do not update functions ABI if contracts not provided",
     params: {
-      functionsAPI: {
+      functionsABI: {
         contract1: { method1: { from: "0xb0b", to: "0xc1" }, method2: { from: "0xb0b", to: "0xc1" } },
         contract2: { method1: { from: "0xb0b", to: "0xc2" } }
       },
       contracts: null
     },
-    assertions: function (functionsAPI) {
-      assert.deepEqual(functionsAPI, {
+    assertions: function (functionsABI) {
+      assert.deepEqual(functionsABI, {
         contract1: { method1: { from: "0xb0b", to: "0xc1" }, method2: { from: "0xb0b", to: "0xc1" } },
         contract2: { method1: { from: "0xb0b", to: "0xc2" } }
       });
     }
   });
   test({
-    description: "do nothing if no functions API provided",
+    description: "do nothing if no functions ABI provided",
     params: {
-      functionsAPI: null,
+      functionsABI: null,
       contracts: "0xb0b"
     },
-    assertions: function (functionsAPI) {
-      assert.isNull(functionsAPI);
+    assertions: function (functionsABI) {
+      assert.isNull(functionsABI);
     }
   });
 });
 
-},{"../src/setup-functions-api":51,"chai":4}]},{},[52,53,54,55,56,57,58,59,60,61]);
+},{"../src/setup-functions-abi":51,"chai":4}]},{},[52,53,54,55,56,57,58,59,60,61]);

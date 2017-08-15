@@ -1,14 +1,14 @@
 "use strict";
 
 var setFrom = require("./set-from");
-var setupEventsAPI = require("./setup-events-api");
-var setupFunctionsAPI = require("./setup-functions-api");
+var setupEventsABI = require("./setup-events-abi");
+var setupFunctionsABI = require("./setup-functions-abi");
 var connect = require("./connect");
 
 module.exports = {
   version: "4.2.0",
   setFrom: setFrom,
-  setupEventsAPI: setupEventsAPI,
-  setupFunctionsAPI: setupFunctionsAPI,
+  setupEventsABI: setupEventsABI,
+  setupFunctionsABI: setupFunctionsABI,
   connect: connect
 };
