@@ -1,11 +1,16 @@
 "use strict";
 
 function setupEventsABI(eventsABI, contracts) {
-  var event;
+  var contractName, eventName, contractEventsABI;
   if (!contracts || !eventsABI) return eventsABI;
-  for (event in eventsABI) {
-    if (eventsABI.hasOwnProperty(event)) {
-      eventsABI[event].address = contracts[eventsABI[event].contract];
+  for (contractName in eventsABI) {
+    if (eventsABI.hasOwnProperty(contractName)) {
+      contractEventsABI = eventsABI[contractName];
+      for (eventName in contractEventsABI) {
+        if (contractEventsABI.hasOwnProperty(eventName)) {
+          eventsABI[contractName][eventName].address = contracts[contractEventsABI[eventName].contract];
+        }
+      }
     }
   }
   return eventsABI;

@@ -8704,11 +8704,16 @@ module.exports = setNetworkID;
 "use strict";
 
 function setupEventsABI(eventsABI, contracts) {
-  var event;
+  var contractName, eventName, contractEventsABI;
   if (!contracts || !eventsABI) return eventsABI;
-  for (event in eventsABI) {
-    if (eventsABI.hasOwnProperty(event)) {
-      eventsABI[event].address = contracts[eventsABI[event].contract];
+  for (contractName in eventsABI) {
+    if (eventsABI.hasOwnProperty(contractName)) {
+      contractEventsABI = eventsABI[contractName];
+      for (eventName in contractEventsABI) {
+        if (contractEventsABI.hasOwnProperty(eventName)) {
+          eventsABI[contractName][eventName].address = contracts[contractEventsABI[eventName].contract];
+        }
+      }
     }
   }
   return eventsABI;
@@ -9369,9 +9374,13 @@ describe("setup-events-abi", function () {
     description: "set up events ABI",
     params: {
       eventsABI: {
-        event1: { contract: "contract1" },
-        event2: { contract: "contract1" },
-        event3: { contract: "contract2" }
+        contract1: {
+          event1: { contract: "contract1" },
+          event2: { contract: "contract1" }
+        },
+        contract2: {
+          event3: { contract: "contract2" }
+        }
       },
       contracts: {
         contract1: "0xc1",
@@ -9380,9 +9389,13 @@ describe("setup-events-abi", function () {
     },
     assertions: function (eventsABI) {
       assert.deepEqual(eventsABI, {
-        event1: { address: "0xc1", contract: "contract1" },
-        event2: { address: "0xc1", contract: "contract1" },
-        event3: { address: "0xc2", contract: "contract2" }
+        contract1: {
+          event1: { address: "0xc1", contract: "contract1" },
+          event2: { address: "0xc1", contract: "contract1" }
+        },
+        contract2: {
+          event3: { address: "0xc2", contract: "contract2" }
+        }
       });
     }
   });
@@ -9390,9 +9403,13 @@ describe("setup-events-abi", function () {
     description: "modify existing events ABI",
     params: {
       eventsABI: {
-        event1: { address: "0xC1", contract: "contract1" },
-        event2: { address: "0xC1", contract: "contract1" },
-        event3: { address: "0xC2", contract: "contract2" }
+        contract1: {
+          event1: { address: "0xC1", contract: "contract1" },
+          event2: { address: "0xC1", contract: "contract1" }
+        },
+        contract2: {
+          event3: { address: "0xC2", contract: "contract2" }
+        }
       },
       contracts: {
         contract1: "0xc1",
@@ -9401,9 +9418,13 @@ describe("setup-events-abi", function () {
     },
     assertions: function (eventsABI) {
       assert.deepEqual(eventsABI, {
-        event1: { address: "0xc1", contract: "contract1" },
-        event2: { address: "0xc1", contract: "contract1" },
-        event3: { address: "0xc2", contract: "contract2" }
+        contract1: {
+          event1: { address: "0xc1", contract: "contract1" },
+          event2: { address: "0xc1", contract: "contract1" }
+        },
+        contract2: {
+          event3: { address: "0xc2", contract: "contract2" }
+        }
       });
     }
   });

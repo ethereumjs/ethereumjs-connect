@@ -236,9 +236,13 @@ function connectTest(transportType, transportAddress) {
     },
     abi: {
       events: {
-        event1: { contract: "contract1" },
-        event2: { contract: "contract1" },
-        event3: { contract: "contract2" }
+        contract1: {
+          event1: { contract: "contract1" },
+          event2: { contract: "contract1" }
+        },
+        contract2: {
+          event3: { contract: "contract2" }
+        }
       },
       functions: {
         contract1: { method1: {}, method2: {} },
@@ -254,9 +258,13 @@ function connectTest(transportType, transportAddress) {
         contracts: { contract1: "0xc1", contract2: "0xc2" },
         abi: {
           events: {
-            event1: { address: "0xc1", contract: "contract1" },
-            event2: { address: "0xc1", contract: "contract1" },
-            event3: { address: "0xc2", contract: "contract2" }
+            contract1: {
+              event1: { address: "0xc1", contract: "contract1" },
+              event2: { address: "0xc1", contract: "contract1" }
+            },
+            contract2: {
+              event3: { address: "0xc2", contract: "contract2" }
+            }
           },
           functions: {
             contract1: { method1: { from: "0xb0b", to: "0xc1" }, method2: { from: "0xb0b", to: "0xc1" } },
@@ -284,9 +292,13 @@ describe("sync connect", function () {
       contracts: { contract1: "0xc1", contract2: "0xc2" },
       abi: {
         events: {
-          event1: { address: "0xc1", contract: "contract1" },
-          event2: { address: "0xc1", contract: "contract1" },
-          event3: { address: "0xc2", contract: "contract2" }
+          contract1: {
+            event1: { address: "0xc1", contract: "contract1" },
+            event2: { address: "0xc1", contract: "contract1" }
+          },
+          contract2: {
+            event3: { address: "0xc2", contract: "contract2" }
+          }
         },
         functions: {
           contract1: { method1: { from: "0xb0b", to: "0xc1" }, method2: { from: "0xb0b", to: "0xc1" } },
@@ -300,9 +312,13 @@ describe("sync connect", function () {
       contracts: { 9000: { contract1: "0xc1", contract2: "0xc2" } },
       abi: {
         events: {
-          event1: { contract: "contract1" },
-          event2: { contract: "contract1" },
-          event3: { contract: "contract2" }
+          contract1: {
+            event1: { contract: "contract1" },
+            event2: { contract: "contract1" }
+          },
+          contract2: {
+            event3: { contract: "contract2" }
+          }
         },
         functions: {
           contract1: { method1: {}, method2: {} },
