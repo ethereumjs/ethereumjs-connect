@@ -9,7 +9,8 @@
     "build": "browserify ./exports.js > ./dist/ethereumjs-connect.js && uglifyjs ./dist/ethereumjs-connect.js > ./dist/ethereumjs-connect.min.js",
     "build:tests": "browserify test/create-*.js test/set*.js > test/browser/bundle.js",
     "lint": "eslint src && eslint test/*.js",
-    "test": "mocha test/*.js"
+    "test": "mocha test/*.js",
+    "coverage": "istanbul cover --include-all-sources --root ./src ./node_modules/mocha/bin/_mocha test/*.js"
   },
   "repository": {
     "type": "git",
