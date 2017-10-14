@@ -1,6 +1,6 @@
 {
   "name": "ethereumjs-connect",
-  "version": "4.3.10",
+  "version": "4.4.0",
   "description": "Basic Ethereum connection tasks",
   "author": "The Augur Developers <team@augur.net>",
   "license": "MIT",

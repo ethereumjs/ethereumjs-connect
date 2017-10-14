@@ -7,21 +7,10 @@ var setBlockNumber = require("../src/set-block-number");
 
 describe("set-block-number", function () {
   var test = function (t) {
-    describe(t.description, function () {
-      it("sync", function () {
-        var blockNumber;
-        try {
-          blockNumber = setBlockNumber(t.rpc);
-          t.assertions(null, blockNumber);
-        } catch (exc) {
-          t.assertions(exc, blockNumber);
-        }
-      });
-      it("async", function (done) {
-        setBlockNumber(t.rpc, function (err, blockNumber) {
-          t.assertions(err, blockNumber);
-          done();
-        });
+    it(t.description, function (done) {
+      setBlockNumber(t.rpc, function (err, blockNumber) {
+        t.assertions(err, blockNumber);
+        done();
       });
     });
   };

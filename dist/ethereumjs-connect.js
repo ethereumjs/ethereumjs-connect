@@ -45256,20 +45256,11 @@ module.exports = asyncConnect;
 
 var rpc = require("ethrpc");
 var asyncConnect = require("./async-connect");
-var syncConnect = require("./sync-connect");
 var createConfiguration = require("./create-configuration");
 
 function connect(options, callback) {
-  var vitals, configuration = createConfiguration(options || {});
-  if (typeof callback !== "function") {
-    try {
-      vitals = syncConnect(configuration.rpc || rpc, configuration);
-      vitals.rpc = configuration.rpc || rpc;
-      return vitals;
-    } catch (exc) {
-      return exc;
-    }
-  }
+  var configuration = createConfiguration(options || {});
+  if (typeof callback !== "function") callback = function () {};
   asyncConnect(configuration.rpc || rpc, configuration, function (err, vitals) {
     vitals.rpc = configuration.rpc || rpc;
     callback(err, vitals);
@@ -45278,7 +45269,7 @@ function connect(options, callback) {
 
 module.exports = connect;
 
-},{"./async-connect":307,"./create-configuration":309,"./sync-connect":320,"ethrpc":72}],309:[function(require,module,exports){
+},{"./async-connect":307,"./create-configuration":309,"ethrpc":72}],309:[function(require,module,exports){
 "use strict";
 
 var assign = require("lodash.assign");
@@ -45324,7 +45315,7 @@ var setupFunctionsABI = require("./setup-functions-abi");
 var connect = require("./connect");
 
 module.exports = {
-  version: "4.3.10",
+  version: "4.4.0",
   setFrom: setFrom,
   setupEventsABI: setupEventsABI,
   setupFunctionsABI: setupFunctionsABI,
@@ -45335,13 +45326,6 @@ module.exports = {
 "use strict";
 
 function setBlockNumber(rpc, callback) {
-  var blockNumber;
-  if (typeof callback !== "function") {
-    blockNumber = rpc.blockNumber();
-    if (blockNumber == null) throw new Error("setBlockNumber failed");
-    if (blockNumber.error) throw new Error(blockNumber.error);
-    return blockNumber;
-  }
   rpc.blockNumber(function (blockNumber) {
     if (blockNumber == null) return callback(new Error("setBlockNumber failed"));
     if (blockNumber.error) return callback(new Error(blockNumber.error));
@@ -45356,13 +45340,6 @@ module.exports = setBlockNumber;
 
 // this is a best effort, if coinbase isn't available then just move on
 function setCoinbase(rpc, callback) {
-  var coinbase;
-  if (typeof callback !== "function") {
-    coinbase = rpc.coinbase();
-    if (!coinbase) return null;
-    if (coinbase.error || coinbase === "0x") return null;
-    return coinbase;
-  }
   rpc.coinbase(function (coinbase) {
     if (!coinbase) return callback(null, null);
     if (coinbase.error || coinbase === "0x") return callback(null, null);
@@ -45406,13 +45383,6 @@ module.exports = setFrom;
 "use strict";
 
 function setGasPrice(rpc, callback) {
-  var gasPrice;
-  if (typeof callback !== "function") {
-    gasPrice = rpc.eth.gasPrice();
-    if (!gasPrice) throw new Error("setGasPrice failed");
-    if (gasPrice.error) throw new Error(gasPrice.error);
-    return parseInt(gasPrice, 16);
-  }
   rpc.eth.gasPrice(function (gasPrice) {
     if (!gasPrice) return callback(new Error("setGasPrice failed"));
     if (gasPrice.error) return callback(new Error(gasPrice.error));
@@ -45426,13 +45396,6 @@ module.exports = setGasPrice;
 "use strict";
 
 function setNetworkID(rpc, callback) {
-  var networkID;
-  if (typeof callback !== "function") {
-    networkID = rpc.version();
-    if (networkID == null) throw new Error("setNetworkID failed");
-    if (networkID.error) throw new Error(networkID.error);
-    return networkID;
-  }
   rpc.version(function (networkID) {
     if (networkID == null) return callback(new Error("setNetworkID failed"));
     if (networkID.error) return callback(new Error(networkID.error));
@@ -45483,39 +45446,4 @@ function setupFunctionsABI(functionsABI, contracts) {
 
 module.exports = setupFunctionsABI;
 
-},{}],320:[function(require,module,exports){
-"use strict";
-
-var setNetworkID = require("./set-network-id");
-var setBlockNumber = require("./set-block-number");
-var setGasPrice = require("./set-gas-price");
-var setCoinbase = require("./set-coinbase");
-var setContracts = require("./set-contracts");
-var setFrom = require("./set-from");
-var setupEventsABI = require("./setup-events-abi");
-var setupFunctionsABI = require("./setup-functions-abi");
-var createEthrpcConfiguration = require("./create-ethrpc-configuration");
-
-var noop = function () {};
-
-// synchronous connection sequence
-function syncConnect(rpc, configuration) {
-  var eventsABI, functionsABI, vitals = {};
-  rpc.connect(createEthrpcConfiguration(configuration));
-  rpc.blockNumber(noop);
-  vitals.networkID = setNetworkID(rpc);
-  vitals.blockNumber = setBlockNumber(rpc);
-  vitals.gasPrice = setGasPrice(rpc);
-  vitals.coinbase = setCoinbase(rpc);
-  vitals.contracts = setContracts(vitals.networkID, configuration.contracts);
-  vitals.abi = {};
-  eventsABI = setupEventsABI((configuration.abi || {}).events, vitals.contracts);
-  functionsABI = setupFunctionsABI(setFrom((configuration.abi || {}).functions, vitals.coinbase), vitals.contracts);
-  if (eventsABI) vitals.abi.events = eventsABI;
-  if (functionsABI) vitals.abi.functions = functionsABI;
-  return vitals;
-}
-
-module.exports = syncConnect;
-
-},{"./create-ethrpc-configuration":310,"./set-block-number":312,"./set-coinbase":313,"./set-contracts":314,"./set-from":315,"./set-gas-price":316,"./set-network-id":317,"./setup-events-abi":318,"./setup-functions-abi":319}]},{},[1]);
+},{}]},{},[1]);

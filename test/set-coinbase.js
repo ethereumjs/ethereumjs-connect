@@ -7,21 +7,10 @@ var setCoinbase = require("../src/set-coinbase");
 
 describe("set-coinbase", function () {
   var test = function (t) {
-    describe(t.description, function () {
-      it("sync", function () {
-        var coinbase;
-        try {
-          coinbase = setCoinbase(t.rpc);
-          t.assertions(null, coinbase);
-        } catch (exc) {
-          t.assertions(exc, coinbase);
-        }
-      });
-      it("async", function (done) {
-        setCoinbase(t.rpc, function (err, coinbase) {
-          t.assertions(err, coinbase);
-          done();
-        });
+    it(t.description, function (done) {
+      setCoinbase(t.rpc, function (err, coinbase) {
+        t.assertions(err, coinbase);
+        done();
       });
     });
   };

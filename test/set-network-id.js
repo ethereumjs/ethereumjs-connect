@@ -7,21 +7,10 @@ var setNetworkID = require("../src/set-network-id");
 
 describe("set-network-id", function () {
   var test = function (t) {
-    describe(t.description, function () {
-      it("sync", function () {
-        var networkID;
-        try {
-          networkID = setNetworkID(t.rpc);
-          t.assertions(null, networkID);
-        } catch (exc) {
-          t.assertions(exc, networkID);
-        }
-      });
-      it("async", function (done) {
-        setNetworkID(t.rpc, function (err, networkID) {
-          t.assertions(err, networkID);
-          done();
-        });
+    it(t.description, function (done) {
+      setNetworkID(t.rpc, function (err, networkID) {
+        t.assertions(err, networkID);
+        done();
       });
     });
   };

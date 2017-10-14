@@ -12,17 +12,6 @@ var connect = require("../src/connect");
 describe("connect", function () {
   var test = function (t) {
     describe(t.description, function () {
-      it("sync", function () {
-        t.assertions(proxyquire("../src/connect.js", {
-          "./sync-connect": function (rpc, configuration) {
-            return {
-              http: configuration.http,
-              ws: configuration.ws,
-              ipc: configuration.ipc
-            };
-          }
-        })(t.params.options));
-      });
       it("async", function (done) {
         proxyquire("../src/connect.js", {
           "./async-connect": function (rpc, configuration, callback) {
@@ -176,7 +165,7 @@ function connectTest(transportType, transportAddress) {
   });
 
   function test(t) {
-    it("async " + t.description, function (done) {
+    it(t.description, function (done) {
       var connectOptions;
       server.addResponder(function (jso) { if (jso.method === "eth_coinbase") return t.blockchain.coinbase; });
       server.addResponder(function (jso) { if (jso.method === "eth_gasPrice") return t.blockchain.gasPrice; });
@@ -280,66 +269,4 @@ describe("async connect", function () {
   describe("HTTP", connectTest.bind(null, "HTTP", "http://localhost:1337"));
   describe("WS", connectTest.bind(null, "WS", "ws://localhost:1337"));
   describe("IPC", connectTest.bind(null, "IPC", (os.type() === "Windows_NT") ? "\\\\.\\pipe\\TestRPC" : "testrpc.ipc"));
-});
-
-describe("sync connect", function () {
-  it("sync connection sequence with abi", function () {
-    var expectedState, connectOptions, vitals;
-    this.timeout(10000);
-    expectedState = {
-      coinbase: "0xb0b",
-      networkID: "9000",
-      contracts: { contract1: "0xc1", contract2: "0xc2" },
-      abi: {
-        events: {
-          contract1: {
-            event1: { address: "0xc1", contract: "contract1" },
-            event2: { address: "0xc1", contract: "contract1" }
-          },
-          contract2: {
-            event3: { address: "0xc2", contract: "contract2" }
-          }
-        },
-        functions: {
-          contract1: { method1: { from: "0xb0b", to: "0xc1" }, method2: { from: "0xb0b", to: "0xc1" } },
-          contract2: { method1: { from: "0xb0b", to: "0xc2" } }
-        }
-      }
-    };
-
-    connectOptions = {
-      http: "https://eth9000.augur.net",
-      contracts: { 9000: { contract1: "0xc1", contract2: "0xc2" } },
-      abi: {
-        events: {
-          contract1: {
-            event1: { contract: "contract1" },
-            event2: { contract: "contract1" }
-          },
-          contract2: {
-            event3: { contract: "contract2" }
-          }
-        },
-        functions: {
-          contract1: { method1: {}, method2: {} },
-          contract2: { method1: {} }
-        }
-      },
-      noFallback: true
-    };
-
-    vitals = immutableDelete(immutableDelete(connect(connectOptions), "blockNumber"), "gasPrice");
-
-    // since this is running against a real blockchain, some of the things don't test well
-    assert.match(vitals.abi.functions.contract1.method1.from, /^0x[0-9a-zA-Z]{40}$/);
-    vitals.abi.functions.contract1.method1.from = "0xb0b";
-    assert.match(vitals.abi.functions.contract1.method2.from, /^0x[0-9a-zA-Z]{40}$/);
-    vitals.abi.functions.contract1.method2.from = "0xb0b";
-    assert.match(vitals.abi.functions.contract2.method1.from, /^0x[0-9a-zA-Z]{40}$/);
-    vitals.abi.functions.contract2.method1.from = "0xb0b";
-    assert.match(vitals.coinbase, /^0x[0-9a-zA-Z]{40}$/);
-    vitals.coinbase = "0xb0b";
-
-    assert.deepEqual(immutableDelete(vitals, "rpc"), expectedState);
-  });
 });

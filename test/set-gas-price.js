@@ -7,21 +7,10 @@ var setGasPrice = require("../src/set-gas-price");
 
 describe("set-gas-price", function () {
   var test = function (t) {
-    describe(t.description, function () {
-      it("sync", function () {
-        var gasPrice;
-        try {
-          gasPrice = setGasPrice(t.rpc);
-          t.assertions(null, gasPrice);
-        } catch (exc) {
-          t.assertions(exc, gasPrice);
-        }
-      });
-      it("async", function (done) {
-        setGasPrice(t.rpc, function (err, gasPrice) {
-          t.assertions(err, gasPrice);
-          done();
-        });
+    it(t.description, function (done) {
+      setGasPrice(t.rpc, function (err, gasPrice) {
+        t.assertions(err, gasPrice);
+        done();
       });
     });
   };
