@@ -19098,19 +19098,8 @@ var isObject = require("../utils/is-object");
 var errors = require("../errors/codes");
 var RPCError = require("../errors/rpc-error");
 
-var parseEthereumResponse = function (origResponse, returns, callback) {
-  var results, len, err, i, response;
-  response = clone(origResponse);
-  if (response && typeof response === "string") {
-    try {
-      response = JSON.parse(response);
-    } catch (e) {
-      err = e;
-      if (e && e.name === "SyntaxError") err = errors.INVALID_RESPONSE;
-      if (isFunction(callback)) return callback(err);
-      throw new RPCError(err);
-    }
-  }
+function parseEthereumResponse(origResponse, callback) {
+  var results, len, err, i, response = clone(origResponse);
   if (isObject(response)) {
     if (response.error) {
       response = { error: response.error.code, message: response.error.message };
@@ -19138,8 +19127,10 @@ var parseEthereumResponse = function (origResponse, returns, callback) {
     err.bubble = response;
     if (isFunction(callback)) return callback(err);
     throw new RPCError(err);
+  } else {
+    throw new RPCError(JSON.stringify(response));
   }
-};
+}
 
 module.exports = parseEthereumResponse;
 
@@ -20561,7 +20552,7 @@ function blockchainMessageHandler(error, jso) {
       }
 
       // FIXME: outstandingRequest.callback should be function(Error,object) not function(Error|object)
-      parseEthereumResponse(jso, outstandingRequest.expectedReturnTypes, outstandingRequest.callback);
+      parseEthereumResponse(jso, outstandingRequest.callback);
     };
 
     errorHandler = function () {
@@ -40816,11 +40807,6 @@ var EC_PRIVKEY_EXPORT_DER_UNCOMPRESSED = Buffer.from([
   0x00
 ])
 
-var ZERO_BUFFER_32 = Buffer.from([
-  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-])
-
 exports.privateKeyExport = function (privateKey, publicKey, compressed) {
   var result = Buffer.from(compressed ? EC_PRIVKEY_EXPORT_DER_COMPRESSED : EC_PRIVKEY_EXPORT_DER_UNCOMPRESSED)
   privateKey.copy(result, compressed ? 8 : 9)
@@ -40880,8 +40866,8 @@ exports.signatureExport = function (sigObj) {
 }
 
 exports.signatureImport = function (sig) {
-  var r = Buffer.from(ZERO_BUFFER_32)
-  var s = Buffer.from(ZERO_BUFFER_32)
+  var r = Buffer.alloc(32, 0)
+  var s = Buffer.alloc(32, 0)
 
   try {
     var sigObj = bip66.decode(sig)
@@ -40900,8 +40886,8 @@ exports.signatureImport = function (sig) {
 }
 
 exports.signatureImportLax = function (sig) {
-  var r = Buffer.from(ZERO_BUFFER_32)
-  var s = Buffer.from(ZERO_BUFFER_32)
+  var r = Buffer.alloc(32, 0)
+  var s = Buffer.alloc(32, 0)
 
   var length = sig.length
   var index = 0
@@ -42341,7 +42327,9 @@ module.exports = abiDecodeData;
 var abiDecodeData = require("./abi-decode-data");
 
 function abiDecodeRpcResponse(responseType, abiEncodedRpcResponse) {
-  return abiDecodeData([{type: responseType}], abiEncodedRpcResponse)[0];
+  var decodedRpcResponse = abiDecodeData([{type: responseType}], abiEncodedRpcResponse)[0];
+  if (responseType === "bool") return Boolean(decodedRpcResponse);
+  return decodedRpcResponse;
 }
 
 module.exports = abiDecodeRpcResponse;
@@ -42797,7 +42785,7 @@ var BigNumber = require("bignumber.js");
 BigNumber.config({MODULO_MODE: BigNumber.EUCLID, ROUNDING_MODE: BigNumber.ROUND_HALF_DOWN});
 
 module.exports = {
-  version: "2.0.3",
+  version: "2.0.4",
   constants: require("./constants"),
   unrollArray: require("./unroll-array"),
   byteArrayToUtf8String: require("./byte-array-to-utf8-string"),
@@ -45315,7 +45303,7 @@ var setupFunctionsABI = require("./setup-functions-abi");
 var connect = require("./connect");
 
 module.exports = {
-  version: "4.4.0",
+  version: "4.4.1",
   setFrom: setFrom,
   setupEventsABI: setupEventsABI,
   setupFunctionsABI: setupFunctionsABI,
