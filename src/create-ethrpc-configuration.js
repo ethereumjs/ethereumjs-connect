@@ -9,6 +9,7 @@ function createEthrpcConfiguration(configuration) {
   ethrpcConfiguration.wsAddresses = configuration.wsAddresses;
   ethrpcConfiguration.ipcAddresses = configuration.ipcAddresses;
   ethrpcConfiguration.networkID = configuration.networkID;
+  ethrpcConfiguration.startBlockStreamOnConnect = configuration.startBlockStreamOnConnect;
   return ethrpcConfiguration;
 }
 
