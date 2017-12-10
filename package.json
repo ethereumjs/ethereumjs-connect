@@ -42,7 +42,7 @@
     "eslint": "3.17.1",
     "ethereumjs-stub-rpc-server": "2.1.6",
     "immutable-delete": "1.0.1",
-    "istanbul": "0.4.1",
+    "istanbul": "0.4.5",
     "mocha": "3.2.0",
     "proxyquire": "1.7.11",
     "uglify-js": "2.6.1",
