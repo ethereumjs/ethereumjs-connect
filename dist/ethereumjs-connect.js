@@ -8443,7 +8443,7 @@ var setupFunctionsABI = require("./setup-functions-abi");
 var connect = require("./connect");
 
 module.exports = {
-  version: "4.4.7",
+  version: "4.4.8",
   setFrom: setFrom,
   setupEventsABI: setupEventsABI,
   setupFunctionsABI: setupFunctionsABI,
@@ -43515,6 +43515,7 @@ function blockchainMessageHandler(error, jso) {
     var outOfBandErrorHandler, subscriptionHandler, responseHandler, errorHandler, subscriptions, state = getState();
     subscriptions = state.subscriptions;
     outOfBandErrorHandler = internalState.get("outOfBandErrorHandler");
+    // if (state.debug.broadcast) console.log("[ethrpc] RPC response:", JSON.stringify(jso));
 
     if (error !== null) {
       return outOfBandErrorHandler(error);
@@ -45053,7 +45054,7 @@ WsTransport.prototype = Object.create(AbstractTransport.prototype);
 WsTransport.prototype.constructor = WsTransport;
 
 WsTransport.prototype.connect = function (callback) {
-  var messageHandler;
+  var messageHandler, self = this;
   this.webSocketClient = new WebSocketClient(this.address, undefined, undefined, undefined, { timeout: this.timeout });
   messageHandler = function () { };
   this.webSocketClient.onopen = function () {
@@ -45071,7 +45072,7 @@ WsTransport.prototype.connect = function (callback) {
   };
   this.webSocketClient.onclose = function (event) {
     if (event && event.code !== 1000) {
-      console.error("websocket.onclose:", event.code, event.reason);
+      console.error("websocket", self.address, "closed:", event.code, event.reason);
       callback(new Error("Web socket closed without opening, usually means failed connection."));
     }
     callback = function () { };
