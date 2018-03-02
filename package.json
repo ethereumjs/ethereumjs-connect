@@ -1,6 +1,6 @@
 {
   "name": "ethereumjs-connect",
-  "version": "4.4.9",
+  "version": "4.5.0",
   "description": "Basic Ethereum connection tasks",
   "author": "The Augur Developers <team@augur.net>",
   "license": "MIT",
@@ -8,7 +8,7 @@
   "scripts": {
     "build": "browserify ./exports.js > ./dist/ethereumjs-connect.js && uglifyjs ./dist/ethereumjs-connect.js > ./dist/ethereumjs-connect.min.js",
     "build:tests": "browserify test/create-*.js test/set*.js > test/browser/bundle.js",
-    "lint": "eslint src && eslint test/*.js",
+    "lint": "eslint src test/*.js",
     "test": "mocha test/*.js",
     "link": "npm link ethrpc",
     "coverage": "istanbul cover --include-all-sources --root ./src ./node_modules/mocha/bin/_mocha test/*.js"
@@ -29,7 +29,7 @@
   "dependencies": {
     "async": "1.5.2",
     "clone": "2.1.1",
-    "ethrpc": "4.5.7"
+    "ethrpc": "5.0.0"
   },
   "devDependencies": {
     "babel-cli": "6.22.2",

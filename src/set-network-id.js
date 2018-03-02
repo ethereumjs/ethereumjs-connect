@@ -1,9 +1,9 @@
 "use strict";
 
 function setNetworkID(rpc, callback) {
-  rpc.version(function (networkID) {
+  rpc.version(function (err, networkID) {
+    if (err) return callback(err);
     if (networkID == null) return callback(new Error("setNetworkID failed"));
-    if (networkID.error) return callback(new Error(networkID.error));
     callback(null, networkID);
   });
 }

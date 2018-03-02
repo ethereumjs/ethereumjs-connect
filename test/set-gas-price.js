@@ -19,8 +19,7 @@ describe("set-gas-price", function () {
     rpc: {
       eth: {
         gasPrice: function (callback) {
-          if (!callback) return "0x1234";
-          callback("0x1234");
+          callback(null, "0x1234");
         }
       }
     },
@@ -33,8 +32,7 @@ describe("set-gas-price", function () {
     rpc: {
       eth: {
         gasPrice: function (callback) {
-          if (!callback) return undefined;
-          callback(undefined);
+          callback(null, undefined);
         }
       }
     },
@@ -48,8 +46,7 @@ describe("set-gas-price", function () {
     rpc: {
       eth: {
         gasPrice: function (callback) {
-          if (!callback) return null;
-          callback(null);
+          callback(null, null);
         }
       }
     },

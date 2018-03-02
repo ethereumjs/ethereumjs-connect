@@ -18,8 +18,7 @@ describe("set-network-id", function () {
     description: "set current block number",
     rpc: {
       version: function (callback) {
-        if (!callback) return "3";
-        callback("3");
+        callback(null, "3");
       }
     },
     assertions: function (err, networkID) {
@@ -30,8 +29,7 @@ describe("set-network-id", function () {
     description: "networkID is undefined",
     rpc: {
       version: function (callback) {
-        if (!callback) return undefined;
-        callback(undefined);
+        callback(null, undefined);
       }
     },
     assertions: function (err, networkID) {
@@ -43,8 +41,7 @@ describe("set-network-id", function () {
     description: "networkID is null",
     rpc: {
       version: function (callback) {
-        if (!callback) return null;
-        callback(null);
+        callback(null, null);
       }
     },
     assertions: function (err, networkID) {
