@@ -18,8 +18,7 @@ describe("set-block-number", function () {
     description: "set current block number",
     rpc: {
       blockNumber: function (callback) {
-        if (!callback) return "0x1234";
-        callback("0x1234");
+        callback(null, "0x1234");
       }
     },
     assertions: function (err, blockNumber) {
@@ -30,8 +29,7 @@ describe("set-block-number", function () {
     description: "blockNumber is undefined",
     rpc: {
       blockNumber: function (callback) {
-        if (!callback) return undefined;
-        callback(undefined);
+        callback(null, undefined);
       }
     },
     assertions: function (err, blockNumber) {
@@ -43,8 +41,7 @@ describe("set-block-number", function () {
     description: "blockNumber is null",
     rpc: {
       blockNumber: function (callback) {
-        if (!callback) return null;
-        callback(null);
+        callback(null, null);
       }
     },
     assertions: function (err, blockNumber) {

@@ -1,9 +1,9 @@
 "use strict";
 
 function setBlockNumber(rpc, callback) {
-  rpc.blockNumber(function (blockNumber) {
+  rpc.blockNumber(function (err, blockNumber) {
+    if (err) return callback(err);
     if (blockNumber == null) return callback(new Error("setBlockNumber failed"));
-    if (blockNumber.error) return callback(new Error(blockNumber.error));
     callback(null, blockNumber);
   });
 }

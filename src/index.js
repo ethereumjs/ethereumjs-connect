@@ -6,7 +6,7 @@ var setupFunctionsABI = require("./setup-functions-abi");
 var connect = require("./connect");
 
 module.exports = {
-  version: "4.4.9",
+  version: "4.5.0",
   setFrom: setFrom,
   setupEventsABI: setupEventsABI,
   setupFunctionsABI: setupFunctionsABI,

@@ -18,8 +18,7 @@ describe("set-coinbase", function () {
     description: "set coinbase address",
     rpc: {
       coinbase: function (callback) {
-        if (!callback) return "0xb0b";
-        callback("0xb0b");
+        callback(null, "0xb0b");
       }
     },
     assertions: function (err, coinbase) {
@@ -30,8 +29,7 @@ describe("set-coinbase", function () {
     description: "coinbase is 0x (no response)",
     rpc: {
       coinbase: function (callback) {
-        if (!callback) return "0x";
-        callback("0x");
+        callback(null, "0x");
       }
     },
     assertions: function (err, coinbase) {
@@ -43,8 +41,7 @@ describe("set-coinbase", function () {
     description: "coinbase is undefined",
     rpc: {
       coinbase: function (callback) {
-        if (!callback) return undefined;
-        callback(undefined);
+        callback(null, undefined);
       }
     },
     assertions: function (err, coinbase) {
@@ -56,8 +53,7 @@ describe("set-coinbase", function () {
     description: "coinbase is null",
     rpc: {
       coinbase: function (callback) {
-        if (!callback) return null;
-        callback(null);
+        callback(null, null);
       }
     },
     assertions: function (err, coinbase) {
